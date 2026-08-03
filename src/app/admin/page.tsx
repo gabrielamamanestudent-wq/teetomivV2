@@ -1,0 +1,157 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+} from "recharts";
+import { useI18n } from "@/lib/i18n/context";
+import { api } from "@/lib/api-client";
+import type { AdminMetrics } from "@/lib/data/repository";
+import { formatCADCents } from "@/lib/time";
+import { Badge, Skeleton } from "@/components/ui";
+import { cn } from "@/lib/cn";
+
+const DEPOSIT_LABELS: Record<string, string> = {
+  authorized: "Held",
+  refunded: "Refunded",
+  forfeited: "Forfeited",
+  "refunded-on-refill": "Refund-on-refill",
+};
+
+export default function AdminPage() {
+  const { t } = useI18n();
+  const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+  const [resetting, setResetting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    api.adminMetrics().then(({ metrics }) => setMetrics(metrics));
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function reset() {
+    setResetting(true);
+    await api.resetDemo();
+    await load();
+    setResetting(false);
+    setToast(t("admin.resetDone"));
+    setTimeout(() => setToast(null), 2500);
+  }
+
+  const funnelData = metrics
+    ? [
+        { name: t("admin.funnelViews"), value: metrics.funnel.views },
+        { name: t("admin.funnelStarts"), value: metrics.funnel.starts },
+        { name: t("admin.funnelCompleted"), value: metrics.funnel.completed },
+      ]
+    : [];
+
+  return (
+    <div className="space-y-6 pt-2">
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-forest">{t("admin.title")}</h1>
+        <button onClick={reset} disabled={resetting} className="btn-ghost text-sm">
+          {resetting ? t("admin.resetting") : `↻ ${t("admin.reset")}`}
+        </button>
+      </div>
+
+      {toast && (
+        <div className="rounded-2xl bg-lime px-4 py-2 text-sm font-semibold text-forest animate-fade-in">
+          ✓ {toast}
+        </div>
+      )}
+
+      {!metrics ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28" />)}
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Metric label={t("admin.gmv")} value={formatCADCents(metrics.gmvCents)} accent />
+            <Metric label={t("admin.bookings")} value={String(metrics.bookings)} />
+            <Metric label={t("admin.alerts")} value={String(metrics.activeAlerts)} />
+            <Metric label={t("admin.courses")} value={String(metrics.courses)} />
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {/* Funnel */}
+            <div className="card p-5">
+              <h2 className="mb-3 font-display font-bold text-forest">{t("admin.funnel")}</h2>
+              <div className="h-56 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={funnelData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#0B3D2E99" }} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      cursor={{ fill: "#0B3D2E0d" }}
+                      contentStyle={{ borderRadius: 12, border: "1px solid #0B3D2E22", fontSize: 12 }}
+                    />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                      {funnelData.map((_, i) => (
+                        <Cell key={i} fill={["#0B3D2E", "#0F4E3A", "#C6F432"][i]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="mt-2 text-center text-xs text-forest/50">
+                {metrics.funnel.views} → {metrics.funnel.starts} →{" "}
+                <span className="font-bold text-forest">{metrics.funnel.completed}</span> (
+                {Math.round((metrics.funnel.completed / metrics.funnel.views) * 100)}% conversion)
+              </p>
+            </div>
+
+            {/* Deposit states */}
+            <div className="card p-5">
+              <h2 className="mb-3 font-display font-bold text-forest">{t("admin.deposits")}</h2>
+              <div className="space-y-2">
+                {Object.entries(metrics.deposits).map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="flex items-center justify-between rounded-2xl bg-forest/5 px-4 py-3"
+                  >
+                    <span className="font-semibold text-forest/80">{DEPOSIT_LABELS[k] ?? k}</span>
+                    <Badge
+                      tone={
+                        k === "refunded"
+                          ? "lime"
+                          : k === "forfeited"
+                            ? "red"
+                            : k === "refunded-on-refill"
+                              ? "sky"
+                              : "amber"
+                      }
+                    >
+                      {v}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className={cn("card p-5", accent && "bg-forest text-cream")}>
+      <p className={cn("text-xs font-bold uppercase tracking-wide", accent ? "text-lime" : "text-forest/50")}>
+        {label}
+      </p>
+      <p className={cn("mt-1 font-display text-3xl font-bold", accent ? "text-cream" : "text-forest")}>
+        {value}
+      </p>
+    </div>
+  );
+}

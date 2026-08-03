@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: #faf8f3;
+  color: #1a1a1a;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide scrollbars on the ticker / horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Focus ring for accessibility */
+:focus-visible {
+  outline: 3px solid rgba(198, 244, 50, 0.7);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-forest text-cream hover:bg-forest-600 shadow-card;
+  }
+  .btn-lime {
+    @apply btn bg-lime text-forest hover:bg-lime-dark shadow-card;
+  }
+  .btn-ghost {
+    @apply btn bg-white/70 text-forest border border-forest/10 hover:bg-white;
+  }
+  .card {
+    @apply rounded-2xl bg-white shadow-card;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+  .field-label {
+    @apply block text-sm font-semibold text-forest/80 mb-1.5;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-forest/15 bg-white px-4 py-3 text-base outline-none focus:border-forest/40;
+  }
+}
+
+.skeleton {
+  @apply animate-pulse-soft rounded-2xl bg-forest/10;
+}
