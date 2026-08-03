@@ -12,12 +12,12 @@ const ACCOUNTS = [
 ];
 
 const SCRIPT = [
-  { t: "0:00", en: "Open the landing page. Point at the live ticker of just-released deals and the ‘$15 refundable deposit’ promise.", fr: "Ouvrez la page d'accueil. Montrez le bandeau d'offres et la promesse « dépôt remboursable de 15 $ »." },
+  { t: "0:00", en: "Open the landing page. Point at the live ticker of just-released deals and the ‘$10 back as TeeCredit’ promise.", fr: "Ouvrez la page d'accueil. Montrez le bandeau d'offres et la promesse « 10 $ remis en TeeCredit »." },
   { t: "0:10", en: "Tap Browse. Filter to ‘Dawn patrol’ + your region. Watch the countdown badges tick.", fr: "Touchez Parcourir. Filtrez « Aube » + votre région. Les comptes à rebours défilent." },
   { t: "0:25", en: "Open a deal. Show struck-through rack price vs live price, pick 2 players, tap Reserve.", fr: "Ouvrez une offre. Montrez le prix barré vs prix en direct, choisissez 2 joueurs, touchez Réserver." },
-  { t: "0:35", en: "On the deposit screen say: ‘Only $15 now, green fee is paid at the course.’ Pay with 4242. Land on the QR confirmation.", fr: "À l'écran de dépôt : « Seulement 15 $ maintenant, le droit de jeu se paie au club. » Payez avec 4242. Confirmation QR." },
+  { t: "0:35", en: "On the fee screen say: ‘$10 to reserve — it comes back as TeeCredit and earns points. Green fee is paid at the course.’ Pay with 4242. Land on the QR confirmation.", fr: "À l'écran des frais : « 10 $ pour réserver — remis en TeeCredit avec des points. Le droit de jeu se paie au club. » Payez avec 4242. Confirmation QR." },
   { t: "0:55", en: "Switch to the Pro shop tab. Tap an open slot → accept the suggested price → Push to TEETOMIC. Show ‘alert-holders notified’.", fr: "Onglet Boutique. Touchez un créneau → acceptez le prix suggéré → Publier. Montrez « détenteurs d'alertes notifiés »." },
-  { t: "1:15", en: "Open the Check-in queue. Tap ‘Checked in’ on your booking → deposit auto-refunds. Point at the confirmation.", fr: "File d'enregistrement. Touchez « Enregistrer » → le dépôt est remboursé automatiquement." },
+  { t: "1:15", en: "Open the Check-in queue. Tap ‘Checked in’ → the $10 returns as TeeCredit and the golfer earns 60 points. Then open Rewards to show their tier climb.", fr: "File d'enregistrement. Touchez « Enregistrer » → les 10 $ reviennent en TeeCredit et le golfeur gagne 60 points. Ouvrez Récompenses pour montrer la montée de niveau." },
   { t: "1:25", en: "Flip to Stats: ‘$1,240 of dead inventory recovered this month.’ That's the retention hook. Done.", fr: "Onglet Stats : « 1 240 $ d'inventaire mort récupéré ce mois-ci. » C'est le hook de rétention. Fin." },
 ];
 

@@ -14,6 +14,7 @@ const createSchema = z.object({
   golferId: z.string().min(1),
   golferName: z.string().min(1).max(80),
   golferEmail: z.string().email(),
+  applyCredit: z.boolean().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -58,15 +59,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 2) Create the booking.
-  const booking = await repo.createBooking({
+  // 2) Create the booking (applies tier fee-waiver + TeeCredit, awards points on check-in).
+  const result = await repo.createBooking({
     slotId: parsed.data.slotId,
     golferId: parsed.data.golferId,
     golferName: parsed.data.golferName,
     golferEmail: parsed.data.golferEmail,
     players: parsed.data.players,
     paymentIntentId: intentId,
+    applyCredit: parsed.data.applyCredit,
   });
+  const booking = result.booking;
 
   // 3) Fire the confirmation email (mock/console fallback).
   const course = await repo.getCourse(booking.courseId);
@@ -80,5 +83,12 @@ export async function POST(req: NextRequest) {
   });
   await sendEmail({ to: booking.golferEmail, ...email });
 
-  return NextResponse.json({ booking, mockPayment: payment.isMock });
+  return NextResponse.json({
+    booking,
+    mockPayment: payment.isMock,
+    feeCents: result.feeCents,
+    creditAppliedCents: result.creditAppliedCents,
+    chargedCents: result.chargedCents,
+    pointsPreview: result.pointsPreview,
+  });
 }

@@ -17,10 +17,11 @@ import { Badge, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 const DEPOSIT_LABELS: Record<string, string> = {
-  authorized: "Held",
-  refunded: "Refunded",
-  forfeited: "Forfeited",
-  "refunded-on-refill": "Refund-on-refill",
+  authorized: "Fee charged",
+  refunded: "Returned to card",
+  credited: "Returned as TeeCredit",
+  forfeited: "Kept (no-show)",
+  "refunded-on-refill": "Returned (re-filled)",
 };
 
 export default function AdminPage() {
@@ -121,7 +122,7 @@ export default function AdminPage() {
                     <span className="font-semibold text-forest/80">{DEPOSIT_LABELS[k] ?? k}</span>
                     <Badge
                       tone={
-                        k === "refunded"
+                        k === "refunded" || k === "credited"
                           ? "lime"
                           : k === "forfeited"
                             ? "red"

@@ -7,8 +7,8 @@ import { useSession } from "@/lib/session";
 import { api } from "@/lib/api-client";
 import type { Course, Slot } from "@/lib/data/types";
 import { freeCancellationDeadline } from "@/lib/policy";
-import { formatLocalDateTime, formatLocalTime, formatCAD } from "@/lib/time";
-import { Skeleton, EmptyState } from "@/components/ui";
+import { formatLocalDateTime, formatLocalTime, formatCAD, formatCADCents } from "@/lib/time";
+import { Skeleton, EmptyState, Badge } from "@/components/ui";
 import Link from "next/link";
 
 export default function BookPage({ params }: { params: { id: string } }) {
@@ -26,14 +26,32 @@ export default function BookPage({ params }: { params: { id: string } }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Loyalty context for this golfer.
+  const [feeWaived, setFeeWaived] = useState(false);
+  const [creditCents, setCreditCents] = useState(0);
+  const [pointsPreview, setPointsPreview] = useState(60);
+  const [useCredit, setUseCredit] = useState(false);
+
   useEffect(() => {
     setName(golfer.name);
     setEmail(golfer.email);
+    api
+      .account(golfer.id)
+      .then((r) => {
+        setFeeWaived(r.perks.feeWaived);
+        setCreditCents(r.account.teeCreditCents);
+        setUseCredit(r.account.teeCreditCents > 0 && !r.perks.feeWaived);
+      })
+      .catch(() => {});
   }, [golfer]);
 
   useEffect(() => {
     api.slot(params.id).then(setData).catch(() => setNotFound(true));
   }, [params.id]);
+
+  const baseFeeCents = feeWaived ? 0 : 1000;
+  const creditApplied = useCredit ? Math.min(baseFeeCents, creditCents) : 0;
+  const chargeCents = baseFeeCents - creditApplied;
 
   const deadlineLabel = useMemo(() => {
     if (!data) return "";
@@ -54,6 +72,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
         golferId: golfer.id,
         golferName: name,
         golferEmail: email,
+        applyCredit: useCredit,
       });
       router.push(`/booking/${booking.reference}`);
     } catch (e) {
@@ -109,18 +128,47 @@ export default function BookPage({ params }: { params: { id: string } }) {
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-forest/60">{t("book.deposit")}</span>
-          <span className="font-semibold text-forest">$15.00</span>
+          {feeWaived ? (
+            <Badge tone="lime">{t("rewards.perkFee")}</Badge>
+          ) : (
+            <span className="font-semibold text-forest">{formatCADCents(baseFeeCents)}</span>
+          )}
         </div>
+        {creditCents > 0 && !feeWaived && (
+          <label className="flex cursor-pointer items-center justify-between text-sm">
+            <span className="text-forest/70">
+              {t("book.applyCredit")}{" "}
+              <span className="text-forest/45">({formatCADCents(creditCents)})</span>
+            </span>
+            <input
+              type="checkbox"
+              checked={useCredit}
+              onChange={(e) => setUseCredit(e.target.checked)}
+              className="h-4 w-4 accent-forest"
+            />
+          </label>
+        )}
+        {creditApplied > 0 && (
+          <div className="flex items-center justify-between text-sm font-semibold text-lime-dark">
+            <span>{t("book.creditApplied")}</span>
+            <span>−{formatCADCents(creditApplied)}</span>
+          </div>
+        )}
         <div className="border-t border-forest/10 pt-3">
           <div className="flex items-center justify-between">
             <span className="font-bold text-forest">{t("book.totalNow")}</span>
-            <span className="font-display text-xl font-bold text-forest">$15.00</span>
+            <span className="font-display text-xl font-bold text-forest">
+              {formatCADCents(chargeCents)}
+            </span>
           </div>
           <p className="mt-1 text-xs text-forest/50">
             {t("book.greenFee")}: {formatCAD(greenFeeTotal)} — {t("deal.dueAtCourse").toLowerCase()}.
           </p>
         </div>
         <div className="rounded-xl bg-lime-soft px-3 py-2 text-sm font-semibold text-forest">
+          🏅 {t("book.earnLine", { pts: String(pointsPreview) })}
+        </div>
+        <div className="rounded-xl bg-forest/5 px-3 py-2 text-sm font-semibold text-forest/70">
           {t("book.freeCancelUntil")} {deadlineLabel}
         </div>
       </div>
@@ -159,7 +207,11 @@ export default function BookPage({ params }: { params: { id: string } }) {
         )}
 
         <button onClick={submit} disabled={submitting || !email} className="btn-lime w-full text-base">
-          {submitting ? t("book.processing") : t("book.pay")}
+          {submitting
+            ? t("book.processing")
+            : chargeCents === 0
+              ? t("book.payWaived")
+              : t("book.pay")}
         </button>
         <p className="text-center text-xs text-forest/50">{t("deal.depositExplain")}</p>
       </div>

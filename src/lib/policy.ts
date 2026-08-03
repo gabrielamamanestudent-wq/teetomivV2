@@ -12,7 +12,8 @@
 // formatting (America/Toronto) is done in the UI layer, not here.
 // ============================================================================
 
-export const DEPOSIT_CENTS = 1500; // $15.00 CAD per booking
+export const BOOKING_FEE_CENTS = 1000; // $10.00 CAD booking fee (points model)
+export const DEPOSIT_CENTS = BOOKING_FEE_CENTS; // back-compat alias
 export const HOUR_MS = 60 * 60 * 1000;
 
 export type CancellationOutcome =

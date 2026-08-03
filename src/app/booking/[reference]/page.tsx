@@ -76,6 +76,10 @@ export default function ConfirmationPage({ params }: { params: { reference: stri
               {t("confirm.dueLine", { price: formatCAD(booking.pricePerPlayer) })}
             </p>
           </div>
+          <div className="flex items-center gap-2 rounded-2xl bg-forest px-4 py-3 text-cream">
+            <span className="text-lg">🏅</span>
+            <span className="text-sm font-semibold">{t("confirm.earned", { pts: "60" })}</span>
+          </div>
           <div className="flex items-center justify-between rounded-2xl bg-forest/5 px-4 py-3">
             <span className="text-sm font-semibold text-forest/70">
               {t("confirm.cancelLine", {

@@ -8,7 +8,9 @@ import type {
   Alert,
   Booking,
   Course,
+  GolferAccount,
   Notification,
+  PointsEntry,
   Slot,
   User,
 } from "./types";
@@ -35,6 +37,22 @@ export interface CreateBookingInput {
   golferEmail: string;
   players: number;
   paymentIntentId: string;
+  applyCredit?: boolean; // spend available TeeCredit against the $10 fee
+}
+
+export interface BookingResult {
+  booking: Booking;
+  feeCents: number; // fee after tier waiver
+  creditAppliedCents: number; // TeeCredit spent
+  chargedCents: number; // actually charged to card
+  pointsPreview: number; // points they'll earn on check-in
+}
+
+export interface MatchmakingCandidate {
+  golferId: string;
+  name: string;
+  handicap: number;
+  tier: string;
 }
 
 export interface AdminMetrics {
@@ -66,7 +84,7 @@ export interface Repository {
   releaseSlot(input: ReleaseSlotInput): Promise<{ slot: Slot; notified: number }>;
 
   // bookings
-  createBooking(input: CreateBookingInput): Promise<Booking>;
+  createBooking(input: CreateBookingInput): Promise<BookingResult>;
   getBookingByReference(reference: string): Promise<Booking | null>;
   listBookings(golferId: string): Promise<Booking[]>;
   cancelBooking(bookingId: string): Promise<Booking>;
@@ -84,6 +102,13 @@ export interface Repository {
   // users
   listUsers(): Promise<User[]>;
   authenticate(email: string, password: string): Promise<User | null>;
+
+  // loyalty
+  getAccount(golferId: string): Promise<GolferAccount>;
+  listPointsLedger(golferId: string): Promise<PointsEntry[]>;
+  setSubscription(golferId: string, subscription: "none" | "plus"): Promise<GolferAccount>;
+  setHandicap(golferId: string, handicap: number): Promise<GolferAccount>;
+  matchmaking(golferId: string): Promise<MatchmakingCandidate[]>;
 
   // metrics
   adminMetrics(): Promise<AdminMetrics>;

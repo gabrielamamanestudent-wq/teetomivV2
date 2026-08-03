@@ -124,16 +124,16 @@ describe("no-show auto-forfeit", () => {
 });
 
 describe("depositSplit — 50/50", () => {
-  it("splits the standard $15 deposit into $7.50 / $7.50", () => {
+  it("splits the standard $10 fee into $5.00 / $5.00", () => {
     const split = depositSplit();
-    expect(split.courseCents).toBe(750);
-    expect(split.teetomicCents).toBe(750);
+    expect(split.courseCents).toBe(500);
+    expect(split.teetomicCents).toBe(500);
     expect(split.courseCents + split.teetomicCents).toBe(DEPOSIT_CENTS);
   });
 
   it("keeps cents conserved for odd amounts", () => {
-    const split = depositSplit(1501);
-    expect(split.courseCents + split.teetomicCents).toBe(1501);
+    const split = depositSplit(1001);
+    expect(split.courseCents + split.teetomicCents).toBe(1001);
   });
 });
 

@@ -49,7 +49,7 @@ export function bookingConfirmationEmail(params: {
 }): { subject: string; html: string; text: string } {
   const { reference, courseName, teeTimeLabel, pricePerPlayer, players, cancelDeadlineLabel } = params;
   const subject = `TEETOMIC booking confirmed — ${courseName} (${reference})`;
-  const text = `You're on the tee sheet at ${courseName}, ${teeTimeLabel}. Reference ${reference}. Pay $${pricePerPlayer}/player for ${players} player(s) at the pro shop — your $15 deposit is refunded at check-in. Free cancellation until ${cancelDeadlineLabel}.`;
+  const text = `You're on the tee sheet at ${courseName}, ${teeTimeLabel}. Reference ${reference}. Pay $${pricePerPlayer}/player for ${players} player(s) at the pro shop — your $10 booking fee comes back as TeeCredit at check-in. Free cancellation until ${cancelDeadlineLabel}.`;
   const html = `
   <div style="font-family:Inter,Arial,sans-serif;max-width:520px;margin:auto;background:#FAF8F3;padding:24px;border-radius:16px;color:#1A1A1A">
     <div style="background:#0B3D2E;color:#C6F432;padding:12px 16px;border-radius:12px;font-weight:700;letter-spacing:.04em">TEE<span style="color:#fff">TOMIC</span></div>
@@ -58,7 +58,7 @@ export function bookingConfirmationEmail(params: {
     <div style="background:#fff;border-radius:12px;padding:16px;margin:16px 0">
       <p style="margin:0 0 8px"><strong>Reference:</strong> ${reference}</p>
       <p style="margin:0 0 8px"><strong>Due at the pro shop:</strong> $${pricePerPlayer}/player × ${players}</p>
-      <p style="margin:0 0 8px"><strong>Deposit:</strong> $15 refundable (refunded at check-in)</p>
+      <p style="margin:0 0 8px"><strong>Booking fee:</strong> $10 — back as TeeCredit at check-in</p>
       <p style="margin:0;color:#0B3D2E"><strong>Free cancellation until ${cancelDeadlineLabel}</strong></p>
     </div>
     <p style="font-size:13px;color:#6a6a6a">Show your QR code at the pro shop to check in. Pay your green fee directly at the course — never through TEETOMIC.</p>

@@ -8,7 +8,9 @@ import type {
   Alert,
   Booking,
   Course,
+  GolferAccount,
   Notification,
+  PointsEntry,
   Slot,
   User,
 } from "./types";
@@ -23,6 +25,8 @@ export interface SeedData {
   bookings: Booking[];
   alerts: Alert[];
   notifications: Notification[];
+  accounts: GolferAccount[];
+  pointsLedger: PointsEntry[];
 }
 
 // Unsplash golf photos (source pool — public hotlinkable images).
@@ -441,7 +445,7 @@ export function buildSeed(now: Date = new Date()): SeedData {
       teeTimeISO: teeTime.toISOString(),
       status: "checked-in",
       depositCents: DEPOSIT_CENTS,
-      depositStatus: "refunded",
+      depositStatus: "credited",
       paymentIntentId: "pi_demo_done",
       freeCancellationDeadlineISO: freeCancellationDeadline(bookedAt, teeTime).toISOString(),
     });
@@ -455,8 +459,8 @@ export function buildSeed(now: Date = new Date()): SeedData {
       kind: "refill-refund",
       title: { en: "Your slot was re-filled — deposit refunded", fr: "Votre place a été reprise — dépôt remboursé" },
       body: {
-        en: "Good news! Rivière-aux-Cerfs re-booked your cancelled tee time, so your $15 deposit was refunded automatically.",
-        fr: "Bonne nouvelle ! Rivière-aux-Cerfs a repris votre départ annulé, votre dépôt de 15 $ a donc été remboursé automatiquement.",
+        en: "Good news! Rivière-aux-Cerfs re-booked your cancelled tee time, so your $10 booking fee was returned automatically.",
+        fr: "Bonne nouvelle ! Rivière-aux-Cerfs a repris votre départ annulé, vos frais de 10 $ ont donc été remis automatiquement.",
       },
       createdAtISO: new Date(now.getTime() - 25 * 3600000).toISOString(),
       read: false,
@@ -475,5 +479,42 @@ export function buildSeed(now: Date = new Date()): SeedData {
     },
   ];
 
-  return { courses, slots, users, bookings, alerts, notifications };
+  // --- Loyalty accounts (points model) -------------------------------------
+  // Alex: Gold (past that threshold). Marie: TEETOMIC+ subscriber with credit.
+  // Sam: standby, has whiffed a couple of check-ins.
+  const accounts: GolferAccount[] = [
+    { golferId: "g1", lifetimePoints: 340, teeCreditCents: 1000, subscription: "none", handicap: 12 },
+    { golferId: "g2", lifetimePoints: 180, teeCreditCents: 2000, subscription: "plus", handicap: 8 },
+    { golferId: "g3", lifetimePoints: 60, teeCreditCents: 0, subscription: "none", handicap: 20 },
+  ];
+
+  const ledgerEntry = (
+    golferId: string,
+    delta: number,
+    reason: PointsEntry["reason"],
+    en: string,
+    fr: string,
+    hoursAgo: number,
+  ): PointsEntry => ({
+    id: `pe-${golferId}-${reason}-${hoursAgo}`,
+    golferId,
+    delta,
+    reason,
+    label: { en, fr },
+    createdAtISO: new Date(now.getTime() - hoursAgo * 3600000).toISOString(),
+  });
+
+  const pointsLedger: PointsEntry[] = [
+    ledgerEntry("g1", 25, "signup", "Welcome bonus", "Bonus de bienvenue", 720),
+    ledgerEntry("g1", 60, "checkin", "Checked in — Pointe-Claire Fairways", "Enregistré — Pointe-Claire Fairways", 72),
+    ledgerEntry("g1", 55, "checkin", "Checked in — Héron Bleu", "Enregistré — Héron Bleu", 200),
+    ledgerEntry("g1", 200, "tournament", "Twilight scramble — 2nd place", "Scramble crépuscule — 2e place", 300),
+    ledgerEntry("g2", 25, "signup", "Welcome bonus", "Bonus de bienvenue", 500),
+    ledgerEntry("g2", 55, "checkin", "Checked in — Rivière-aux-Cerfs", "Enregistré — Rivière-aux-Cerfs", 100),
+    ledgerEntry("g2", 100, "tournament", "TEETOMIC+ member bonus", "Bonus membre TEETOMIC+", 40),
+    ledgerEntry("g3", 25, "signup", "Welcome bonus", "Bonus de bienvenue", 260),
+    ledgerEntry("g3", 35, "checkin", "Checked in — Les Berges du Nord", "Enregistré — Les Berges du Nord", 120),
+  ];
+
+  return { courses, slots, users, bookings, alerts, notifications, accounts, pointsLedger };
 }

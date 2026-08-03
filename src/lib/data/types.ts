@@ -70,10 +70,33 @@ export type BookingStatus =
   | "no-show";
 
 export type DepositStatus =
-  | "authorized" // $15 held
-  | "refunded" // released to golfer
-  | "forfeited" // kept, split 50/50 (display only)
-  | "refunded-on-refill"; // late cancel but slot refilled -> refunded
+  | "authorized" // $10 booking fee charged
+  | "refunded" // free cancel -> returned to card
+  | "credited" // checked in -> returned as $10 TeeCredit + points
+  | "forfeited" // late cancel / no-show -> kept by TEETOMIC (B2C revenue)
+  | "refunded-on-refill"; // late cancel but slot refilled -> returned to card
+
+// ---- Loyalty model ---------------------------------------------------------
+export type Tier = "standby" | "gold" | "gold-plus";
+export type Subscription = "none" | "plus";
+
+export interface GolferAccount {
+  golferId: string;
+  lifetimePoints: number; // XP, only ever increases -> drives tier
+  teeCreditCents: number; // spendable, from returned booking fees
+  subscription: Subscription;
+  handicap?: number; // Gold Plus: skill index for matchmaking
+}
+
+export interface PointsEntry {
+  id: string;
+  golferId: string;
+  delta: number;
+  reason: "signup" | "booking" | "checkin" | "tournament" | "redeem";
+  label: LocalizedText;
+  bookingId?: string;
+  createdAtISO: string;
+}
 
 export interface Booking {
   id: string;
@@ -88,7 +111,7 @@ export interface Booking {
   createdAtISO: string;
   teeTimeISO: string;
   status: BookingStatus;
-  depositCents: number; // 1500
+  depositCents: number; // booking fee charged, cents (1000 = $10; 0 if waived)
   depositStatus: DepositStatus;
   paymentIntentId: string;
   freeCancellationDeadlineISO: string;

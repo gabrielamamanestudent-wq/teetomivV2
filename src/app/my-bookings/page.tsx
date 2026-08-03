@@ -14,6 +14,7 @@ import { cn } from "@/lib/cn";
 const depositTone: Record<string, "neutral" | "lime" | "amber" | "red" | "sky"> = {
   authorized: "amber",
   refunded: "lime",
+  credited: "lime",
   forfeited: "red",
   "refunded-on-refill": "sky",
 };

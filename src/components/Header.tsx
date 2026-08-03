@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { GolferSwitcher } from "./GolferSwitcher";
+import { AccountBadge } from "./AccountBadge";
 import { useI18n } from "@/lib/i18n/context";
 import { cn } from "@/lib/cn";
 import type { DictKey } from "@/lib/i18n/dictionary";
@@ -12,6 +13,7 @@ import type { DictKey } from "@/lib/i18n/dictionary";
 const NAV: { href: string; key: DictKey; icon: string }[] = [
   { href: "/browse", key: "nav.browse", icon: "⛳" },
   { href: "/alerts", key: "nav.alerts", icon: "🔔" },
+  { href: "/rewards", key: "nav.rewards", icon: "🏅" },
   { href: "/my-bookings", key: "nav.bookings", icon: "🎟️" },
   { href: "/operator", key: "nav.operator", icon: "🏪" },
 ];
@@ -44,6 +46,7 @@ export function Header() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <AccountBadge />
             <GolferSwitcher />
             <LanguageToggle />
           </div>

@@ -9,20 +9,31 @@ import type {
   Alert,
   Booking,
   Course,
+  GolferAccount,
   Notification,
+  PointsEntry,
   Slot,
   User,
 } from "./types";
 import type {
   AdminMetrics,
+  BookingResult,
   CreateBookingInput,
   DealFilters,
+  MatchmakingCandidate,
   OperatorStats,
   ReleaseSlotInput,
   Repository,
 } from "./repository";
 import { buildSeed, type SeedData } from "./seed";
-import { DEPOSIT_CENTS, freeCancellationDeadline, resolveCancellation } from "../policy";
+import { BOOKING_FEE_CENTS, freeCancellationDeadline, resolveCancellation } from "../policy";
+import {
+  applyCredit,
+  effectiveTier,
+  perksForTier,
+  pointsForCheckin,
+  TIER_LABEL,
+} from "../loyalty";
 import { localDayOfWeek } from "../time";
 
 interface Store extends SeedData {
@@ -180,13 +191,27 @@ export class MockRepository implements Repository {
     return { slot: { ...slot }, notified };
   }
 
-  async createBooking(input: CreateBookingInput): Promise<Booking> {
+  async createBooking(input: CreateBookingInput): Promise<BookingResult> {
     const slot = this.s.slots.find((sl) => sl.id === input.slotId);
     if (!slot) throw new Error("Slot not found");
     if (slot.spotsLeft <= 0) throw new Error("No spots left");
 
     const now = new Date();
     const teeTime = new Date(slot.teeTimeISO);
+
+    // Loyalty: waive the fee for Gold+, then apply any TeeCredit to the rest.
+    const account = this.accountFor(input.golferId);
+    const tier = effectiveTier(account);
+    const feeCents = perksForTier(tier).feeWaived ? 0 : BOOKING_FEE_CENTS;
+    let creditAppliedCents = 0;
+    let chargedCents = feeCents;
+    if (input.applyCredit && feeCents > 0 && account.teeCreditCents > 0) {
+      const r = applyCredit(feeCents, account.teeCreditCents);
+      creditAppliedCents = r.appliedCents;
+      chargedCents = r.chargeCents;
+      account.teeCreditCents = r.remainingCreditCents;
+    }
+
     const booking: Booking = {
       id: `b${Date.now()}`,
       reference: genReference(),
@@ -200,12 +225,13 @@ export class MockRepository implements Repository {
       createdAtISO: now.toISOString(),
       teeTimeISO: slot.teeTimeISO,
       status: "confirmed",
-      depositCents: DEPOSIT_CENTS,
+      depositCents: feeCents,
       depositStatus: "authorized",
       paymentIntentId: input.paymentIntentId,
       freeCancellationDeadlineISO: freeCancellationDeadline(now, teeTime).toISOString(),
     };
     this.s.bookings.unshift(booking);
+    const pointsPreview = pointsForCheckin(BOOKING_FEE_CENTS);
 
     // Update slot inventory.
     slot.spotsLeft = Math.max(0, slot.spotsLeft - 1);
@@ -232,8 +258,8 @@ export class MockRepository implements Repository {
           fr: "Votre place a été reprise — dépôt remboursé",
         },
         body: {
-          en: `${course.name} re-booked your cancelled tee time, so your $15 deposit was refunded automatically.`,
-          fr: `${course.name} a repris votre départ annulé, votre dépôt de 15 $ a donc été remboursé automatiquement.`,
+          en: `${course.name} re-booked your cancelled tee time, so your $10 booking fee was returned automatically.`,
+          fr: `${course.name} a repris votre départ annulé, vos frais de 10 $ ont donc été remis automatiquement.`,
         },
         createdAtISO: new Date().toISOString(),
         read: false,
@@ -242,7 +268,13 @@ export class MockRepository implements Repository {
     }
 
     this.s.funnel.completed++;
-    return { ...booking };
+    return {
+      booking: { ...booking },
+      feeCents,
+      creditAppliedCents,
+      chargedCents,
+      pointsPreview,
+    };
   }
 
   async getBookingByReference(reference: string): Promise<Booking | null> {
@@ -286,7 +318,26 @@ export class MockRepository implements Repository {
     const booking = this.s.bookings.find((b) => b.id === bookingId);
     if (!booking) throw new Error("Booking not found");
     booking.status = "checked-in";
-    booking.depositStatus = "refunded"; // check-in triggers automatic refund
+    // Check-in returns the $10 fee as TeeCredit (not a card refund) and earns points.
+    booking.depositStatus = "credited";
+
+    const account = this.accountFor(booking.golferId);
+    account.teeCreditCents += BOOKING_FEE_CENTS;
+    const points = pointsForCheckin(BOOKING_FEE_CENTS);
+    account.lifetimePoints += points;
+    const course = this.s.courses.find((c) => c.id === booking.courseId);
+    this.s.pointsLedger.unshift({
+      id: `pe-${Date.now()}`,
+      golferId: booking.golferId,
+      delta: points,
+      reason: "checkin",
+      label: {
+        en: `Checked in — ${course?.name ?? "course"}`,
+        fr: `Enregistré — ${course?.name ?? "club"}`,
+      },
+      bookingId: booking.id,
+      createdAtISO: new Date().toISOString(),
+    });
     return { ...booking };
   }
 
@@ -358,6 +409,60 @@ export class MockRepository implements Repository {
         (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
       ) ?? null
     );
+  }
+
+  // --- loyalty --------------------------------------------------------------
+  private accountFor(golferId: string): GolferAccount {
+    let acct = this.s.accounts.find((a) => a.golferId === golferId);
+    if (!acct) {
+      acct = { golferId, lifetimePoints: 0, teeCreditCents: 0, subscription: "none" };
+      this.s.accounts.push(acct);
+    }
+    return acct;
+  }
+
+  async getAccount(golferId: string): Promise<GolferAccount> {
+    return { ...this.accountFor(golferId) };
+  }
+
+  async listPointsLedger(golferId: string): Promise<PointsEntry[]> {
+    return this.s.pointsLedger
+      .filter((p) => p.golferId === golferId)
+      .sort((a, b) => (b.createdAtISO > a.createdAtISO ? 1 : -1));
+  }
+
+  async setSubscription(
+    golferId: string,
+    subscription: "none" | "plus",
+  ): Promise<GolferAccount> {
+    const acct = this.accountFor(golferId);
+    acct.subscription = subscription;
+    return { ...acct };
+  }
+
+  async setHandicap(golferId: string, handicap: number): Promise<GolferAccount> {
+    const acct = this.accountFor(golferId);
+    acct.handicap = handicap;
+    return { ...acct };
+  }
+
+  async matchmaking(golferId: string): Promise<MatchmakingCandidate[]> {
+    const me = this.accountFor(golferId);
+    const myHc = me.handicap ?? 18;
+    return this.s.accounts
+      .filter((a) => a.golferId !== golferId && a.handicap != null)
+      .map((a) => {
+        const user = this.s.users.find((u) => u.id === a.golferId);
+        return {
+          golferId: a.golferId,
+          name: user?.name ?? "Golfer",
+          handicap: a.handicap!,
+          tier: TIER_LABEL[effectiveTier(a)].en,
+          gap: Math.abs((a.handicap ?? 18) - myHc),
+        };
+      })
+      .sort((a, b) => a.gap - b.gap)
+      .map(({ gap: _gap, ...rest }) => rest);
   }
 
   async adminMetrics(): Promise<AdminMetrics> {

@@ -1,7 +1,27 @@
 // Thin typed fetch wrapper for the client components.
 
-import type { Alert, Booking, Course, Notification, Slot } from "./data/types";
-import type { AdminMetrics, OperatorStats } from "./data/repository";
+import type {
+  Alert,
+  Booking,
+  Course,
+  GolferAccount,
+  Notification,
+  PointsEntry,
+  Slot,
+  Tier,
+} from "./data/types";
+import type { AdminMetrics, MatchmakingCandidate, OperatorStats } from "./data/repository";
+import type { TierPerks } from "./loyalty";
+
+export interface AccountResponse {
+  account: GolferAccount;
+  ledger: PointsEntry[];
+  tier: Tier;
+  earnedTier: Tier;
+  perks: TierPerks;
+  next: { next: Tier | null; remaining: number };
+  matchmaking: MatchmakingCandidate[];
+}
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -32,12 +52,22 @@ export const api = {
     golferId: string;
     golferName: string;
     golferEmail: string;
+    applyCredit?: boolean;
   }) =>
     fetch(`/api/bookings`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    }).then(json<{ booking: Booking; mockPayment: boolean }>),
+    }).then(
+      json<{
+        booking: Booking;
+        mockPayment: boolean;
+        feeCents: number;
+        creditAppliedCents: number;
+        chargedCents: number;
+        pointsPreview: number;
+      }>,
+    ),
   bookingByRef: (ref: string) =>
     fetch(`/api/booking/${ref}`, { cache: "no-store" }).then(
       json<{ booking: Booking; course: Course }>,
@@ -95,4 +125,16 @@ export const api = {
   adminMetrics: () =>
     fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics }>),
   resetDemo: () => fetch(`/api/admin`, { method: "POST" }).then(json<{ ok: boolean }>),
+  account: (golferId: string) =>
+    fetch(`/api/account?golferId=${golferId}`, { cache: "no-store" }).then(json<AccountResponse>),
+  accountAction: (payload: {
+    golferId: string;
+    action: "subscribe" | "unsubscribe" | "handicap";
+    handicap?: number;
+  }) =>
+    fetch(`/api/account`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(json<{ account: GolferAccount }>),
 };

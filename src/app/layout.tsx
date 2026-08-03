@@ -19,7 +19,7 @@ const body = Inter({
 export const metadata: Metadata = {
   title: "TEETOMIC — Last-minute tee times in Montreal",
   description:
-    "Montreal's standby list for golf. Last-minute tee times up to 60% off. Reserve with a $15 refundable deposit — pay your green fee at the course.",
+    "Montreal's standby list for golf. Last-minute tee times up to 60% off. Reserve with a $10 booking fee that comes back as TeeCredit — pay your green fee at the course.",
 };
 
 export const viewport: Viewport = {
