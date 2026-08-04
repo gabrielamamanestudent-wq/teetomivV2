@@ -14,7 +14,7 @@ export const dict = {
   "nav.browse": { en: "Browse deals", fr: "Voir les offres" },
   "nav.alerts": { en: "Standby alerts", fr: "Alertes standby" },
   "nav.bookings": { en: "My bookings", fr: "Mes réservations" },
-  "nav.operator": { en: "Pro shop", fr: "Boutique" },
+  "nav.operator": { en: "Business Corner", fr: "Espace affaires" },
   "nav.rewards": { en: "Rewards", fr: "Récompenses" },
   "nav.admin": { en: "Admin", fr: "Admin" },
   "nav.demo": { en: "Demo", fr: "Démo" },
@@ -216,7 +216,7 @@ export const dict = {
   "deposit.refunded-on-refill": { en: "Returned — slot re-filled", fr: "Remis — place reprise" },
 
   // --- operator -------------------------------------------------------------
-  "op.title": { en: "Pro shop dashboard", fr: "Tableau de bord boutique" },
+  "op.title": { en: "Business Corner", fr: "Espace affaires" },
   "op.teesheet": { en: "Tee sheet", fr: "Feuille de départ" },
   "op.release": { en: "Release a slot", fr: "Libérer un départ" },
   "op.checkin": { en: "Check-in queue", fr: "File d'enregistrement" },
@@ -280,7 +280,7 @@ export const dict = {
   "op.signupPin": { en: "Choose a 4-digit PIN", fr: "Choisissez un NIP à 4 chiffres" },
   "op.createCourse": { en: "Create pro shop account", fr: "Créer le compte boutique" },
   "op.forCourses": { en: "I run a course", fr: "Je gère un club" },
-  "op.forCoursesDesc": { en: "Pro shop master account — list slots, set your hours", fr: "Compte maître boutique — publiez des départs, réglez vos heures" },
+  "op.forCoursesDesc": { en: "Business Corner — list your slots, set your hours", fr: "Espace affaires — publiez vos départs, réglez vos heures" },
   "op.created": { en: "Account created — welcome to your dashboard!", fr: "Compte créé — bienvenue sur votre tableau de bord !" },
 
   // --- admin ----------------------------------------------------------------
@@ -346,8 +346,8 @@ export const dict = {
   // --- welcome gate ---------------------------------------------------------
   "welcome.title": { en: "Welcome to TEETOMIC", fr: "Bienvenue sur TEETOMIC" },
   "welcome.sub": {
-    en: "Montreal's standby list for golf. Create an account for exclusive perks, or explore the demo.",
-    fr: "La liste d'attente golf de Montréal. Créez un compte pour des avantages exclusifs, ou explorez la démo.",
+    en: "Montreal's standby list for golf. Watch the 30-second play-through, then create your account.",
+    fr: "La liste d'attente golf de Montréal. Regardez l'aperçu de 30 s, puis créez votre compte.",
   },
   "welcome.createBtn": { en: "Create an account", fr: "Créer un compte" },
   "welcome.createDesc": { en: "Earn points, unlock Gold perks, set your PIN", fr: "Gagnez des points, débloquez les avantages Or, choisissez votre NIP" },
@@ -383,6 +383,49 @@ export const dict = {
   "tour.start": { en: "Start exploring", fr: "Commencer" },
   "tour.next": { en: "Next", fr: "Suivant" },
   "tour.take": { en: "Take the tour", fr: "Faire la visite" },
+  "tour.stepOf": { en: "{n} of {total}", fr: "{n} sur {total}" },
+  "tour.finishTitle": { en: "That's TEETOMIC.", fr: "Voilà TEETOMIC." },
+  "tour.finishBody": {
+    en: "Create your free account to set alerts, book deals, and start earning points.",
+    fr: "Créez votre compte gratuit pour créer des alertes, réserver et gagner des points.",
+  },
+  "tour.finishCta": { en: "Create my account", fr: "Créer mon compte" },
+  "tour.b.browse.t": { en: "Browse the deals", fr: "Voir les offres" },
+  "tour.b.browse.b": { en: "Last-minute tee times courses release — up to 60% off.", fr: "Des départs de dernière minute libérés par les clubs — jusqu'à 60 % de rabais." },
+  "tour.b.alerts.t": { en: "Set a standby alert", fr: "Créez une alerte standby" },
+  "tour.b.alerts.b": { en: "We ping you the instant a matching slot goes live.", fr: "On vous ping dès qu'un départ correspond." },
+  "tour.b.rewards.t": { en: "Earn rewards", fr: "Gagnez des récompenses" },
+  "tour.b.rewards.b": { en: "Every check-in earns points and TeeCredit toward Gold.", fr: "Chaque enregistrement rapporte points et TeeCredit vers Or." },
+  "tour.b.bookings.t": { en: "Your bookings", fr: "Vos réservations" },
+  "tour.b.bookings.b": { en: "Your tee times, QR check-in, and free-cancel deadlines.", fr: "Vos départs, enregistrement QR et délais d'annulation." },
+
+  // --- account modal (create / login) --------------------------------------
+  "acct.createTitle": { en: "Create your account", fr: "Créez votre compte" },
+  "acct.loginTitle": { en: "Welcome back", fr: "Content de vous revoir" },
+  "acct.createTab": { en: "Create account", fr: "Créer un compte" },
+  "acct.loginTab": { en: "Log in", fr: "Connexion" },
+  "acct.create": { en: "Create account", fr: "Créer le compte" },
+  "acct.login": { en: "Log in", fr: "Se connecter" },
+  "acct.close": { en: "Close", fr: "Fermer" },
+
+  // --- TEETOMIC+ offer ------------------------------------------------------
+  "plus.title": { en: "Unlock TEETOMIC+", fr: "Débloquez TEETOMIC+" },
+  "plus.sub": {
+    en: "You're in! Go Gold Plus now and skip the wait for the best perks.",
+    fr: "C'est fait ! Passez à Or Plus maintenant et sautez l'attente pour les meilleurs avantages.",
+  },
+  "plus.perk1": { en: "Booking fees waived", fr: "Frais de réservation offerts" },
+  "plus.perk2": { en: "30-min priority on new slots", fr: "Priorité de 30 min sur les nouveaux départs" },
+  "plus.perk3": { en: "Skill-based matchmaking", fr: "Jumelage selon le calibre" },
+  "plus.get": { en: "Get TEETOMIC+ · $9.99/mo", fr: "Obtenir TEETOMIC+ · 9,99 $/mois" },
+  "plus.later": { en: "Maybe later", fr: "Plus tard" },
+  "plus.done": { en: "You're Gold Plus! 🎉", fr: "Vous êtes Or Plus ! 🎉" },
+
+  // --- welcome extras -------------------------------------------------------
+  "welcome.haveAccount": { en: "Already have an account?", fr: "Vous avez déjà un compte ?" },
+  "welcome.login": { en: "Log in", fr: "Connexion" },
+  "op.businessOnly": { en: "The Business Corner is for course operators.", fr: "L'Espace affaires est réservé aux exploitants de clubs." },
+  "op.enterCode": { en: "Enter your business code", fr: "Entrez votre code affaires" },
 } as const;
 
 export type DictKey = keyof typeof dict;

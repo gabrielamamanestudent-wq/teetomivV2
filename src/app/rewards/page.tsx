@@ -18,7 +18,7 @@ const TIER_HERO: Record<string, string> = {
 
 export default function RewardsPage() {
   const { t, locale } = useI18n();
-  const { golfer, mode, perksUnlocked } = useSession();
+  const { golfer, member, perksUnlocked } = useSession();
   const [data, setData] = useState<AccountResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [hcp, setHcp] = useState<string>("");
@@ -44,7 +44,7 @@ export default function RewardsPage() {
 
   // Members must enter their 4-digit PIN to unlock the exclusive perks area.
   // Demo explorers see everything (maxed out) with no lock.
-  if (mode === "member" && !perksUnlocked) {
+  if (member && !perksUnlocked) {
     return <PinLock />;
   }
 

@@ -1,25 +1,25 @@
 "use client";
 
-// Session model. The app has two front doors:
-//   • member  — a real (locally-stored) account with a 4-digit PIN that gates
-//               the exclusive perks area.
-//   • demo    — a maxed-out explorer identity (Gold Plus, full perks) for people
-//               who just want to learn the app, paired with a guided walkthrough.
-// `golfer` ({id,name,email}) is always present so the rest of the app is agnostic
-// to which door was used.
+// Session / onboarding model.
+//
+// There are no switchable demo accounts. The flow is:
+//   welcome → concept demo (the little golfer) → arrow-guided tour →
+//   create account → TEETOMIC+ offer → member.
+// A course instead enters the universal access code to see the pro-shop pitch.
+//
+// `golfer` ({id,name,email}) is always present — a lightweight guest identity
+// before an account is created, then the member once they sign up — so the rest
+// of the app stays agnostic.
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export interface DemoGolfer {
+export interface Golfer {
   id: string;
   name: string;
   email: string;
 }
 
-export const DEMO_GOLFERS: DemoGolfer[] = [
-  { id: "g1", name: "Alexandre Roy", email: "alex@demo.golf" },
-  { id: "g2", name: "Marie-Claude Tremblay", email: "marie@demo.golf" },
-];
+const GUEST: Golfer = { id: "guest", name: "Guest", email: "" };
 
 export interface Member {
   golferId: string;
@@ -28,58 +28,57 @@ export interface Member {
   pin: string;
 }
 
-type Mode = "member" | "demo";
 export type ConceptMode = "golfer" | "course";
 
-/** Access code a course enters (emailed to them) to unlock the perks pitch. */
-export const COURSE_DEMO_PIN = process.env.NEXT_PUBLIC_COURSE_DEMO_PIN || "2580";
+/** Universal access code a business enters (from their invite) for the pitch. */
+export const COURSE_DEMO_PIN = process.env.NEXT_PUBLIC_COURSE_DEMO_PIN || "5432";
 
 interface SessionValue {
-  mode: Mode;
-  golfer: DemoGolfer; // {id,name,email} for whichever identity is active
+  golfer: Golfer;
   member: Member | null;
   perksUnlocked: boolean;
+  // onboarding surfaces
   showWelcome: boolean;
   showConcept: ConceptMode | null;
-  createAccount: (name: string, email: string, pin: string) => void;
-  enterDemo: () => void;
-  unlockPerks: (pin: string) => boolean;
+  showTour: boolean;
+  showCreate: boolean;
+  showPlusOffer: boolean;
+  // actions
   playConcept: (mode: ConceptMode) => void;
   endConcept: () => void;
+  startTour: () => void;
+  endTour: () => void;
+  openCreate: () => void;
+  closeCreate: () => void;
+  createAccount: (name: string, email: string, pin: string) => void;
+  login: (email: string, pin: string) => void;
+  logout: () => void;
+  dismissPlusOffer: () => void;
+  unlockPerks: (pin: string) => boolean;
   openWelcome: () => void;
-  setGolfer: (g: DemoGolfer) => void; // demo-only identity switch
 }
 
 const SessionContext = createContext<SessionValue | null>(null);
 
 const K = {
-  mode: "teetomic.mode",
   member: "teetomic.member",
-  golfer: "teetomic.golfer",
   welcomeSeen: "teetomic.welcomeSeen",
 };
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<Mode>("demo");
   const [member, setMember] = useState<Member | null>(null);
-  const [demoGolfer, setDemoGolfer] = useState<DemoGolfer>(DEMO_GOLFERS[0]);
-  const [perksUnlocked, setPerksUnlocked] = useState(true); // demo starts unlocked
+  const [perksUnlocked, setPerksUnlocked] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showConcept, setShowConcept] = useState<ConceptMode | null>(null);
+  const [showTour, setShowTour] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showPlusOffer, setShowPlusOffer] = useState(false);
 
   useEffect(() => {
     try {
       const storedMember = window.localStorage.getItem(K.member);
-      const storedMode = window.localStorage.getItem(K.mode) as Mode | null;
-      const storedGolfer = window.localStorage.getItem(K.golfer);
-      if (storedGolfer) {
-        const g = DEMO_GOLFERS.find((x) => x.id === storedGolfer);
-        if (g) setDemoGolfer(g);
-      }
-      if (storedMode === "member" && storedMember) {
+      if (storedMember) {
         setMember(JSON.parse(storedMember));
-        setMode("member");
-        setPerksUnlocked(false); // member must enter PIN each session
       } else if (!window.localStorage.getItem(K.welcomeSeen)) {
         setShowWelcome(true);
       }
@@ -88,23 +87,37 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const seen = () => window.localStorage.setItem(K.welcomeSeen, "1");
+
   const createAccount = (name: string, email: string, pin: string) => {
     const m: Member = { golferId: `m${Date.now()}`, name, email, pin };
     setMember(m);
-    setMode("member");
-    setPerksUnlocked(false);
+    setPerksUnlocked(true); // they just set it — no need to re-enter immediately
+    setShowCreate(false);
     setShowWelcome(false);
+    seen();
     window.localStorage.setItem(K.member, JSON.stringify(m));
-    window.localStorage.setItem(K.mode, "member");
-    window.localStorage.setItem(K.welcomeSeen, "1");
+    setShowPlusOffer(true); // offer TEETOMIC+ right after signup
   };
 
-  const enterDemo = () => {
-    setMode("demo");
+  // Demo login: with no real user database we simply restore/create the member
+  // session for the given credentials. (Real auth is the Supabase backend.)
+  const login = (email: string, pin: string) => {
+    const name = email.split("@")[0].replace(/[._]/g, " ") || "Golfer";
+    const m: Member = { golferId: `m${Date.now()}`, name, email, pin };
+    setMember(m);
     setPerksUnlocked(true);
+    setShowCreate(false);
     setShowWelcome(false);
-    window.localStorage.setItem(K.mode, "demo");
-    window.localStorage.setItem(K.welcomeSeen, "1");
+    seen();
+    window.localStorage.setItem(K.member, JSON.stringify(m));
+  };
+
+  const logout = () => {
+    setMember(null);
+    setPerksUnlocked(false);
+    window.localStorage.removeItem(K.member);
+    setShowWelcome(true);
   };
 
   const unlockPerks = (pin: string): boolean => {
@@ -115,32 +128,41 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const setGolfer = (g: DemoGolfer) => {
-    setDemoGolfer(g);
-    window.localStorage.setItem(K.golfer, g.id);
-  };
-
-  const golfer: DemoGolfer = member
+  const golfer: Golfer = member
     ? { id: member.golferId, name: member.name, email: member.email }
-    : demoGolfer;
+    : GUEST;
 
   const value: SessionValue = {
-    mode,
     golfer,
     member,
-    perksUnlocked,
+    perksUnlocked: member ? perksUnlocked : true, // guests aren't gated
     showWelcome,
     showConcept,
-    createAccount,
-    enterDemo,
-    unlockPerks,
-    playConcept: (m: ConceptMode) => {
+    showTour,
+    showCreate,
+    showPlusOffer,
+    playConcept: (m) => {
       setShowConcept(m);
       setShowWelcome(false);
     },
     endConcept: () => setShowConcept(null),
+    startTour: () => {
+      setShowTour(true);
+      seen();
+    },
+    endTour: () => setShowTour(false),
+    openCreate: () => {
+      setShowTour(false);
+      setShowWelcome(false);
+      setShowCreate(true);
+    },
+    closeCreate: () => setShowCreate(false),
+    createAccount,
+    login,
+    logout,
+    dismissPlusOffer: () => setShowPlusOffer(false),
+    unlockPerks,
     openWelcome: () => setShowWelcome(true),
-    setGolfer,
   };
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

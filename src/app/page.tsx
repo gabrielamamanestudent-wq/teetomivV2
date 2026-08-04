@@ -62,39 +62,50 @@ export default function LandingPage() {
             {t("landing.tickerLabel")}
           </h2>
         </div>
-        <div className="no-scrollbar -mx-4 overflow-x-auto px-4">
-          <div className="flex gap-3">
-            {!deals &&
-              Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-64 shrink-0" />
-              ))}
-            {deals?.map((slot) => {
-              const course = courseById(slot.courseId);
-              if (!course) return null;
-              return (
-                <Link
-                  key={slot.id}
-                  href={`/deal/${slot.id}`}
-                  className="flex w-64 shrink-0 items-center gap-3 rounded-2xl border border-forest/10 bg-white p-3 shadow-card transition-transform hover:-translate-y-0.5"
-                >
-                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl">
-                    <Image src={course.photoUrl} alt="" fill sizes="44px" className="object-cover" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-forest">{course.name}</p>
-                    <p className="truncate text-xs text-forest/60">
-                      {formatLocalTime(slot.teeTimeISO, locale)} ·{" "}
-                      <span className="font-bold text-forest">{formatCAD(slot.currentPrice)}</span>{" "}
-                      <span className="text-forest/40 line-through">
-                        {formatCAD(slot.rackRate)}
-                      </span>
-                    </p>
-                  </div>
-                </Link>
-              );
-            })}
+        {!deals ? (
+          <div className="flex gap-3 overflow-hidden">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-64 shrink-0" />
+            ))}
           </div>
-        </div>
+        ) : deals.length === 0 ? null : (
+          <div className="no-scrollbar group relative -mx-4 overflow-hidden px-4">
+            {/* edge fades */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-cream to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-cream to-transparent" />
+            <div className="flex w-max gap-3 animate-marquee group-hover:[animation-play-state:paused]">
+              {[...deals, ...deals].map((slot, idx) => {
+                const course = courseById(slot.courseId);
+                if (!course) return null;
+                const off = Math.round(((slot.rackRate - slot.currentPrice) / slot.rackRate) * 100);
+                return (
+                  <Link
+                    key={`${slot.id}-${idx}`}
+                    href={`/deal/${slot.id}`}
+                    className="flex w-60 shrink-0 items-center gap-3 rounded-2xl border border-forest/10 bg-white p-3 shadow-card"
+                  >
+                    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl">
+                      <Image src={course.photoUrl} alt="" fill sizes="44px" className="object-cover" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-forest">{course.name}</p>
+                      <p className="truncate text-xs text-forest/60">
+                        {formatLocalTime(slot.teeTimeISO, locale)} ·{" "}
+                        <span className="font-bold text-forest">{formatCAD(slot.currentPrice)}</span>{" "}
+                        <span className="text-forest/40 line-through">{formatCAD(slot.rackRate)}</span>
+                      </p>
+                    </div>
+                    {off > 0 && (
+                      <span className="ml-auto shrink-0 rounded-full bg-lime px-2 py-0.5 text-xs font-bold text-forest">
+                        −{off}%
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* How it works */}

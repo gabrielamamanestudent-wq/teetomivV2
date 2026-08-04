@@ -7,7 +7,7 @@ import { ConceptDemo } from "./ConceptDemo";
 /** Renders the concept demo when the session requests it, and routes on finish:
  *  golfer → into the app (browse); course → to the pro-shop signup. */
 export function ConceptDemoHost() {
-  const { showConcept, endConcept, enterDemo } = useSession();
+  const { showConcept, endConcept, startTour } = useSession();
   const router = useRouter();
 
   if (!showConcept) return null;
@@ -21,8 +21,9 @@ export function ConceptDemoHost() {
         if (mode === "course") {
           router.push("/operator/signup");
         } else {
-          enterDemo();
+          // Golfer path: into the app, then the arrow-guided tour of the functions.
           router.push("/browse");
+          startTour();
         }
       }}
     />

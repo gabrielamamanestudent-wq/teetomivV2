@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { COURSE_DEMO_PIN } from "@/lib/session";
+import { Logo } from "@/components/Logo";
 import { api } from "@/lib/api-client";
 import type { Booking, Course, CourseAvailability, Slot } from "@/lib/data/types";
 import type { OperatorStats } from "@/lib/data/repository";
@@ -26,9 +29,57 @@ const OPERATOR_KEY = "teetomic.operatorCourseId";
 
 type Tab = "release" | "teesheet" | "checkin" | "hours" | "stats";
 
+// The Business Corner is for course operators only. Reached via the business
+// code (also entered on the welcome screen). Average golfers never land here.
+function BusinessGate() {
+  const { t } = useI18n();
+  const router = useRouter();
+  const [code, setCode] = useState("");
+  const [err, setErr] = useState(false);
+
+  const check = (v: string) => {
+    if (v === COURSE_DEMO_PIN) router.push("/operator/signup");
+    else setErr(true);
+  };
+
+  return (
+    <div className="mx-auto flex max-w-sm flex-col items-center gap-4 pt-12 text-center">
+      <Logo className="text-2xl" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest text-3xl text-lime">
+        🏪
+      </div>
+      <h1 className="font-display text-2xl font-bold text-forest">{t("nav.operator")}</h1>
+      <p className="text-sm text-forest/60">{t("op.businessOnly")}</p>
+      <input
+        autoFocus
+        inputMode="numeric"
+        maxLength={4}
+        placeholder="••••"
+        aria-label={t("op.enterCode")}
+        className={cn(
+          "input max-w-[12rem] text-center text-3xl font-bold tracking-[0.6em] tabular-nums",
+          err && "border-red-400",
+        )}
+        value={code}
+        onChange={(e) => {
+          const v = e.target.value.replace(/\D/g, "").slice(0, 4);
+          setCode(v);
+          setErr(false);
+          if (v.length === 4) check(v);
+        }}
+      />
+      {err && <p className="text-sm font-semibold text-red-600">{t("welcome.coursePinWrong")}</p>}
+      <button onClick={() => check(code)} disabled={code.length !== 4} className="btn-lime w-full max-w-[12rem]">
+        {t("welcome.coursePinGo")}
+      </button>
+    </div>
+  );
+}
+
 export default function OperatorPage() {
   const { t } = useI18n();
   const [courseId, setCourseId] = useState("c1");
+  const [access, setAccess] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>("release");
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
@@ -36,6 +87,7 @@ export default function OperatorPage() {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(OPERATOR_KEY);
+    setAccess(!!stored);
     if (stored) setCourseId(stored);
   }, []);
 
@@ -65,6 +117,9 @@ export default function OperatorPage() {
     { id: "hours", key: "op.hours" },
     { id: "stats", key: "op.stats" },
   ];
+
+  if (access === null) return <div className="skeleton mt-6 h-48 w-full" />;
+  if (!access) return <BusinessGate />;
 
   return (
     <div className="space-y-5 pt-2">

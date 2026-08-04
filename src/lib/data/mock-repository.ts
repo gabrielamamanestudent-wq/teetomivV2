@@ -29,6 +29,8 @@ import type {
   Repository,
 } from "./repository";
 import { isBlackedOut } from "../availability";
+import { computePrice } from "../pricing";
+import { bandForHour, localHour } from "../time";
 import { buildSeed, type SeedData } from "./seed";
 import { BOOKING_FEE_CENTS, freeCancellationDeadline, resolveCancellation } from "../policy";
 import {
@@ -206,6 +208,50 @@ export class MockRepository implements Repository {
       courseId,
     });
     this.s.availability.push({ courseId, closedDays: [], blackout: [] });
+
+    // Seed a starter tee sheet (unlisted) so the new business has gaps to
+    // release from day one.
+    const now = Date.now();
+    let n = 0;
+    for (let day = 0; day < 3; day++) {
+      for (const h of [7, 9, 11, 14, 16]) {
+        const tee = new Date();
+        tee.setDate(tee.getDate() + day);
+        tee.setHours(h, h % 2 === 0 ? 10 : 40, 0, 0);
+        if (tee.getTime() <= now + 60 * 60 * 1000) continue;
+        const iso = tee.toISOString();
+        const rack = 55 + Math.round(Math.random() * 40);
+        const floor = Math.round(rack * 0.4);
+        const teeHour = localHour(iso);
+        const price = computePrice({
+          hoursUntilTeeTime: (tee.getTime() - now) / 3600000,
+          rackRate: rack,
+          floorPrice: floor,
+          dayOfWeek: localDayOfWeek(iso),
+          band: bandForHour(teeHour),
+          teeHour,
+          weather: "sun",
+          fillRate: 0.5,
+        }).price;
+        this.s.slots.push({
+          id: `s-${courseId}-${++n}`,
+          courseId,
+          teeTimeISO: iso,
+          holes: 18,
+          cart: true,
+          walking: true,
+          players: 4,
+          spotsLeft: 4,
+          rackRate: rack,
+          floorPrice: floor,
+          currentPrice: price,
+          status: "unlisted",
+          band: bandForHour(teeHour),
+          weather: "sun",
+          fillRate: 0.5,
+        });
+      }
+    }
     return { courseId, course: { ...course }, operatorId };
   }
 

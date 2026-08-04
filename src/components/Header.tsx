@@ -4,18 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
-import { GolferSwitcher } from "./GolferSwitcher";
 import { AccountBadge } from "./AccountBadge";
 import { useI18n } from "@/lib/i18n/context";
 import { cn } from "@/lib/cn";
 import type { DictKey } from "@/lib/i18n/dictionary";
 
-const NAV: { href: string; key: DictKey; icon: string }[] = [
-  { href: "/browse", key: "nav.browse", icon: "⛳" },
-  { href: "/alerts", key: "nav.alerts", icon: "🔔" },
-  { href: "/rewards", key: "nav.rewards", icon: "🏅" },
-  { href: "/my-bookings", key: "nav.bookings", icon: "🎟️" },
-  { href: "/operator", key: "nav.operator", icon: "🏪" },
+// The golfer nav — average folk. The Business Corner (/operator) is NOT here;
+// it's reached only through the business-code flow.
+const NAV: { href: string; key: DictKey; icon: string; tour: string }[] = [
+  { href: "/browse", key: "nav.browse", icon: "⛳", tour: "browse" },
+  { href: "/alerts", key: "nav.alerts", icon: "🔔", tour: "alerts" },
+  { href: "/rewards", key: "nav.rewards", icon: "🏅", tour: "rewards" },
+  { href: "/my-bookings", key: "nav.bookings", icon: "🎟️", tour: "bookings" },
 ];
 
 export function Header() {
@@ -47,7 +47,6 @@ export function Header() {
           </nav>
           <div className="flex items-center gap-2">
             <AccountBadge />
-            <GolferSwitcher />
             <LanguageToggle />
           </div>
         </div>
@@ -62,6 +61,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour={item.tour}
                 className={cn(
                   "flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-semibold",
                   active ? "text-forest" : "text-forest/50",

@@ -7,34 +7,18 @@ import { Logo } from "./Logo";
 import { cn } from "@/lib/cn";
 
 export function WelcomeGate() {
-  const { showWelcome, createAccount, playConcept } = useSession();
+  const { showWelcome, playConcept, openCreate } = useSession();
+  // "Log in" opens the same account modal (it has a Log in tab).
   const { t } = useI18n();
-  const [step, setStep] = useState<"choose" | "create" | "coursePin">("choose");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [pin, setPin] = useState("");
+  const [step, setStep] = useState<"choose" | "coursePin">("choose");
   const [coursePin, setCoursePin] = useState("");
   const [coursePinErr, setCoursePinErr] = useState(false);
-  const [err, setErr] = useState(false);
 
   if (!showWelcome) return null;
 
-  const canCreate = name.trim() && /.+@.+\..+/.test(email) && /^\d{4}$/.test(pin);
-
-  function submit() {
-    if (!canCreate) {
-      setErr(true);
-      return;
-    }
-    createAccount(name.trim(), email.trim(), pin);
-  }
-
   function checkCoursePin() {
-    if (coursePin === COURSE_DEMO_PIN) {
-      playConcept("course");
-    } else {
-      setCoursePinErr(true);
-    }
+    if (coursePin === COURSE_DEMO_PIN) playConcept("course");
+    else setCoursePinErr(true);
   }
 
   return (
@@ -64,7 +48,7 @@ export function WelcomeGate() {
                 <span className="mt-0.5 block text-sm text-cream/70">{t("welcome.seeHowDesc")}</span>
               </button>
               <button
-                onClick={() => setStep("create")}
+                onClick={openCreate}
                 className="w-full rounded-2xl border-2 border-forest/15 bg-white p-4 text-left transition-transform active:scale-[0.99]"
               >
                 <span className="flex items-center justify-between">
@@ -88,48 +72,12 @@ export function WelcomeGate() {
                 <span className="mt-0.5 block text-sm text-forest/60">{t("op.forCoursesDesc")}</span>
               </button>
             </div>
-          </>
-        )}
-
-        {step === "create" && (
-          <>
-            <h1 className="mt-4 text-center font-display text-2xl font-bold text-forest">
-              {t("welcome.formTitle")}
-            </h1>
-            <div className="mt-5 space-y-4">
-              <div>
-                <label className="field-label" htmlFor="w-name">{t("welcome.name")}</label>
-                <input id="w-name" className="input" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              <div>
-                <label className="field-label" htmlFor="w-email">{t("welcome.email")}</label>
-                <input id="w-email" type="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div>
-                <label className="field-label" htmlFor="w-pin">{t("welcome.pin")}</label>
-                <input
-                  id="w-pin"
-                  inputMode="numeric"
-                  maxLength={4}
-                  className="input text-center text-2xl font-bold tracking-[0.5em] tabular-nums"
-                  value={pin}
-                  placeholder="••••"
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                />
-                <p className="mt-1 text-xs text-forest/50">{t("welcome.pinHint")}</p>
-              </div>
-              {err && !canCreate && (
-                <p className="text-sm font-semibold text-red-600">
-                  {t("welcome.name")} · {t("welcome.email")} · {t("welcome.pin")}
-                </p>
-              )}
-              <button onClick={submit} className={cn("btn-lime w-full", !canCreate && "opacity-60")}>
-                {t("welcome.create")}
+            <p className="mt-5 text-center text-sm text-forest/60">
+              {t("welcome.haveAccount")}{" "}
+              <button onClick={openCreate} className="font-bold text-forest underline">
+                {t("welcome.login")}
               </button>
-              <button onClick={() => setStep("choose")} className="w-full text-center text-sm font-semibold text-forest/50">
-                ← {t("welcome.back")}
-              </button>
-            </div>
+            </p>
           </>
         )}
 
@@ -162,11 +110,7 @@ export function WelcomeGate() {
               {coursePinErr && (
                 <p className="text-center text-sm font-semibold text-red-600">{t("welcome.coursePinWrong")}</p>
               )}
-              <button
-                onClick={checkCoursePin}
-                disabled={coursePin.length !== 4}
-                className="btn-lime w-full"
-              >
+              <button onClick={checkCoursePin} disabled={coursePin.length !== 4} className="btn-lime w-full">
                 {t("welcome.coursePinGo")}
               </button>
               <button onClick={() => setStep("choose")} className="w-full text-center text-sm font-semibold text-forest/50">
