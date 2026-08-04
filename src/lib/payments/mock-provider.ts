@@ -1,13 +1,16 @@
 import type {
   AuthorizeResult,
+  CheckoutSession,
+  CheckoutStatus,
   PaymentProvider,
   RefundResult,
 } from "./provider";
 
 /**
- * Offline deposit provider — always succeeds. Used whenever no Stripe secret
- * key is configured so the entire booking → deposit → refund flow works with
- * zero setup and offline from Stripe.
+ * Offline fee provider — always succeeds. Used whenever no Stripe secret key is
+ * configured so the entire booking → fee → refund flow works with zero setup and
+ * offline from Stripe. The app uses the instant authorize path for the mock, so
+ * the Checkout methods here exist only to satisfy the interface.
  */
 export class MockPaymentProvider implements PaymentProvider {
   readonly isMock = true;
@@ -27,5 +30,20 @@ export class MockPaymentProvider implements PaymentProvider {
 
   async refundDeposit(paymentIntentId: string): Promise<RefundResult> {
     return { paymentIntentId, status: "refunded", mock: true };
+  }
+
+  async createFeeCheckout(params: {
+    successUrl: string;
+  }): Promise<CheckoutSession> {
+    const sessionId = `cs_mock_${Date.now()}`;
+    return {
+      url: params.successUrl.replace("{CHECKOUT_SESSION_ID}", sessionId),
+      sessionId,
+      mock: true,
+    };
+  }
+
+  async retrieveFeeCheckout(sessionId: string): Promise<CheckoutStatus> {
+    return { paid: true, paymentIntentId: `pi_mock_${sessionId}`, metadata: {} };
   }
 }

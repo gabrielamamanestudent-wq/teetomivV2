@@ -66,7 +66,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
     setSubmitting(true);
     setError(null);
     try {
-      const { booking } = await api.createBooking({
+      const res = await api.createBooking({
         slotId: data.slot.id,
         players,
         golferId: golfer.id,
@@ -74,7 +74,14 @@ export default function BookPage({ params }: { params: { id: string } }) {
         golferEmail: email,
         applyCredit: useCredit,
       });
-      router.push(`/booking/${booking.reference}`);
+      // Real Stripe path: hand off to the hosted Checkout page.
+      if (res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      if (res.booking) {
+        router.push(`/booking/${res.booking.reference}`);
+      }
     } catch (e) {
       setError(String((e as Error).message));
       setSubmitting(false);

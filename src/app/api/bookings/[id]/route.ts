@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepository } from "@/lib/data";
 import { getPaymentProvider } from "@/lib/payments";
-import { isRefundToGolfer } from "@/lib/policy";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +32,8 @@ export async function POST(
     return NextResponse.json({ booking });
   }
 
-  // check-in -> release deposit automatically
+  // check-in -> the $10 is returned as TeeCredit + points (handled in the repo).
+  // We keep the cash (no card refund); the golfer gets store credit instead.
   const booking = await repo.checkInBooking(params.id);
-  await payment.refundDeposit(booking.paymentIntentId).catch(() => {});
-  return NextResponse.json({ booking, refunded: isRefundToGolfer("free-refund") });
+  return NextResponse.json({ booking, credited: true });
 }

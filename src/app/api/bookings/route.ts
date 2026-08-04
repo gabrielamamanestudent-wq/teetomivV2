@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepository } from "@/lib/data";
 import { getPaymentProvider } from "@/lib/payments";
-import { DEPOSIT_CENTS } from "@/lib/policy";
-import { sendEmail, bookingConfirmationEmail } from "@/lib/email";
-import { formatLocalDateTime, formatLocalTime } from "@/lib/time";
+import { BOOKING_FEE_CENTS } from "@/lib/policy";
+import { applyCredit, effectiveTier, perksForTier } from "@/lib/loyalty";
+import { createBookingAndNotify } from "@/lib/booking-service";
 
 export const dynamic = "force-dynamic";
 
@@ -36,59 +36,68 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+  const input = parsed.data;
 
-  const slot = await repo.getSlot(parsed.data.slotId);
+  const slot = await repo.getSlot(input.slotId);
   if (!slot || slot.spotsLeft <= 0) {
     return NextResponse.json({ error: "slot_unavailable" }, { status: 409 });
   }
 
-  // 1) Authorize the $15 refundable deposit (Stripe test mode or mock).
   const payment = getPaymentProvider();
-  let intentId: string;
-  try {
-    const auth = await payment.authorizeDeposit({
-      amountCents: DEPOSIT_CENTS,
-      golferEmail: parsed.data.golferEmail,
-      reference: parsed.data.slotId,
+
+  // Work out what's actually due now: tier can waive the fee, TeeCredit can cover it.
+  const account = await repo.getAccount(input.golferId);
+  const feeCents = perksForTier(effectiveTier(account)).feeWaived ? 0 : BOOKING_FEE_CENTS;
+  const creditAvail = input.applyCredit ? account.teeCreditCents : 0;
+  const { chargeCents } = applyCredit(feeCents, creditAvail);
+
+  // --- Instant path: mock provider (demo) or nothing to charge --------------
+  if (payment.isMock || chargeCents === 0) {
+    let intentId = "pi_waived";
+    if (chargeCents > 0) {
+      try {
+        const auth = await payment.authorizeDeposit({
+          amountCents: chargeCents,
+          golferEmail: input.golferEmail,
+          reference: input.slotId,
+        });
+        intentId = auth.paymentIntentId;
+      } catch (e) {
+        return NextResponse.json({ error: "fee_failed", detail: String(e) }, { status: 402 });
+      }
+    }
+    const result = await createBookingAndNotify({ ...input, paymentIntentId: intentId });
+    return NextResponse.json({
+      booking: result.booking,
+      mockPayment: payment.isMock,
+      feeCents: result.feeCents,
+      creditAppliedCents: result.creditAppliedCents,
+      chargedCents: result.chargedCents,
+      pointsPreview: result.pointsPreview,
     });
-    intentId = auth.paymentIntentId;
-  } catch (e) {
-    return NextResponse.json(
-      { error: "deposit_failed", detail: String(e) },
-      { status: 402 },
-    );
   }
 
-  // 2) Create the booking (applies tier fee-waiver + TeeCredit, awards points on check-in).
-  const result = await repo.createBooking({
-    slotId: parsed.data.slotId,
-    golferId: parsed.data.golferId,
-    golferName: parsed.data.golferName,
-    golferEmail: parsed.data.golferEmail,
-    players: parsed.data.players,
-    paymentIntentId: intentId,
-    applyCredit: parsed.data.applyCredit,
-  });
-  const booking = result.booking;
-
-  // 3) Fire the confirmation email (mock/console fallback).
-  const course = await repo.getCourse(booking.courseId);
-  const email = bookingConfirmationEmail({
-    reference: booking.reference,
-    courseName: course?.name ?? "Your course",
-    teeTimeLabel: formatLocalDateTime(booking.teeTimeISO),
-    pricePerPlayer: booking.pricePerPlayer,
-    players: booking.players,
-    cancelDeadlineLabel: formatLocalTime(booking.freeCancellationDeadlineISO),
-  });
-  await sendEmail({ to: booking.golferEmail, ...email });
-
-  return NextResponse.json({
-    booking,
-    mockPayment: payment.isMock,
-    feeCents: result.feeCents,
-    creditAppliedCents: result.creditAppliedCents,
-    chargedCents: result.chargedCents,
-    pointsPreview: result.pointsPreview,
-  });
+  // --- Real Stripe path: redirect to hosted Checkout ------------------------
+  // The booking is created on return (see /api/bookings/finalize) once Stripe
+  // confirms the payment. All booking params ride along in session metadata.
+  const origin = req.nextUrl.origin;
+  try {
+    const session = await payment.createFeeCheckout({
+      amountCents: chargeCents,
+      golferEmail: input.golferEmail,
+      successUrl: `${origin}/book/complete?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${origin}/deal/${input.slotId}`,
+      metadata: {
+        slotId: input.slotId,
+        players: String(input.players),
+        golferId: input.golferId,
+        golferName: input.golferName,
+        golferEmail: input.golferEmail,
+        applyCredit: input.applyCredit ? "1" : "0",
+      },
+    });
+    return NextResponse.json({ checkoutUrl: session.url });
+  } catch (e) {
+    return NextResponse.json({ error: "checkout_failed", detail: String(e) }, { status: 402 });
+  }
 }

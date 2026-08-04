@@ -60,14 +60,23 @@ export const api = {
       body: JSON.stringify(payload),
     }).then(
       json<{
-        booking: Booking;
-        mockPayment: boolean;
-        feeCents: number;
-        creditAppliedCents: number;
-        chargedCents: number;
-        pointsPreview: number;
+        // Instant path returns the booking; the real-Stripe path returns a
+        // checkoutUrl to redirect to.
+        booking?: Booking;
+        checkoutUrl?: string;
+        mockPayment?: boolean;
+        feeCents?: number;
+        creditAppliedCents?: number;
+        chargedCents?: number;
+        pointsPreview?: number;
       }>,
     ),
+  finalizeBooking: (sessionId: string) =>
+    fetch(`/api/bookings/finalize`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    }).then(json<{ booking: Booking }>),
   bookingByRef: (ref: string) =>
     fetch(`/api/booking/${ref}`, { cache: "no-store" }).then(
       json<{ booking: Booking; course: Course }>,
