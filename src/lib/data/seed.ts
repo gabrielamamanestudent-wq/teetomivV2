@@ -482,10 +482,12 @@ export function buildSeed(now: Date = new Date()): SeedData {
   // --- Loyalty accounts (points model) -------------------------------------
   // Alex: Gold (past that threshold). Marie: TEETOMIC+ subscriber with credit.
   // Sam: standby, has whiffed a couple of check-ins.
+  // Demo identities are maxed out on purpose — explorers should see every perk
+  // (Gold Plus, big points, TeeCredit, matchmaking) without earning them first.
   const accounts: GolferAccount[] = [
-    { golferId: "g1", lifetimePoints: 340, teeCreditCents: 1000, subscription: "none", handicap: 12 },
-    { golferId: "g2", lifetimePoints: 180, teeCreditCents: 2000, subscription: "plus", handicap: 8 },
-    { golferId: "g3", lifetimePoints: 60, teeCreditCents: 0, subscription: "none", handicap: 20 },
+    { golferId: "g1", lifetimePoints: 920, teeCreditCents: 5000, subscription: "plus", handicap: 12 },
+    { golferId: "g2", lifetimePoints: 780, teeCreditCents: 3500, subscription: "plus", handicap: 8 },
+    { golferId: "g3", lifetimePoints: 640, teeCreditCents: 2500, subscription: "plus", handicap: 20 },
   ];
 
   const ledgerEntry = (

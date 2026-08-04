@@ -311,6 +311,38 @@ export const dict = {
   "tier.standby": { en: "Standby", fr: "Standby" },
   "tier.gold": { en: "Gold", fr: "Or" },
   "tier.gold-plus": { en: "Gold Plus", fr: "Or Plus" },
+
+  // --- welcome gate ---------------------------------------------------------
+  "welcome.title": { en: "Welcome to TEETOMIC", fr: "Bienvenue sur TEETOMIC" },
+  "welcome.sub": {
+    en: "Montreal's standby list for golf. Create an account for exclusive perks, or explore the demo.",
+    fr: "La liste d'attente golf de Montréal. Créez un compte pour des avantages exclusifs, ou explorez la démo.",
+  },
+  "welcome.createBtn": { en: "Create an account", fr: "Créer un compte" },
+  "welcome.createDesc": { en: "Earn points, unlock Gold perks, set your PIN", fr: "Gagnez des points, débloquez les avantages Or, choisissez votre NIP" },
+  "welcome.demoBtn": { en: "Explore the demo", fr: "Explorer la démo" },
+  "welcome.demoDesc": { en: "Full-access tour — see everything, maxed out", fr: "Visite complète — tout débloqué au maximum" },
+  "welcome.formTitle": { en: "Create your account", fr: "Créez votre compte" },
+  "welcome.name": { en: "Your name", fr: "Votre nom" },
+  "welcome.email": { en: "Email", fr: "Courriel" },
+  "welcome.pin": { en: "Choose a 4-digit PIN", fr: "Choisissez un NIP à 4 chiffres" },
+  "welcome.pinHint": { en: "You'll enter this to unlock your exclusive perks.", fr: "Vous le saisirez pour débloquer vos avantages exclusifs." },
+  "welcome.create": { en: "Create account", fr: "Créer le compte" },
+  "welcome.back": { en: "Back", fr: "Retour" },
+  "welcome.demoBadge": { en: "Demo — full access", fr: "Démo — accès complet" },
+
+  // --- PIN lock -------------------------------------------------------------
+  "pin.lockTitle": { en: "Exclusive perks", fr: "Avantages exclusifs" },
+  "pin.lockSub": { en: "Enter your 4-digit PIN to unlock your rewards.", fr: "Saisissez votre NIP à 4 chiffres pour débloquer vos récompenses." },
+  "pin.wrong": { en: "Wrong PIN — try again.", fr: "NIP incorrect — réessayez." },
+  "pin.unlock": { en: "Unlock", fr: "Débloquer" },
+
+  // --- walkthrough / tour ---------------------------------------------------
+  "tour.tap": { en: "Tap to continue", fr: "Touchez pour continuer" },
+  "tour.skip": { en: "Skip", fr: "Passer" },
+  "tour.start": { en: "Start exploring", fr: "Commencer" },
+  "tour.next": { en: "Next", fr: "Suivant" },
+  "tour.take": { en: "Take the tour", fr: "Faire la visite" },
 } as const;
 
 export type DictKey = keyof typeof dict;

@@ -7,6 +7,7 @@ import { api, type AccountResponse } from "@/lib/api-client";
 import { GOLD_AT, GOLD_PLUS_AT } from "@/lib/loyalty";
 import { formatCADCents, formatLocalDate } from "@/lib/time";
 import { Badge, Skeleton, EmptyState } from "@/components/ui";
+import { PinLock } from "@/components/PinLock";
 import { cn } from "@/lib/cn";
 
 const TIER_HERO: Record<string, string> = {
@@ -17,7 +18,7 @@ const TIER_HERO: Record<string, string> = {
 
 export default function RewardsPage() {
   const { t, locale } = useI18n();
-  const { golfer } = useSession();
+  const { golfer, mode, perksUnlocked } = useSession();
   const [data, setData] = useState<AccountResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [hcp, setHcp] = useState<string>("");
@@ -39,6 +40,12 @@ export default function RewardsPage() {
     await api.accountAction({ golferId: golfer.id, action, handicap });
     await load();
     setBusy(false);
+  }
+
+  // Members must enter their 4-digit PIN to unlock the exclusive perks area.
+  // Demo explorers see everything (maxed out) with no lock.
+  if (mode === "member" && !perksUnlocked) {
+    return <PinLock />;
   }
 
   if (!data) {
