@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 
 const ACCOUNTS = [
-  { role: "Golfer", email: "alex@demo.golf", password: "golf1234", note: "Has alerts + bookings" },
+  { role: "Golfer", email: "alex@demo.golf", password: "golf1234", note: "Gold Plus — alerts + bookings" },
   { role: "Golfer", email: "marie@demo.golf", password: "golf1234", note: "Refund-on-refill example" },
-  { role: "Golfer", email: "sam@demo.golf", password: "golf1234", note: "No-show example" },
   { role: "Operator", email: "operator@demo.golf", password: "shop1234", note: "Héron Bleu pro shop" },
   { role: "Admin", email: "admin@demo.golf", password: "admin1234", note: "Internal metrics + reset" },
 ];

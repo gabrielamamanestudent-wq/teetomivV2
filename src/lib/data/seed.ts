@@ -302,7 +302,6 @@ export function buildSeed(now: Date = new Date()): SeedData {
   const users: User[] = [
     { id: "g1", name: "Alexandre Roy", email: "alex@demo.golf", password: "golf1234", role: "golfer" },
     { id: "g2", name: "Marie-Claude Tremblay", email: "marie@demo.golf", password: "golf1234", role: "golfer" },
-    { id: "g3", name: "Sam Patel", email: "sam@demo.golf", password: "golf1234", role: "golfer" },
     { id: "o1", name: "Pro Shop — Héron Bleu", email: "operator@demo.golf", password: "shop1234", role: "operator", courseId: "c1" },
     { id: "a1", name: "TEETOMIC Admin", email: "admin@demo.golf", password: "admin1234", role: "admin" },
   ];
@@ -414,9 +413,9 @@ export function buildSeed(now: Date = new Date()): SeedData {
       reference: "TTM-8F1L",
       slotId: "past-noshow",
       courseId: "c4",
-      golferId: "g3",
-      golferName: "Sam Patel",
-      golferEmail: "sam@demo.golf",
+      golferId: "guest-noshow",
+      golferName: "Liam Bélanger",
+      golferEmail: "liam@demo.golf",
       players: 3,
       pricePerPlayer: 61,
       createdAtISO: bookedAt.toISOString(),
@@ -489,7 +488,6 @@ export function buildSeed(now: Date = new Date()): SeedData {
   const accounts: GolferAccount[] = [
     { golferId: "g1", lifetimePoints: 920, teeCreditCents: 5000, subscription: "plus", handicap: 12 },
     { golferId: "g2", lifetimePoints: 780, teeCreditCents: 3500, subscription: "plus", handicap: 8 },
-    { golferId: "g3", lifetimePoints: 640, teeCreditCents: 2500, subscription: "plus", handicap: 20 },
   ];
 
   const ledgerEntry = (
@@ -516,8 +514,6 @@ export function buildSeed(now: Date = new Date()): SeedData {
     ledgerEntry("g2", 25, "signup", "Welcome bonus", "Bonus de bienvenue", 500),
     ledgerEntry("g2", 55, "checkin", "Checked in — Rivière-aux-Cerfs", "Enregistré — Rivière-aux-Cerfs", 100),
     ledgerEntry("g2", 100, "tournament", "TEETOMIC+ member bonus", "Bonus membre TEETOMIC+", 40),
-    ledgerEntry("g3", 25, "signup", "Welcome bonus", "Bonus de bienvenue", 260),
-    ledgerEntry("g3", 35, "checkin", "Checked in — Les Berges du Nord", "Enregistré — Les Berges du Nord", 120),
   ];
 
   // --- Course availability (operator blackout hours) -----------------------

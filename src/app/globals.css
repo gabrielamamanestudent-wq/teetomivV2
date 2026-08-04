@@ -65,3 +65,183 @@ body {
 .skeleton {
   @apply animate-pulse-soft rounded-2xl bg-forest/10;
 }
+
+/* ============================================================
+   Concept demo — the little golfer teeing off (cinematic scene)
+   ============================================================ */
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #bfe3f5 0%, #e8f6e6 55%, #dff0cf 62%, #3f7d47 62%, #2f6a3a 100%);
+}
+.scene-sun {
+  position: absolute;
+  top: 10%;
+  right: 14%;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fff6c8 0%, #ffe25a 60%, rgba(255, 226, 90, 0) 72%);
+  animation: sunPulse 5s ease-in-out infinite;
+}
+.scene-cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  filter: blur(0.5px);
+  animation: cloudDrift linear infinite;
+}
+.scene-hill {
+  position: absolute;
+  bottom: 34%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.scene-flag-pole {
+  position: absolute;
+  right: 15%;
+  bottom: 24%;
+  width: 3px;
+  height: 92px;
+  background: #35502f;
+  border-radius: 2px;
+  transform-origin: bottom center;
+}
+.scene-flag {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 30px;
+  height: 20px;
+  background: #ef4b3c;
+  clip-path: polygon(0 0, 100% 22%, 0 44%);
+  transform-origin: left center;
+  animation: flagWave 1.6s ease-in-out infinite;
+}
+.scene-hole {
+  position: absolute;
+  right: 13.5%;
+  bottom: 22%;
+  width: 26px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+}
+.golfer {
+  position: absolute;
+  left: 15%;
+  bottom: 24%;
+  width: 70px;
+  height: 110px;
+  transform-origin: bottom center;
+}
+.golfer .club {
+  transform-box: fill-box;
+  transform-origin: 50% 8%;
+  animation: idleSway 3s ease-in-out infinite;
+}
+.golfer.is-swing .club {
+  animation: swing 0.9s cubic-bezier(0.5, 0, 0.2, 1) 1 both;
+}
+.golfer.is-swing {
+  animation: golferShift 0.9s ease-in-out 1 both;
+}
+.ball {
+  position: absolute;
+  left: calc(15% + 46px);
+  bottom: 25%;
+}
+.ball .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff, #d7dcd2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.ball.is-fly .ball-x {
+  animation: ballX 1.25s cubic-bezier(0.2, 0.5, 0.5, 1) 0.32s both;
+}
+.ball.is-fly .ball-y {
+  animation: ballY 1.25s ease-in 0.32s both;
+}
+
+@keyframes swing {
+  0% { transform: rotate(-18deg); }
+  35% { transform: rotate(-135deg); }
+  55% { transform: rotate(70deg); }
+  75% { transform: rotate(38deg); }
+  100% { transform: rotate(46deg); }
+}
+@keyframes idleSway {
+  0%, 100% { transform: rotate(-18deg); }
+  50% { transform: rotate(-24deg); }
+}
+@keyframes golferShift {
+  0%, 100% { transform: none; }
+  40% { transform: translateX(-2px) rotate(-2deg); }
+  60% { transform: translateX(2px) rotate(1deg); }
+}
+@keyframes ballX {
+  from { transform: translateX(0); }
+  to { transform: translateX(46vw); }
+}
+@keyframes ballY {
+  0% { transform: translateY(0); }
+  55% { transform: translateY(-170px); }
+  100% { transform: translateY(-6px); }
+}
+@keyframes flagWave {
+  0%, 100% { transform: skewY(0deg) scaleX(1); }
+  50% { transform: skewY(-7deg) scaleX(0.96); }
+}
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+@keyframes cloudDrift {
+  from { transform: translateX(-20vw); }
+  to { transform: translateX(120vw); }
+}
+@keyframes ping-ripple {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes rise-fade {
+  0% { transform: translateY(14px); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-26px); opacity: 0; }
+}
+@keyframes pop-in {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes count-shimmer {
+  0% { background-position: -120% 0; }
+  100% { background-position: 220% 0; }
+}
+.anim-pop { animation: pop-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-rise { animation: rise-fade 2.4s ease-out infinite; }
+.ping-dot {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 3px solid #c6f432;
+}
+.ping-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 3px solid #c6f432;
+  animation: ping-ripple 1.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .golfer .club, .golfer.is-swing .club, .scene-flag, .scene-sun, .scene-cloud,
+  .ball.is-fly .ball-x, .ball.is-fly .ball-y, .anim-rise, .ping-dot::after {
+    animation: none !important;
+  }
+}

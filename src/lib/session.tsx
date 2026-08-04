@@ -19,7 +19,6 @@ export interface DemoGolfer {
 export const DEMO_GOLFERS: DemoGolfer[] = [
   { id: "g1", name: "Alexandre Roy", email: "alex@demo.golf" },
   { id: "g2", name: "Marie-Claude Tremblay", email: "marie@demo.golf" },
-  { id: "g3", name: "Sam Patel", email: "sam@demo.golf" },
 ];
 
 export interface Member {
@@ -30,6 +29,10 @@ export interface Member {
 }
 
 type Mode = "member" | "demo";
+export type ConceptMode = "golfer" | "course";
+
+/** Access code a course enters (emailed to them) to unlock the perks pitch. */
+export const COURSE_DEMO_PIN = process.env.NEXT_PUBLIC_COURSE_DEMO_PIN || "2580";
 
 interface SessionValue {
   mode: Mode;
@@ -37,12 +40,12 @@ interface SessionValue {
   member: Member | null;
   perksUnlocked: boolean;
   showWelcome: boolean;
-  showWalkthrough: boolean;
+  showConcept: ConceptMode | null;
   createAccount: (name: string, email: string, pin: string) => void;
-  enterDemo: (opts?: { tour?: boolean }) => void;
+  enterDemo: () => void;
   unlockPerks: (pin: string) => boolean;
-  startWalkthrough: () => void;
-  finishWalkthrough: () => void;
+  playConcept: (mode: ConceptMode) => void;
+  endConcept: () => void;
   openWelcome: () => void;
   setGolfer: (g: DemoGolfer) => void; // demo-only identity switch
 }
@@ -62,7 +65,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [demoGolfer, setDemoGolfer] = useState<DemoGolfer>(DEMO_GOLFERS[0]);
   const [perksUnlocked, setPerksUnlocked] = useState(true); // demo starts unlocked
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showConcept, setShowConcept] = useState<ConceptMode | null>(null);
 
   useEffect(() => {
     try {
@@ -96,13 +99,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(K.welcomeSeen, "1");
   };
 
-  const enterDemo = (opts?: { tour?: boolean }) => {
+  const enterDemo = () => {
     setMode("demo");
     setPerksUnlocked(true);
     setShowWelcome(false);
     window.localStorage.setItem(K.mode, "demo");
     window.localStorage.setItem(K.welcomeSeen, "1");
-    if (opts?.tour) setShowWalkthrough(true);
   };
 
   const unlockPerks = (pin: string): boolean => {
@@ -128,12 +130,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     member,
     perksUnlocked,
     showWelcome,
-    showWalkthrough,
+    showConcept,
     createAccount,
     enterDemo,
     unlockPerks,
-    startWalkthrough: () => setShowWalkthrough(true),
-    finishWalkthrough: () => setShowWalkthrough(false),
+    playConcept: (m: ConceptMode) => {
+      setShowConcept(m);
+      setShowWelcome(false);
+    },
+    endConcept: () => setShowConcept(null),
     openWelcome: () => setShowWelcome(true),
     setGolfer,
   };

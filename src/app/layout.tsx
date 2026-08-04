@@ -5,7 +5,7 @@ import { I18nProvider } from "@/lib/i18n/context";
 import { SessionProvider } from "@/lib/session";
 import { Header } from "@/components/Header";
 import { WelcomeGate } from "@/components/WelcomeGate";
-import { Walkthrough } from "@/components/Walkthrough";
+import { ConceptDemoHost } from "@/components/ConceptDemoHost";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-4">{children}</main>
             <WelcomeGate />
-            <Walkthrough />
+            <ConceptDemoHost />
           </SessionProvider>
         </I18nProvider>
       </body>
