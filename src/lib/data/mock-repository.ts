@@ -375,6 +375,10 @@ export class MockRepository implements Repository {
   async cancelBooking(bookingId: string): Promise<Booking> {
     const booking = this.s.bookings.find((b) => b.id === bookingId);
     if (!booking) throw new Error("Booking not found");
+    // Only an active (confirmed) booking can be cancelled. Guard against
+    // double-cancel or cancelling after check-in, which would corrupt slot
+    // inventory (re-opening the slot on every call).
+    if (booking.status !== "confirmed") return { ...booking };
     const now = new Date();
     const outcome = resolveCancellation({
       now,
@@ -397,6 +401,8 @@ export class MockRepository implements Repository {
   async checkInBooking(bookingId: string): Promise<Booking> {
     const booking = this.s.bookings.find((b) => b.id === bookingId);
     if (!booking) throw new Error("Booking not found");
+    // Idempotent: already checked in -> don't re-award points/credit.
+    if (booking.status === "checked-in") return { ...booking };
     booking.status = "checked-in";
     // Check-in returns the $10 fee as TeeCredit (not a card refund) and earns points.
     booking.depositStatus = "credited";

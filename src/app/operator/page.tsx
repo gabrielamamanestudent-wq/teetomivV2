@@ -41,6 +41,13 @@ export default function OperatorPage() {
 
   const loadSlots = useCallback(() => {
     api.operatorSlots(courseId).then(({ slots, course }) => {
+      // Recover gracefully if a stored course no longer exists (e.g. after a
+      // demo reset) — fall back to the demo pro shop instead of hanging.
+      if (!course && courseId !== "c1") {
+        window.localStorage.removeItem(OPERATOR_KEY);
+        setCourseId("c1");
+        return;
+      }
       setSlots(slots);
       setCourse(course);
     });
