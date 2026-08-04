@@ -251,6 +251,37 @@ export const dict = {
   },
   "op.noCheckins": { en: "No check-ins scheduled today.", fr: "Aucun enregistrement prévu aujourd'hui." },
   "op.pushAt": { en: "Set live price", fr: "Prix de mise en ligne" },
+  "op.hours": { en: "Hours", fr: "Heures" },
+  "op.hoursHint": {
+    en: "Set the days and time windows you can't fill. Slots in these hours can never be listed on TEETOMIC.",
+    fr: "Indiquez les jours et plages horaires que vous ne pouvez pas remplir. Ces départs ne seront jamais publiés sur TEETOMIC.",
+  },
+  "op.closedDays": { en: "Days you never list", fr: "Jours non listés" },
+  "op.blackoutWindows": { en: "Blackout windows", fr: "Plages bloquées" },
+  "op.addWindow": { en: "Add window", fr: "Ajouter une plage" },
+  "op.noBlackout": { en: "No blackout windows — all hours can be listed.", fr: "Aucune plage bloquée — toutes les heures peuvent être listées." },
+  "op.windowLabel": { en: "Label (optional)", fr: "Étiquette (facultatif)" },
+  "op.blackoutExplain": { en: "These hours are blocked daily:", fr: "Ces heures sont bloquées chaque jour :" },
+  "op.saveHours": { en: "Save hours", fr: "Enregistrer les heures" },
+  "op.hoursSaved": { en: "Hours saved", fr: "Heures enregistrées" },
+  "op.blackout": { en: "Blackout", fr: "Bloqué" },
+
+  // --- course master account signup ----------------------------------------
+  "op.signupTitle": { en: "Create your pro shop account", fr: "Créez votre compte boutique" },
+  "op.signupSub": {
+    en: "List your empty tee times, keep 100% of the green fee. Set the hours you can't fill.",
+    fr: "Publiez vos départs vides, gardez 100 % du droit de jeu. Choisissez les heures que vous ne pouvez pas remplir.",
+  },
+  "op.courseName": { en: "Course name", fr: "Nom du club" },
+  "op.city": { en: "City", fr: "Ville" },
+  "op.region": { en: "Region", fr: "Région" },
+  "op.contactName": { en: "Your name", fr: "Votre nom" },
+  "op.signupEmail": { en: "Email", fr: "Courriel" },
+  "op.signupPin": { en: "Choose a 4-digit PIN", fr: "Choisissez un NIP à 4 chiffres" },
+  "op.createCourse": { en: "Create pro shop account", fr: "Créer le compte boutique" },
+  "op.forCourses": { en: "I run a course", fr: "Je gère un club" },
+  "op.forCoursesDesc": { en: "Pro shop master account — list slots, set your hours", fr: "Compte maître boutique — publiez des départs, réglez vos heures" },
+  "op.created": { en: "Account created — welcome to your dashboard!", fr: "Compte créé — bienvenue sur votre tableau de bord !" },
 
   // --- admin ----------------------------------------------------------------
   "admin.title": { en: "TEETOMIC — internal metrics", fr: "TEETOMIC — métriques internes" },

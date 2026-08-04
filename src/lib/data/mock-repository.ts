@@ -9,6 +9,7 @@ import type {
   Alert,
   Booking,
   Course,
+  CourseAvailability,
   GolferAccount,
   Notification,
   PointsEntry,
@@ -19,12 +20,15 @@ import type {
   AdminMetrics,
   BookingResult,
   CreateBookingInput,
+  CreateCourseInput,
+  CreateCourseResult,
   DealFilters,
   MatchmakingCandidate,
   OperatorStats,
   ReleaseSlotInput,
   Repository,
 } from "./repository";
+import { isBlackedOut } from "../availability";
 import { buildSeed, type SeedData } from "./seed";
 import { BOOKING_FEE_CENTS, freeCancellationDeadline, resolveCancellation } from "../policy";
 import {
@@ -157,9 +161,85 @@ export class MockRepository implements Repository {
       );
   }
 
+  async createCourseAccount(input: CreateCourseInput): Promise<CreateCourseResult> {
+    const courseId = `c${Date.now()}`;
+    const operatorId = `o${Date.now()}`;
+    const initials = input.courseName
+      .split(/\s+/)
+      .map((w) => w[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+    const photos = [
+      "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&q=70",
+      "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=70",
+      "https://images.unsplash.com/photo-1600861195091-690c92f1d2cc?w=1200&q=70",
+    ];
+    const course: Course = {
+      id: courseId,
+      name: input.courseName,
+      slug: input.courseName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      region: input.region,
+      city: input.city,
+      description: {
+        en: `${input.courseName} — newly onboarded on TEETOMIC.`,
+        fr: `${input.courseName} — nouvellement intégré à TEETOMIC.`,
+      },
+      photoUrl: photos[this.s.courses.length % photos.length],
+      logoLabel: initials || "GC",
+      rackRateLow: 45,
+      rackRateHigh: 95,
+      rating: 4.5,
+      holesAvailable: [9, 18],
+      cartAvailable: true,
+      lat: 45.5,
+      lng: -73.6,
+    };
+    this.s.courses.push(course);
+    this.s.users.push({
+      id: operatorId,
+      name: input.contactName,
+      email: input.email,
+      password: input.pin,
+      role: "operator",
+      courseId,
+    });
+    this.s.availability.push({ courseId, closedDays: [], blackout: [] });
+    return { courseId, course: { ...course }, operatorId };
+  }
+
+  async getAvailability(courseId: string): Promise<CourseAvailability> {
+    let av = this.s.availability.find((a) => a.courseId === courseId);
+    if (!av) {
+      av = { courseId, closedDays: [], blackout: [] };
+      this.s.availability.push(av);
+    }
+    return { ...av, closedDays: [...av.closedDays], blackout: av.blackout.map((w) => ({ ...w })) };
+  }
+
+  async setAvailability(availability: CourseAvailability): Promise<CourseAvailability> {
+    const idx = this.s.availability.findIndex((a) => a.courseId === availability.courseId);
+    const clean: CourseAvailability = {
+      courseId: availability.courseId,
+      closedDays: [...new Set(availability.closedDays)].filter((d) => d >= 0 && d <= 6),
+      blackout: availability.blackout
+        .filter((w) => w.endHour > w.startHour)
+        .map((w) => ({ startHour: w.startHour, endHour: w.endHour, label: w.label })),
+    };
+    if (idx >= 0) this.s.availability[idx] = clean;
+    else this.s.availability.push(clean);
+    return { ...clean };
+  }
+
   async releaseSlot(input: ReleaseSlotInput): Promise<{ slot: Slot; notified: number }> {
     const slot = this.s.slots.find((sl) => sl.id === input.slotId);
     if (!slot) throw new Error("Slot not found");
+    // Respect the operator's blackout hours — a blacked-out slot can't be listed.
+    const av = this.s.availability.find((a) => a.courseId === slot.courseId);
+    if (isBlackedOut(av, slot.teeTimeISO)) {
+      throw new Error("blacked_out");
+    }
     slot.status = "released";
     slot.floorPrice = input.floorPrice;
     slot.currentPrice = Math.max(input.livePrice, input.floorPrice);

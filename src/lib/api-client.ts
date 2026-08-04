@@ -4,13 +4,20 @@ import type {
   Alert,
   Booking,
   Course,
+  CourseAvailability,
   GolferAccount,
   Notification,
   PointsEntry,
+  Region,
   Slot,
   Tier,
 } from "./data/types";
-import type { AdminMetrics, MatchmakingCandidate, OperatorStats } from "./data/repository";
+import type {
+  AdminMetrics,
+  CreateCourseResult,
+  MatchmakingCandidate,
+  OperatorStats,
+} from "./data/repository";
 import type { TierPerks } from "./loyalty";
 
 export interface AccountResponse {
@@ -131,6 +138,29 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }).then(json<{ slot: Slot; notified: number }>),
+  operatorAvailability: (courseId: string) =>
+    fetch(`/api/operator/availability?courseId=${courseId}`, { cache: "no-store" }).then(
+      json<{ availability: CourseAvailability }>,
+    ),
+  setAvailability: (availability: CourseAvailability) =>
+    fetch(`/api/operator/availability`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(availability),
+    }).then(json<{ availability: CourseAvailability }>),
+  operatorSignup: (payload: {
+    courseName: string;
+    city: string;
+    region: Region;
+    contactName: string;
+    email: string;
+    pin: string;
+  }) =>
+    fetch(`/api/operator/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(json<CreateCourseResult>),
   adminMetrics: () =>
     fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics }>),
   resetDemo: () => fetch(`/api/admin`, { method: "POST" }).then(json<{ ok: boolean }>),

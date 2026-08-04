@@ -8,6 +8,7 @@ import type {
   Alert,
   Booking,
   Course,
+  CourseAvailability,
   GolferAccount,
   Notification,
   PointsEntry,
@@ -27,6 +28,7 @@ export interface SeedData {
   notifications: Notification[];
   accounts: GolferAccount[];
   pointsLedger: PointsEntry[];
+  availability: CourseAvailability[];
 }
 
 // Unsplash golf photos (source pool — public hotlinkable images).
@@ -518,5 +520,30 @@ export function buildSeed(now: Date = new Date()): SeedData {
     ledgerEntry("g3", 35, "checkin", "Checked in — Les Berges du Nord", "Enregistré — Les Berges du Nord", 120),
   ];
 
-  return { courses, slots, users, bookings, alerts, notifications, accounts, pointsLedger };
+  // --- Course availability (operator blackout hours) -----------------------
+  // The demo pro shop (c1) ships with example blackouts so the feature is
+  // visible; the rest start fully open.
+  const availability: CourseAvailability[] = courses.map((c) => ({
+    courseId: c.id,
+    closedDays: [],
+    blackout: [],
+  }));
+  const c1av = availability.find((a) => a.courseId === "c1");
+  if (c1av) {
+    c1av.blackout = [
+      { startHour: 11, endHour: 13, label: "Member block" },
+    ];
+  }
+
+  return {
+    courses,
+    slots,
+    users,
+    bookings,
+    alerts,
+    notifications,
+    accounts,
+    pointsLedger,
+    availability,
+  };
 }

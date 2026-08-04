@@ -140,6 +140,19 @@ export interface Notification {
   kind: "match" | "refill-refund" | "reminder";
 }
 
+// ---- Course availability (operator-managed blackout hours) -----------------
+export interface BlackoutWindow {
+  startHour: number; // local hour 0-23, inclusive
+  endHour: number; // local hour 1-24, exclusive
+  label?: string;
+}
+
+export interface CourseAvailability {
+  courseId: string;
+  closedDays: number[]; // 0=Sun..6=Sat the course never lists
+  blackout: BlackoutWindow[]; // daily time windows the course can't fill
+}
+
 export type UserRole = "golfer" | "operator" | "admin";
 
 export interface User {

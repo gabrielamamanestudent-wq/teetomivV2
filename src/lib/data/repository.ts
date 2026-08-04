@@ -8,9 +8,11 @@ import type {
   Alert,
   Booking,
   Course,
+  CourseAvailability,
   GolferAccount,
   Notification,
   PointsEntry,
+  Region,
   Slot,
   User,
 } from "./types";
@@ -55,6 +57,21 @@ export interface MatchmakingCandidate {
   tier: string;
 }
 
+export interface CreateCourseInput {
+  courseName: string;
+  city: string;
+  region: Region;
+  contactName: string;
+  email: string;
+  pin: string;
+}
+
+export interface CreateCourseResult {
+  courseId: string;
+  course: Course;
+  operatorId: string;
+}
+
 export interface AdminMetrics {
   gmvCents: number;
   bookings: number;
@@ -82,6 +99,11 @@ export interface Repository {
   recentDeals(limit: number): Promise<Slot[]>;
   courseSlots(courseId: string): Promise<Slot[]>;
   releaseSlot(input: ReleaseSlotInput): Promise<{ slot: Slot; notified: number }>;
+
+  // course accounts & availability (operator self-service)
+  createCourseAccount(input: CreateCourseInput): Promise<CreateCourseResult>;
+  getAvailability(courseId: string): Promise<CourseAvailability>;
+  setAvailability(availability: CourseAvailability): Promise<CourseAvailability>;
 
   // bookings
   createBooking(input: CreateBookingInput): Promise<BookingResult>;

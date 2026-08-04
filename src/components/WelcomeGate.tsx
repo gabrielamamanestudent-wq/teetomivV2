@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/session";
 import { useI18n } from "@/lib/i18n/context";
 import { Logo } from "./Logo";
@@ -9,6 +10,7 @@ import { cn } from "@/lib/cn";
 export function WelcomeGate() {
   const { showWelcome, createAccount, enterDemo } = useSession();
   const { t } = useI18n();
+  const router = useRouter();
   const [step, setStep] = useState<"choose" | "create">("choose");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -55,6 +57,23 @@ export function WelcomeGate() {
                 </span>
                 <span className="mt-0.5 block text-sm text-cream/70">
                   {t("welcome.createDesc")}
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  enterDemo();
+                  router.push("/operator/signup");
+                }}
+                className="w-full rounded-2xl border-2 border-forest/15 bg-white p-4 text-left transition-transform active:scale-[0.99]"
+              >
+                <span className="flex items-center justify-between">
+                  <span className="font-display text-lg font-bold text-forest">
+                    🏪 {t("op.forCourses")}
+                  </span>
+                  <span aria-hidden>→</span>
+                </span>
+                <span className="mt-0.5 block text-sm text-forest/60">
+                  {t("op.forCoursesDesc")}
                 </span>
               </button>
               <button

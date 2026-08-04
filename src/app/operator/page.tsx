@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
-import type { Booking, Course, Slot } from "@/lib/data/types";
+import type { Booking, Course, CourseAvailability, Slot } from "@/lib/data/types";
 import type { OperatorStats } from "@/lib/data/repository";
 import { computePrice } from "@/lib/pricing";
+import { isBlackedOut, formatBlackoutWindow } from "@/lib/availability";
 import {
   formatLocalDate,
   formatLocalTime,
@@ -19,22 +20,32 @@ import { PriceDecayChart } from "@/components/PriceDecayChart";
 import { Badge, EmptyState, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
-const COURSE_ID = "c1"; // demo operator = Héron Bleu pro shop
+// The pro shop manages ONE course. A master account created via signup stores
+// its courseId here; the demo falls back to Héron Bleu (c1).
+const OPERATOR_KEY = "teetomic.operatorCourseId";
 
-type Tab = "release" | "teesheet" | "checkin" | "stats";
+type Tab = "release" | "teesheet" | "checkin" | "hours" | "stats";
 
 export default function OperatorPage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
+  const [courseId, setCourseId] = useState("c1");
   const [tab, setTab] = useState<Tab>("release");
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
+  const [availability, setAvailability] = useState<CourseAvailability | null>(null);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(OPERATOR_KEY);
+    if (stored) setCourseId(stored);
+  }, []);
 
   const loadSlots = useCallback(() => {
-    api.operatorSlots(COURSE_ID).then(({ slots, course }) => {
+    api.operatorSlots(courseId).then(({ slots, course }) => {
       setSlots(slots);
       setCourse(course);
     });
-  }, []);
+    api.operatorAvailability(courseId).then(({ availability }) => setAvailability(availability));
+  }, [courseId]);
 
   useEffect(() => {
     loadSlots();
@@ -44,6 +55,7 @@ export default function OperatorPage() {
     { id: "release", key: "op.release" },
     { id: "teesheet", key: "op.teesheet" },
     { id: "checkin", key: "op.checkin" },
+    { id: "hours", key: "op.hours" },
     { id: "stats", key: "op.stats" },
   ];
 
@@ -74,10 +86,19 @@ export default function OperatorPage() {
         </div>
       </div>
 
-      {tab === "release" && <ReleaseTab slots={slots} onReleased={loadSlots} />}
+      {tab === "release" && (
+        <ReleaseTab slots={slots} availability={availability} onReleased={loadSlots} />
+      )}
       {tab === "teesheet" && <TeeSheetTab slots={slots} />}
-      {tab === "checkin" && <CheckinTab />}
-      {tab === "stats" && <StatsTab />}
+      {tab === "checkin" && <CheckinTab courseId={courseId} />}
+      {tab === "hours" && (
+        <HoursTab
+          courseId={courseId}
+          availability={availability}
+          onSaved={loadSlots}
+        />
+      )}
+      {tab === "stats" && <StatsTab courseId={courseId} />}
     </div>
   );
 }
@@ -85,7 +106,15 @@ export default function OperatorPage() {
 // ---------------------------------------------------------------------------
 // Release tab — the one-tap killer workflow
 // ---------------------------------------------------------------------------
-function ReleaseTab({ slots, onReleased }: { slots: Slot[] | null; onReleased: () => void }) {
+function ReleaseTab({
+  slots,
+  availability,
+  onReleased,
+}: {
+  slots: Slot[] | null;
+  availability: CourseAvailability | null;
+  onReleased: () => void;
+}) {
   const { t, locale } = useI18n();
   const [selected, setSelected] = useState<Slot | null>(null);
   const [floor, setFloor] = useState(0);
@@ -163,28 +192,38 @@ function ReleaseTab({ slots, onReleased }: { slots: Slot[] | null; onReleased: (
       <div>
         <p className="mb-2 text-sm text-forest/60">{t("op.releaseHint")}</p>
         <div className="grid grid-cols-2 gap-2">
-          {gaps.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => pick(s)}
-              className={cn(
-                "rounded-2xl border p-3 text-left transition-all",
-                selected?.id === s.id
-                  ? "border-forest bg-forest text-cream shadow-card"
-                  : "border-forest/15 bg-white hover:border-forest/40",
-              )}
-            >
-              <p className="font-display font-bold">
-                {formatLocalTime(s.teeTimeISO, locale)}
-              </p>
-              <p className={cn("text-xs", selected?.id === s.id ? "text-cream/70" : "text-forest/50")}>
-                {formatLocalDate(s.teeTimeISO, locale)} · {s.holes}h
-              </p>
-              <p className={cn("mt-1 text-xs", selected?.id === s.id ? "text-lime" : "text-forest/60")}>
-                {s.status === "released" ? "● Live" : "○ Unlisted"} · rack {formatCAD(s.rackRate)}
-              </p>
-            </button>
-          ))}
+          {gaps.map((s) => {
+            const blocked = isBlackedOut(availability, s.teeTimeISO);
+            return (
+              <button
+                key={s.id}
+                onClick={() => !blocked && pick(s)}
+                disabled={blocked}
+                className={cn(
+                  "rounded-2xl border p-3 text-left transition-all",
+                  blocked
+                    ? "cursor-not-allowed border-forest/10 bg-forest/5 opacity-60"
+                    : selected?.id === s.id
+                      ? "border-forest bg-forest text-cream shadow-card"
+                      : "border-forest/15 bg-white hover:border-forest/40",
+                )}
+              >
+                <p className="font-display font-bold">
+                  {formatLocalTime(s.teeTimeISO, locale)}
+                </p>
+                <p className={cn("text-xs", selected?.id === s.id && !blocked ? "text-cream/70" : "text-forest/50")}>
+                  {formatLocalDate(s.teeTimeISO, locale)} · {s.holes}h
+                </p>
+                {blocked ? (
+                  <p className="mt-1 text-xs font-semibold text-red-500/80">⛔ {t("op.blackout")}</p>
+                ) : (
+                  <p className={cn("mt-1 text-xs", selected?.id === s.id ? "text-lime" : "text-forest/60")}>
+                    {s.status === "released" ? "● Live" : "○ Unlisted"} · rack {formatCAD(s.rackRate)}
+                  </p>
+                )}
+              </button>
+            );
+          })}
           {gaps.length === 0 && (
             <div className="col-span-2">
               <EmptyState icon="✅" title="No open gaps — you're all booked up." />
@@ -347,14 +386,14 @@ function TeeSheetTab({ slots }: { slots: Slot[] | null }) {
 // ---------------------------------------------------------------------------
 // Check-in tab
 // ---------------------------------------------------------------------------
-function CheckinTab() {
+function CheckinTab({ courseId }: { courseId: string }) {
   const { t, locale } = useI18n();
   const [checkins, setCheckins] = useState<Booking[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    api.operatorCheckins(COURSE_ID).then(({ checkins }) => setCheckins(checkins));
-  }, []);
+    api.operatorCheckins(courseId).then(({ checkins }) => setCheckins(checkins));
+  }, [courseId]);
 
   useEffect(() => {
     load();
@@ -411,15 +450,185 @@ function CheckinTab() {
 }
 
 // ---------------------------------------------------------------------------
+// Hours tab — operator sets the days / windows they CAN'T fill (blackout)
+// ---------------------------------------------------------------------------
+const DAY_LABELS = [
+  { n: 0, en: "Sun", fr: "Dim" },
+  { n: 1, en: "Mon", fr: "Lun" },
+  { n: 2, en: "Tue", fr: "Mar" },
+  { n: 3, en: "Wed", fr: "Mer" },
+  { n: 4, en: "Thu", fr: "Jeu" },
+  { n: 5, en: "Fri", fr: "Ven" },
+  { n: 6, en: "Sat", fr: "Sam" },
+];
+
+function HoursTab({
+  courseId,
+  availability,
+  onSaved,
+}: {
+  courseId: string;
+  availability: CourseAvailability | null;
+  onSaved: () => void;
+}) {
+  const { t, locale } = useI18n();
+  const [closedDays, setClosedDays] = useState<number[]>([]);
+  const [blackout, setBlackout] = useState<CourseAvailability["blackout"]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (availability) {
+      setClosedDays(availability.closedDays);
+      setBlackout(availability.blackout);
+    }
+  }, [availability]);
+
+  if (!availability) {
+    return <Skeleton className="h-64 w-full" />;
+  }
+
+  const toggleDay = (n: number) =>
+    setClosedDays((d) => (d.includes(n) ? d.filter((x) => x !== n) : [...d, n]));
+
+  const addWindow = () => setBlackout((b) => [...b, { startHour: 11, endHour: 13 }]);
+  const removeWindow = (i: number) => setBlackout((b) => b.filter((_, idx) => idx !== i));
+  const updateWindow = (i: number, patch: Partial<CourseAvailability["blackout"][number]>) =>
+    setBlackout((b) => b.map((w, idx) => (idx === i ? { ...w, ...patch } : w)));
+
+  async function save() {
+    setSaving(true);
+    await api.setAvailability({ courseId, closedDays, blackout });
+    setSaving(false);
+    setSaved(true);
+    onSaved();
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  return (
+    <div className="space-y-5">
+      <p className="text-sm text-forest/60">{t("op.hoursHint")}</p>
+
+      {/* Closed days */}
+      <div className="card p-5">
+        <p className="field-label">{t("op.closedDays")}</p>
+        <div className="flex flex-wrap gap-2">
+          {DAY_LABELS.map((d) => (
+            <button
+              key={d.n}
+              onClick={() => toggleDay(d.n)}
+              aria-pressed={closedDays.includes(d.n)}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors",
+                closedDays.includes(d.n)
+                  ? "bg-red-500 text-white"
+                  : "border border-forest/15 bg-white text-forest/70 hover:bg-forest/5",
+              )}
+            >
+              {locale === "fr" ? d.fr : d.en}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Blackout windows */}
+      <div className="card p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="field-label mb-0">{t("op.blackoutWindows")}</p>
+          <button onClick={addWindow} className="btn-ghost px-3 py-1.5 text-xs">
+            + {t("op.addWindow")}
+          </button>
+        </div>
+        {blackout.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-forest/20 px-4 py-6 text-center text-sm text-forest/50">
+            {t("op.noBlackout")}
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {blackout.map((w, i) => (
+              <div key={i} className="flex flex-wrap items-center gap-2 rounded-2xl bg-forest/5 p-3">
+                <HourSelect value={w.startHour} onChange={(v) => updateWindow(i, { startHour: v })} max={23} />
+                <span className="text-forest/50">→</span>
+                <HourSelect value={w.endHour} onChange={(v) => updateWindow(i, { endHour: v })} min={1} max={24} />
+                <input
+                  className="input min-w-0 flex-1 py-2 text-sm"
+                  placeholder={t("op.windowLabel")}
+                  value={w.label ?? ""}
+                  onChange={(e) => updateWindow(i, { label: e.target.value })}
+                />
+                <button
+                  onClick={() => removeWindow(i)}
+                  className="rounded-lg px-2 py-1 text-red-500 hover:bg-red-50"
+                  aria-label="remove"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="mt-3 text-xs text-forest/50">
+          {t("op.blackoutExplain")}
+          {blackout.length > 0 && (
+            <> {blackout.map((w) => formatBlackoutWindow(w)).join(", ")}.</>
+          )}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button onClick={save} disabled={saving} className="btn-lime">
+          {saving ? t("common.loading") : t("op.saveHours")}
+        </button>
+        {saved && <span className="text-sm font-semibold text-lime-dark">✓ {t("op.hoursSaved")}</span>}
+      </div>
+    </div>
+  );
+}
+
+function HourSelect({
+  value,
+  onChange,
+  min = 0,
+  max = 23,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  const opts: number[] = [];
+  for (let h = min; h <= max; h++) opts.push(h);
+  const label = (h: number) => {
+    const hh = ((h % 24) + 24) % 24;
+    const period = hh < 12 ? "AM" : "PM";
+    const disp = hh % 12 === 0 ? 12 : hh % 12;
+    return `${disp}:00 ${period}`;
+  };
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="rounded-xl border border-forest/15 bg-white px-2 py-2 text-sm font-semibold text-forest outline-none"
+    >
+      {opts.map((h) => (
+        <option key={h} value={h}>
+          {label(h)}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Stats tab
 // ---------------------------------------------------------------------------
-function StatsTab() {
+function StatsTab({ courseId }: { courseId: string }) {
   const { t } = useI18n();
   const [stats, setStats] = useState<OperatorStats | null>(null);
 
   useEffect(() => {
-    api.operatorStats(COURSE_ID).then(({ stats }) => setStats(stats));
-  }, []);
+    api.operatorStats(courseId).then(({ stats }) => setStats(stats));
+  }, [courseId]);
 
   if (!stats) {
     return (

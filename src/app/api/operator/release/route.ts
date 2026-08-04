@@ -20,6 +20,14 @@ export async function POST(req: NextRequest) {
     );
   }
   const repo = getRepository();
-  const result = await repo.releaseSlot(parsed.data);
-  return NextResponse.json(result);
+  try {
+    const result = await repo.releaseSlot(parsed.data);
+    return NextResponse.json(result);
+  } catch (e) {
+    const msg = String((e as Error).message);
+    if (msg.includes("blacked_out")) {
+      return NextResponse.json({ error: "blacked_out" }, { status: 409 });
+    }
+    return NextResponse.json({ error: "release_failed", detail: msg }, { status: 400 });
+  }
 }
