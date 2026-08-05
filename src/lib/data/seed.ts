@@ -43,7 +43,7 @@ const PHOTOS = [
   "https://images.unsplash.com/photo-1519160732537-4e6e4c9c9c0a?w=1200&q=70",
 ];
 
-const COURSES: Omit<Course, "photoUrl">[] = [
+const COURSES: Omit<Course, "photoUrl" | "approved">[] = [
   {
     id: "c1",
     name: "Héron Bleu Golf Club",
@@ -224,6 +224,7 @@ export function buildSeed(now: Date = new Date()): SeedData {
   const courses: Course[] = COURSES.map((c, i) => ({
     ...c,
     photoUrl: PHOTOS[i % PHOTOS.length],
+    approved: true, // demo courses are pre-approved
   }));
 
   const slots: Slot[] = [];

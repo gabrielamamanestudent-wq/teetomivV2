@@ -37,6 +37,7 @@ export interface Course {
   cartAvailable: boolean;
   lat: number;
   lng: number;
+  approved: boolean; // seeded courses are approved; self-signups await review
 }
 
 export type SlotStatus =

@@ -73,6 +73,11 @@ function genReference(): string {
   return `TTM-${out}`;
 }
 
+/** Operator notifications are stored like golfer ones, keyed by `op:<courseId>`. */
+export function operatorNotifId(courseId: string): string {
+  return `op:${courseId}`;
+}
+
 function slotMatchesAlert(slot: Slot, course: Course, alert: Alert): boolean {
   if (!alert.active) return false;
   if (slot.currentPrice > alert.maxPrice) return false;
@@ -88,6 +93,37 @@ function slotMatchesAlert(slot: Slot, course: Course, alert: Alert): boolean {
 export class MockRepository implements Repository {
   private get s(): Store {
     return getStore();
+  }
+
+  private pingOperator(courseId: string, title: Course["description"], body: Course["description"]) {
+    this.s.notifications.unshift({
+      id: `opn-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      golferId: operatorNotifId(courseId),
+      kind: "match",
+      title,
+      body,
+      createdAtISO: new Date().toISOString(),
+      read: false,
+    });
+  }
+
+  async approveCourse(courseId: string): Promise<Course | null> {
+    const course = this.s.courses.find((c) => c.id === courseId);
+    if (!course) return null;
+    course.approved = true;
+    this.pingOperator(
+      courseId,
+      { en: "You're approved! 🎉", fr: "Vous êtes approuvé ! 🎉" },
+      {
+        en: "Your Business Corner is live. Start releasing your empty tee times.",
+        fr: "Votre Espace affaires est actif. Publiez vos départs vides.",
+      },
+    );
+    return { ...course };
+  }
+
+  async listPendingCourses(): Promise<Course[]> {
+    return this.s.courses.filter((c) => !c.approved);
   }
 
   async listCourses(): Promise<Course[]> {
@@ -197,6 +233,7 @@ export class MockRepository implements Repository {
       cartAvailable: true,
       lat: 45.5,
       lng: -73.6,
+      approved: false, // awaits admin approval before it can list
     };
     this.s.courses.push(course);
     this.s.users.push({
@@ -393,6 +430,21 @@ export class MockRepository implements Repository {
       });
     }
 
+    // Ping the business: a golfer just booked one of their slots.
+    const teeLabel = new Date(slot.teeTimeISO).toLocaleTimeString("en-CA", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/Toronto",
+    });
+    this.pingOperator(
+      slot.courseId,
+      { en: "New booking 🎟️", fr: "Nouvelle réservation 🎟️" },
+      {
+        en: `${input.golferName} booked your ${teeLabel} slot (${input.players} player${input.players > 1 ? "s" : ""}).`,
+        fr: `${input.golferName} a réservé votre départ de ${teeLabel} (${input.players} joueur${input.players > 1 ? "s" : ""}).`,
+      },
+    );
+
     this.s.funnel.completed++;
     return {
       booking: { ...booking },
@@ -470,6 +522,16 @@ export class MockRepository implements Repository {
       bookingId: booking.id,
       createdAtISO: new Date().toISOString(),
     });
+
+    // Ping the business: this booking has been fulfilled (golfer checked in).
+    this.pingOperator(
+      booking.courseId,
+      { en: "Booking fulfilled ✓", fr: "Réservation honorée ✓" },
+      {
+        en: `${booking.golferName} checked in for their tee time. Deposit returned as TeeCredit.`,
+        fr: `${booking.golferName} s'est enregistré pour son départ. Dépôt remis en TeeCredit.`,
+      },
+    );
     return { ...booking };
   }
 

@@ -21,6 +21,12 @@ export interface Golfer {
 
 const GUEST: Golfer = { id: "guest", name: "Guest", email: "" };
 
+/** Stable id derived from the email so the same account always maps to the same
+ *  golfer — its bookings, points and TeeCredit persist across logins. */
+function golferIdForEmail(email: string): string {
+  return "m-" + email.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 28);
+}
+
 export interface Member {
   golferId: string;
   name: string;
@@ -90,7 +96,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const seen = () => window.localStorage.setItem(K.welcomeSeen, "1");
 
   const createAccount = (name: string, email: string, pin: string) => {
-    const m: Member = { golferId: `m${Date.now()}`, name, email, pin };
+    const m: Member = { golferId: golferIdForEmail(email), name, email, pin };
     setMember(m);
     setPerksUnlocked(true); // they just set it — no need to re-enter immediately
     setShowCreate(false);
@@ -104,7 +110,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // session for the given credentials. (Real auth is the Supabase backend.)
   const login = (email: string, pin: string) => {
     const name = email.split("@")[0].replace(/[._]/g, " ") || "Golfer";
-    const m: Member = { golferId: `m${Date.now()}`, name, email, pin };
+    const m: Member = { golferId: golferIdForEmail(email), name, email, pin };
     setMember(m);
     setPerksUnlocked(true);
     setShowCreate(false);

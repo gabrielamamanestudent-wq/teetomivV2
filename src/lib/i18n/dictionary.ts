@@ -297,6 +297,8 @@ export const dict = {
   "admin.resetting": { en: "Reseeding…", fr: "Réinitialisation…" },
   "admin.resetDone": { en: "Demo data reseeded.", fr: "Données de démo réinitialisées." },
   "admin.deposits": { en: "Deposit states", fr: "États des dépôts" },
+  "admin.pending": { en: "Businesses awaiting approval", fr: "Entreprises en attente d'approbation" },
+  "admin.approve": { en: "Approve", fr: "Approuver" },
 
   // --- demo -----------------------------------------------------------------
   "demo.title": { en: "Demo cheat-sheet", fr: "Aide-mémoire démo" },
@@ -424,8 +426,35 @@ export const dict = {
   // --- welcome extras -------------------------------------------------------
   "welcome.haveAccount": { en: "Already have an account?", fr: "Vous avez déjà un compte ?" },
   "welcome.login": { en: "Log in", fr: "Connexion" },
+
+  // --- account menu ---------------------------------------------------------
+  "menu.account": { en: "Account", fr: "Compte" },
+  "menu.login": { en: "Log in / Create account", fr: "Connexion / Créer un compte" },
+  "menu.logout": { en: "Log out", fr: "Se déconnecter" },
+  "menu.help": { en: "AI Help Center", fr: "Centre d'aide IA" },
+  "menu.membership": { en: "Membership", fr: "Abonnement" },
+
+  // --- help center ----------------------------------------------------------
+  "help.title": { en: "Help Center", fr: "Centre d'aide" },
+  "help.intro": {
+    en: "Ask a question or tap a common one below.",
+    fr: "Posez une question ou touchez-en une ci-dessous.",
+  },
+  "help.common": { en: "Common questions", fr: "Questions fréquentes" },
+  "help.placeholder": { en: "Ask about deposits, points, alerts…", fr: "Dépôts, points, alertes…" },
+  "help.send": { en: "Ask", fr: "Demander" },
+  "help.noMatch": {
+    en: "I don't have an answer for that yet — try one of the common questions below, or email support.",
+    fr: "Je n'ai pas encore de réponse — essayez une question fréquente ci-dessous, ou écrivez au support.",
+  },
   "op.businessOnly": { en: "The Business Corner is for course operators.", fr: "L'Espace affaires est réservé aux exploitants de clubs." },
   "op.enterCode": { en: "Enter your business code", fr: "Entrez votre code affaires" },
+  "op.activity": { en: "Activity", fr: "Activité" },
+  "op.pendingTitle": { en: "Account under review", fr: "Compte en révision" },
+  "op.pendingBody": {
+    en: "Thanks for signing up! We've emailed our team to approve {course}. You'll be live shortly — check back soon.",
+    fr: "Merci de votre inscription ! Nous avons écrit à notre équipe pour approuver {course}. Vous serez actif sous peu.",
+  },
 } as const;
 
 export type DictKey = keyof typeof dict;

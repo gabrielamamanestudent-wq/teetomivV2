@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const repo = getRepository();
   const metrics = await repo.adminMetrics();
-  return NextResponse.json({ metrics });
+  const pending = await repo.listPendingCourses();
+  return NextResponse.json({ metrics, pending });
 }
 
 export async function POST() {

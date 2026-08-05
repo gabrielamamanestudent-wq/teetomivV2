@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepository } from "@/lib/data";
+import { sendEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,9 @@ const schema = z.object({
   pin: z.string().regex(/^\d{4}$/),
 });
 
+// Where business-account approval requests are sent for review.
+const APPROVALS_INBOX = process.env.APPROVALS_EMAIL || "tomictee@gmail.com";
+
 export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
@@ -20,5 +24,24 @@ export async function POST(req: NextRequest) {
   }
   const repo = getRepository();
   const result = await repo.createCourseAccount(parsed.data);
-  return NextResponse.json(result);
+
+  // New business accounts require approval — email the review inbox.
+  const origin = req.nextUrl.origin;
+  const approveUrl = `${origin}/api/operator/approve?courseId=${result.courseId}`;
+  await sendEmail({
+    to: APPROVALS_INBOX,
+    subject: `TEETOMIC — new business needs approval: ${parsed.data.courseName}`,
+    text: `${parsed.data.courseName} (${parsed.data.city}, ${parsed.data.region}) signed up.\nContact: ${parsed.data.contactName} · ${parsed.data.email}\n\nApprove: ${approveUrl}`,
+    html: `
+      <div style="font-family:Inter,Arial,sans-serif;max-width:520px;margin:auto;color:#1A1A1A">
+        <h2>New business account awaiting approval</h2>
+        <p><strong>${parsed.data.courseName}</strong> — ${parsed.data.city}, ${parsed.data.region}</p>
+        <p>Contact: ${parsed.data.contactName} · ${parsed.data.email}</p>
+        <p style="margin-top:20px">
+          <a href="${approveUrl}" style="background:#0B3D2E;color:#C6F432;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700">Approve this business →</a>
+        </p>
+      </div>`,
+  });
+
+  return NextResponse.json({ ...result, pending: true });
 }

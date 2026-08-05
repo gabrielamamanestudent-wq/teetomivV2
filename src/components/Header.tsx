@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
-import { AccountBadge } from "./AccountBadge";
+import { AccountMenu } from "./AccountMenu";
 import { useI18n } from "@/lib/i18n/context";
 import { cn } from "@/lib/cn";
 import type { DictKey } from "@/lib/i18n/dictionary";
@@ -46,8 +46,8 @@ export function Header() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <AccountBadge />
             <LanguageToggle />
+            <AccountMenu />
           </div>
         </div>
       </header>

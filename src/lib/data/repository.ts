@@ -104,6 +104,8 @@ export interface Repository {
   createCourseAccount(input: CreateCourseInput): Promise<CreateCourseResult>;
   getAvailability(courseId: string): Promise<CourseAvailability>;
   setAvailability(availability: CourseAvailability): Promise<CourseAvailability>;
+  approveCourse(courseId: string): Promise<Course | null>;
+  listPendingCourses(): Promise<Course[]>;
 
   // bookings
   createBooking(input: CreateBookingInput): Promise<BookingResult>;

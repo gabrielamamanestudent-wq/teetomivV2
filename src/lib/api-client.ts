@@ -162,8 +162,14 @@ export const api = {
       body: JSON.stringify(payload),
     }).then(json<CreateCourseResult>),
   adminMetrics: () =>
-    fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics }>),
+    fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics; pending: Course[] }>),
   resetDemo: () => fetch(`/api/admin`, { method: "POST" }).then(json<{ ok: boolean }>),
+  approveCourse: (courseId: string) =>
+    fetch(`/api/operator/approve`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ courseId }),
+    }).then(json<{ course: Course }>),
   account: (golferId: string) =>
     fetch(`/api/account?golferId=${golferId}`, { cache: "no-store" }).then(json<AccountResponse>),
   accountAction: (payload: {

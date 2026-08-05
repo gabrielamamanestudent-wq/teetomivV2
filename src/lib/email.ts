@@ -13,6 +13,7 @@ interface EmailInput {
 export async function sendEmail(input: EmailInput): Promise<{ sent: boolean; mock: boolean }> {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM || "TEETOMIC <bookings@teetomic.golf>";
+  // Domain: teetomic.golf (verify it in Resend + set DNS to send for real).
 
   if (!key) {
     /* eslint-disable no-console */

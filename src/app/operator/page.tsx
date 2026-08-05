@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { COURSE_DEMO_PIN } from "@/lib/session";
 import { Logo } from "@/components/Logo";
 import { api } from "@/lib/api-client";
-import type { Booking, Course, CourseAvailability, Slot } from "@/lib/data/types";
+import type { Booking, Course, CourseAvailability, Notification, Slot } from "@/lib/data/types";
 import type { OperatorStats } from "@/lib/data/repository";
 import { computePrice } from "@/lib/pricing";
 import { isBlackedOut, formatBlackoutWindow } from "@/lib/availability";
@@ -76,6 +76,28 @@ function BusinessGate() {
   );
 }
 
+function PendingApproval({ course }: { course: Course }) {
+  const { t } = useI18n();
+  return (
+    <div className="mx-auto flex max-w-sm flex-col items-center gap-4 pt-12 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-3xl">⏳</div>
+      <h1 className="font-display text-2xl font-bold text-forest">{t("op.pendingTitle")}</h1>
+      <p className="text-sm text-forest/60">{t("op.pendingBody", { course: course.name })}</p>
+      <span className="chip bg-amber-100 text-amber-800">{course.name}</span>
+    </div>
+  );
+}
+
+function OpPing({ n }: { n: Notification }) {
+  const { locale } = useI18n();
+  return (
+    <div className={cn("rounded-xl px-3 py-2 text-sm", n.read ? "bg-forest/5" : "bg-lime-soft")}>
+      <span className="font-semibold text-forest">{n.title[locale]}</span>{" "}
+      <span className="text-forest/60">{n.body[locale]}</span>
+    </div>
+  );
+}
+
 export default function OperatorPage() {
   const { t } = useI18n();
   const [courseId, setCourseId] = useState("c1");
@@ -84,6 +106,7 @@ export default function OperatorPage() {
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
   const [availability, setAvailability] = useState<CourseAvailability | null>(null);
+  const [opNotifs, setOpNotifs] = useState<Notification[]>([]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(OPERATOR_KEY);
@@ -104,7 +127,17 @@ export default function OperatorPage() {
       setCourse(course);
     });
     api.operatorAvailability(courseId).then(({ availability }) => setAvailability(availability));
+    api.notifications(`op:${courseId}`).then(({ notifications }) => setOpNotifs(notifications));
   }, [courseId]);
+
+  // Poll for business pings (new bookings / fulfilments).
+  useEffect(() => {
+    if (access !== true) return;
+    const id = setInterval(() => {
+      api.notifications(`op:${courseId}`).then(({ notifications }) => setOpNotifs(notifications));
+    }, 8000);
+    return () => clearInterval(id);
+  }, [courseId, access]);
 
   useEffect(() => {
     loadSlots();
@@ -120,9 +153,27 @@ export default function OperatorPage() {
 
   if (access === null) return <div className="skeleton mt-6 h-48 w-full" />;
   if (!access) return <BusinessGate />;
+  if (course && !course.approved) return <PendingApproval course={course} />;
+
+  const unread = opNotifs.filter((n) => !n.read).length;
 
   return (
     <div className="space-y-5 pt-2">
+      {opNotifs.length > 0 && (
+        <div className="card p-4">
+          <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-forest/50">
+            🔔 {t("op.activity")}
+            {unread > 0 && (
+              <span className="rounded-full bg-lime px-2 py-0.5 text-[10px] text-forest">{unread}</span>
+            )}
+          </p>
+          <div className="space-y-1.5">
+            {opNotifs.slice(0, 3).map((n) => (
+              <OpPing key={n.id} n={n} />
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-forest">{t("op.title")}</h1>

@@ -12,6 +12,7 @@ import {
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
 import type { AdminMetrics } from "@/lib/data/repository";
+import type { Course } from "@/lib/data/types";
 import { formatCADCents } from "@/lib/time";
 import { Badge, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -27,12 +28,21 @@ const DEPOSIT_LABELS: Record<string, string> = {
 export default function AdminPage() {
   const { t } = useI18n();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+  const [pending, setPending] = useState<Course[]>([]);
   const [resetting, setResetting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    api.adminMetrics().then(({ metrics }) => setMetrics(metrics));
+    api.adminMetrics().then(({ metrics, pending }) => {
+      setMetrics(metrics);
+      setPending(pending);
+    });
   }, []);
+
+  async function approve(courseId: string) {
+    await api.approveCourse(courseId);
+    load();
+  }
 
   useEffect(() => {
     load();
@@ -67,6 +77,27 @@ export default function AdminPage() {
       {toast && (
         <div className="rounded-2xl bg-lime px-4 py-2 text-sm font-semibold text-forest animate-fade-in">
           ✓ {toast}
+        </div>
+      )}
+
+      {pending.length > 0 && (
+        <div className="card border-2 border-amber-200 p-5">
+          <h2 className="mb-3 font-display font-bold text-forest">
+            ⏳ {t("admin.pending")} <Badge tone="amber">{pending.length}</Badge>
+          </h2>
+          <div className="space-y-2">
+            {pending.map((c) => (
+              <div key={c.id} className="flex items-center justify-between rounded-2xl bg-amber-50 px-4 py-3">
+                <div>
+                  <p className="font-semibold text-forest">{c.name}</p>
+                  <p className="text-xs text-forest/50">{c.city}</p>
+                </div>
+                <button onClick={() => approve(c.id)} className="btn-lime px-4 py-2 text-sm">
+                  {t("admin.approve")}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
