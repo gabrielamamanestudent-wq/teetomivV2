@@ -8,18 +8,13 @@ import { Logo } from "@/components/Logo";
 import { api } from "@/lib/api-client";
 import type { Booking, Course, CourseAvailability, Notification, Slot } from "@/lib/data/types";
 import type { OperatorStats } from "@/lib/data/repository";
-import { computePrice } from "@/lib/pricing";
-import { isBlackedOut, formatBlackoutWindow } from "@/lib/availability";
+import { formatBlackoutWindow } from "@/lib/availability";
 import {
   formatLocalDate,
   formatLocalTime,
   formatCAD,
   formatCADCents,
-  localDayOfWeek,
-  localHour,
-  hoursUntil,
 } from "@/lib/time";
-import { PriceDecayChart } from "@/components/PriceDecayChart";
 import { Badge, EmptyState, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
@@ -27,51 +22,107 @@ import { cn } from "@/lib/cn";
 // its courseId here; the demo falls back to Héron Bleu (c1).
 const OPERATOR_KEY = "teetomic.operatorCourseId";
 
-type Tab = "release" | "teesheet" | "checkin" | "hours" | "stats";
+type Tab = "add" | "teesheet" | "checkin" | "hours" | "settings" | "stats";
 
 // The Business Corner is for course operators only. Reached via the business
 // code (also entered on the welcome screen). Average golfers never land here.
-function BusinessGate() {
+function BusinessGate({ onAccess }: { onAccess: (courseId: string) => void }) {
   const { t } = useI18n();
   const router = useRouter();
+  const [mode, setMode] = useState<"code" | "login">("code");
   const [code, setCode] = useState("");
   const [err, setErr] = useState(false);
+  const [email, setEmail] = useState("");
+  const [pin, setPin] = useState("");
+  const [loginErr, setLoginErr] = useState(false);
 
   const check = (v: string) => {
     if (v === COURSE_DEMO_PIN) router.push("/operator/signup");
     else setErr(true);
   };
 
+  async function login() {
+    setLoginErr(false);
+    try {
+      const { user } = await api.operatorLogin(email.trim(), pin);
+      if (user.role === "operator" && user.courseId) {
+        window.localStorage.setItem(OPERATOR_KEY, user.courseId);
+        onAccess(user.courseId);
+      } else {
+        setLoginErr(true);
+      }
+    } catch {
+      setLoginErr(true);
+    }
+  }
+
   return (
-    <div className="mx-auto flex max-w-sm flex-col items-center gap-4 pt-12 text-center">
+    <div className="mx-auto flex max-w-sm flex-col items-center gap-4 pt-10 text-center">
       <Logo className="text-2xl" />
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest text-3xl text-lime">
-        🏪
-      </div>
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest text-3xl text-lime">🏪</div>
       <h1 className="font-display text-2xl font-bold text-forest">{t("nav.operator")}</h1>
-      <p className="text-sm text-forest/60">{t("op.businessOnly")}</p>
-      <input
-        autoFocus
-        inputMode="numeric"
-        maxLength={4}
-        placeholder="••••"
-        aria-label={t("op.enterCode")}
-        className={cn(
-          "input max-w-[12rem] text-center text-3xl font-bold tracking-[0.6em] tabular-nums",
-          err && "border-red-400",
-        )}
-        value={code}
-        onChange={(e) => {
-          const v = e.target.value.replace(/\D/g, "").slice(0, 4);
-          setCode(v);
-          setErr(false);
-          if (v.length === 4) check(v);
-        }}
-      />
-      {err && <p className="text-sm font-semibold text-red-600">{t("welcome.coursePinWrong")}</p>}
-      <button onClick={() => check(code)} disabled={code.length !== 4} className="btn-lime w-full max-w-[12rem]">
-        {t("welcome.coursePinGo")}
-      </button>
+
+      <div className="inline-flex rounded-full border border-forest/15 bg-white p-0.5 text-sm font-semibold">
+        {(["code", "login"] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            className={cn("rounded-full px-4 py-1.5", mode === m ? "bg-forest text-cream" : "text-forest/60")}
+          >
+            {m === "code" ? t("op.newBusiness") : t("op.haveBusiness")}
+          </button>
+        ))}
+      </div>
+
+      {mode === "code" ? (
+        <>
+          <p className="text-sm text-forest/60">{t("op.businessOnly")}</p>
+          <input
+            autoFocus
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="••••"
+            aria-label={t("op.enterCode")}
+            className={cn(
+              "input max-w-[12rem] text-center text-3xl font-bold tracking-[0.6em] tabular-nums",
+              err && "border-red-400",
+            )}
+            value={code}
+            onChange={(e) => {
+              const v = e.target.value.replace(/\D/g, "").slice(0, 4);
+              setCode(v);
+              setErr(false);
+              if (v.length === 4) check(v);
+            }}
+          />
+          {err && <p className="text-sm font-semibold text-red-600">{t("welcome.coursePinWrong")}</p>}
+          <button onClick={() => check(code)} disabled={code.length !== 4} className="btn-lime w-full max-w-[12rem]">
+            {t("welcome.coursePinGo")}
+          </button>
+        </>
+      ) : (
+        <div className="w-full max-w-xs space-y-3 text-left">
+          <div>
+            <label className="field-label">{t("op.signupEmail")}</label>
+            <input type="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div>
+            <label className="field-label">{t("op.signupPin")}</label>
+            <input
+              inputMode="numeric"
+              maxLength={4}
+              placeholder="••••"
+              className="input text-center text-xl font-bold tracking-[0.4em] tabular-nums"
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            />
+          </div>
+          {loginErr && <p className="text-sm font-semibold text-red-600">{t("op.loginFailed")}</p>}
+          <button onClick={login} disabled={!email || pin.length !== 4} className="btn-lime w-full">
+            {t("acct.login")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -102,7 +153,7 @@ export default function OperatorPage() {
   const { t } = useI18n();
   const [courseId, setCourseId] = useState("c1");
   const [access, setAccess] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<Tab>("release");
+  const [tab, setTab] = useState<Tab>("add");
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
   const [availability, setAvailability] = useState<CourseAvailability | null>(null);
@@ -144,15 +195,24 @@ export default function OperatorPage() {
   }, [loadSlots]);
 
   const TABS: { id: Tab; key: string }[] = [
-    { id: "release", key: "op.release" },
+    { id: "add", key: "op.add" },
     { id: "teesheet", key: "op.teesheet" },
     { id: "checkin", key: "op.checkin" },
     { id: "hours", key: "op.hours" },
+    { id: "settings", key: "op.settings" },
     { id: "stats", key: "op.stats" },
   ];
 
   if (access === null) return <div className="skeleton mt-6 h-48 w-full" />;
-  if (!access) return <BusinessGate />;
+  if (!access)
+    return (
+      <BusinessGate
+        onAccess={(cid) => {
+          setCourseId(cid);
+          setAccess(true);
+        }}
+      />
+    );
   if (course && !course.approved) return <PendingApproval course={course} />;
 
   const unread = opNotifs.filter((n) => !n.read).length;
@@ -199,235 +259,257 @@ export default function OperatorPage() {
         </div>
       </div>
 
-      {tab === "release" && (
-        <ReleaseTab slots={slots} availability={availability} onReleased={loadSlots} />
-      )}
+      {tab === "add" && <AddSlotTab courseId={courseId} slots={slots} onCreated={loadSlots} />}
       {tab === "teesheet" && <TeeSheetTab slots={slots} />}
       {tab === "checkin" && <CheckinTab courseId={courseId} />}
       {tab === "hours" && (
-        <HoursTab
-          courseId={courseId}
-          availability={availability}
-          onSaved={loadSlots}
-        />
+        <HoursTab courseId={courseId} availability={availability} onSaved={loadSlots} />
       )}
+      {tab === "settings" && <SettingsTab course={course} onSaved={loadSlots} />}
       {tab === "stats" && <StatsTab courseId={courseId} />}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Release tab — the one-tap killer workflow
+// Add slot — the business creates a bookable tee time at THEIR price
 // ---------------------------------------------------------------------------
-function ReleaseTab({
+function AddSlotTab({
+  courseId,
   slots,
-  availability,
-  onReleased,
+  onCreated,
 }: {
+  courseId: string;
   slots: Slot[] | null;
-  availability: CourseAvailability | null;
-  onReleased: () => void;
+  onCreated: () => void;
 }) {
   const { t, locale } = useI18n();
-  const [selected, setSelected] = useState<Slot | null>(null);
-  const [floor, setFloor] = useState(0);
-  const [livePrice, setLivePrice] = useState(0);
-  const [pushing, setPushing] = useState(false);
-  const [result, setResult] = useState<{ notified: number } | null>(null);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [holes, setHoles] = useState<9 | 18>(18);
+  const [price, setPrice] = useState("");
+  const [rack, setRack] = useState("");
+  const [players, setPlayers] = useState(4);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [ok, setOk] = useState<number | null>(null);
 
-  // Open gaps = future slots not yet booked.
-  const gaps = useMemo(
-    () =>
-      (slots ?? [])
-        .filter(
-          (s) =>
-            s.status !== "booked" &&
-            new Date(s.teeTimeISO).getTime() > Date.now(),
-        )
-        .slice(0, 12),
-    [slots],
-  );
-
-  const suggested = useMemo(() => {
-    if (!selected) return 0;
-    return computePrice({
-      hoursUntilTeeTime: hoursUntil(selected.teeTimeISO),
-      rackRate: selected.rackRate,
-      floorPrice: floor || selected.floorPrice,
-      dayOfWeek: localDayOfWeek(selected.teeTimeISO),
-      band: selected.band,
-      teeHour: localHour(selected.teeTimeISO),
-      weather: selected.weather,
-      fillRate: selected.fillRate,
-    }).price;
-  }, [selected, floor]);
-
-  function pick(s: Slot) {
-    setSelected(s);
-    setFloor(s.floorPrice);
-    setResult(null);
-    const sug = computePrice({
-      hoursUntilTeeTime: hoursUntil(s.teeTimeISO),
-      rackRate: s.rackRate,
-      floorPrice: s.floorPrice,
-      dayOfWeek: localDayOfWeek(s.teeTimeISO),
-      band: s.band,
-      teeHour: localHour(s.teeTimeISO),
-      weather: s.weather,
-      fillRate: s.fillRate,
-    }).price;
-    setLivePrice(sug);
-  }
-
-  async function push() {
-    if (!selected) return;
-    setPushing(true);
-    const res = await api.releaseSlot({
-      slotId: selected.id,
-      floorPrice: floor,
-      livePrice: Math.max(livePrice, floor),
-    });
-    setResult({ notified: res.notified });
-    setPushing(false);
-    onReleased();
-  }
-
-  if (!slots) {
-    return (
-      <div className="grid gap-3 sm:grid-cols-2">
-        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20" />)}
-      </div>
+  useEffect(() => {
+    const d = new Date(Date.now() + 2 * 3600000);
+    setDate(
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
     );
+    setTime(`${String(d.getHours()).padStart(2, "0")}:00`);
+  }, []);
+
+  const teeISO = date && time ? new Date(`${date}T${time}`).toISOString() : "";
+  const tooSoon = teeISO ? new Date(teeISO).getTime() < Date.now() + 90 * 60000 : false;
+  const priceN = Number(price);
+  const valid = !!teeISO && !tooSoon && priceN >= 1;
+
+  async function submit() {
+    if (!valid) {
+      setErr(tooSoon ? t("op.tooSoon") : t("op.fillPrice"));
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    setOk(null);
+    try {
+      const { notified } = await api.createSlot({
+        courseId,
+        teeTimeISO: teeISO,
+        holes,
+        pricePerPlayer: priceN,
+        rackRate: rack ? Number(rack) : undefined,
+        players,
+      });
+      setOk(notified);
+      setPrice("");
+      setRack("");
+      onCreated();
+    } catch (e) {
+      setErr(String((e as Error).message).includes("too_soon") ? t("op.tooSoon") : t("common.errorTitle"));
+    } finally {
+      setBusy(false);
+    }
   }
+
+  const mySlots = (slots ?? [])
+    .filter((s) => new Date(s.teeTimeISO).getTime() > Date.now())
+    .sort((a, b) => new Date(a.teeTimeISO).getTime() - new Date(b.teeTimeISO).getTime());
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      <div>
-        <p className="mb-2 text-sm text-forest/60">{t("op.releaseHint")}</p>
-        <div className="grid grid-cols-2 gap-2">
-          {gaps.map((s) => {
-            const blocked = isBlackedOut(availability, s.teeTimeISO);
-            return (
+      <div className="card space-y-4 p-5">
+        <div>
+          <h2 className="font-display text-lg font-bold text-forest">{t("op.addTitle")}</h2>
+          <p className="text-sm text-forest/60">{t("op.addHint")}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="field-label">{t("op.date")}</label>
+            <input type="date" className="input" value={date} onChange={(e) => setDate(e.target.value)} />
+          </div>
+          <div>
+            <label className="field-label">{t("op.time")}</label>
+            <input type="time" className="input" value={time} onChange={(e) => setTime(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label className="field-label">{t("op.holesLabel")}</label>
+          <div className="flex gap-2">
+            {[9, 18].map((h) => (
               <button
-                key={s.id}
-                onClick={() => !blocked && pick(s)}
-                disabled={blocked}
+                key={h}
+                onClick={() => setHoles(h as 9 | 18)}
                 className={cn(
-                  "rounded-2xl border p-3 text-left transition-all",
-                  blocked
-                    ? "cursor-not-allowed border-forest/10 bg-forest/5 opacity-60"
-                    : selected?.id === s.id
-                      ? "border-forest bg-forest text-cream shadow-card"
-                      : "border-forest/15 bg-white hover:border-forest/40",
+                  "flex-1 rounded-2xl border py-2.5 font-bold",
+                  holes === h ? "border-forest bg-forest text-cream" : "border-forest/15 bg-white text-forest/70",
                 )}
               >
-                <p className="font-display font-bold">
-                  {formatLocalTime(s.teeTimeISO, locale)}
-                </p>
-                <p className={cn("text-xs", selected?.id === s.id && !blocked ? "text-cream/70" : "text-forest/50")}>
-                  {formatLocalDate(s.teeTimeISO, locale)} · {s.holes}h
-                </p>
-                {blocked ? (
-                  <p className="mt-1 text-xs font-semibold text-red-500/80">⛔ {t("op.blackout")}</p>
-                ) : (
-                  <p className={cn("mt-1 text-xs", selected?.id === s.id ? "text-lime" : "text-forest/60")}>
-                    {s.status === "released" ? "● Live" : "○ Unlisted"} · rack {formatCAD(s.rackRate)}
-                  </p>
-                )}
+                {h}
               </button>
-            );
-          })}
-          {gaps.length === 0 && (
-            <div className="col-span-2">
-              <EmptyState icon="✅" title="No open gaps — you're all booked up." />
-            </div>
-          )}
+            ))}
+          </div>
         </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="field-label">{t("op.yourPrice")}</label>
+            <div className="flex items-center rounded-2xl border border-forest/15 bg-white px-3">
+              <span className="text-forest/50">$</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="45"
+                className="w-full bg-transparent py-3 pl-1 outline-none"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="field-label">{t("op.rackOptional")}</label>
+            <div className="flex items-center rounded-2xl border border-forest/15 bg-white px-3">
+              <span className="text-forest/50">$</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="95"
+                className="w-full bg-transparent py-3 pl-1 outline-none"
+                value={rack}
+                onChange={(e) => setRack(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label className="field-label">{t("deal.players")}</label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                onClick={() => setPlayers(n)}
+                className={cn(
+                  "h-11 flex-1 rounded-2xl border font-bold",
+                  players === n ? "border-forest bg-forest text-cream" : "border-forest/15 bg-white text-forest/70",
+                )}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+        {tooSoon && (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
+            ⏱ {t("op.tooSoon")}
+          </p>
+        )}
+        {err && !tooSoon && <p className="text-sm font-semibold text-red-600">{err}</p>}
+        {ok !== null && (
+          <p className="rounded-xl bg-lime-soft px-3 py-2 text-sm font-semibold text-forest">
+            ✓ {t("op.slotLive", { n: String(ok) })}
+          </p>
+        )}
+        <button onClick={submit} disabled={busy || !valid} className="btn-lime w-full">
+          {busy ? t("op.pushing") : t("op.addSlot")}
+        </button>
+        <p className="text-xs text-forest/50">{t("op.addRule")}</p>
       </div>
 
-      {/* Release panel */}
-      <div className="card p-5">
-        {!selected ? (
-          <div className="flex h-full min-h-[16rem] flex-col items-center justify-center text-center text-forest/50">
-            <span className="text-4xl">👆</span>
-            <p className="mt-2 text-sm font-semibold">Tap an open slot to release it.</p>
-          </div>
-        ) : result ? (
-          <div className="flex flex-col items-center gap-3 py-6 text-center animate-fade-in">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime text-2xl">
-              ⚡
-            </span>
-            <p className="font-display text-lg font-bold text-forest">
-              {t("op.pushed", { n: String(result.notified) })}
-            </p>
-            <p className="text-sm text-forest/60">
-              {formatLocalTime(selected.teeTimeISO, locale)} · {formatCAD(Math.max(livePrice, floor))}
-            </p>
-            <button onClick={() => setSelected(null)} className="btn-ghost mt-2 text-sm">
-              {t("op.release")}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+      <div>
+        <p className="field-label">{t("op.yourLive")}</p>
+        <div className="space-y-2">
+          {mySlots.length === 0 && <EmptyState icon="🕳️" title={t("op.noSlots")} />}
+          {mySlots.map((s) => (
+            <div key={s.id} className="card flex items-center justify-between p-3">
               <div>
-                <p className="font-display text-lg font-bold text-forest">
-                  {formatLocalTime(selected.teeTimeISO, locale)}
-                </p>
+                <p className="font-display font-bold text-forest">{formatLocalTime(s.teeTimeISO, locale)}</p>
                 <p className="text-xs text-forest/50">
-                  {formatLocalDate(selected.teeTimeISO, locale)} · rack {formatCAD(selected.rackRate)}
+                  {formatLocalDate(s.teeTimeISO, locale)} · {s.holes}h · {s.spotsLeft}/{s.players}
                 </p>
               </div>
-              <Badge tone="lime">{t("op.suggested")} {formatCAD(suggested)}</Badge>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="field-label">{t("op.floorPrice")}</label>
-                <div className="flex items-center rounded-2xl border border-forest/15 bg-white px-3">
-                  <span className="text-forest/50">$</span>
-                  <input
-                    type="number"
-                    value={floor}
-                    min={1}
-                    onChange={(e) => setFloor(Number(e.target.value))}
-                    className="w-full bg-transparent py-3 pl-1 outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="field-label">{t("op.pushAt")}</label>
-                <div className="flex items-center rounded-2xl border border-forest/15 bg-white px-3">
-                  <span className="text-forest/50">$</span>
-                  <input
-                    type="number"
-                    value={livePrice}
-                    min={floor}
-                    onChange={(e) => setLivePrice(Number(e.target.value))}
-                    className="w-full bg-transparent py-3 pl-1 outline-none"
-                  />
-                </div>
+              <div className="text-right">
+                <span className="font-display text-lg font-bold text-forest">{formatCAD(s.currentPrice)}</span>
+                <Badge
+                  tone={s.status === "booked" ? "forest" : s.status === "released" ? "lime" : "neutral"}
+                  className="ml-2"
+                >
+                  {s.status === "booked" ? t("op.legendBooked") : s.status === "released" ? "● Live" : t("op.legendUnlisted")}
+                </Badge>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            <div>
-              <p className="field-label">{t("op.decayPreview")}</p>
-              <PriceDecayChart slot={selected} floorPrice={floor || selected.floorPrice} />
-            </div>
+// ---------------------------------------------------------------------------
+// Settings — update course info
+// ---------------------------------------------------------------------------
+function SettingsTab({ course, onSaved }: { course: Course | null; onSaved: () => void }) {
+  const { t } = useI18n();
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [ok, setOk] = useState(false);
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => setLivePrice(suggested)}
-                className="btn-ghost flex-1 text-sm"
-              >
-                {t("op.suggested")}
-              </button>
-              <button onClick={push} disabled={pushing} className="btn-lime flex-[2] text-base">
-                {pushing ? t("op.pushing") : `${t("op.pushLive")} · ${formatCAD(Math.max(livePrice, floor))}`}
-              </button>
-            </div>
-          </div>
-        )}
+  useEffect(() => {
+    if (course) {
+      setName(course.name);
+      setCity(course.city);
+    }
+  }, [course]);
+
+  if (!course) return <Skeleton className="h-40 w-full" />;
+
+  async function save() {
+    setBusy(true);
+    await api.updateCourse({ courseId: course!.id, name, city });
+    setBusy(false);
+    setOk(true);
+    onSaved();
+    setTimeout(() => setOk(false), 2000);
+  }
+
+  return (
+    <div className="card max-w-lg space-y-4 p-5">
+      <h2 className="font-display text-lg font-bold text-forest">{t("op.settingsTitle")}</h2>
+      <div>
+        <label className="field-label">{t("op.courseName")}</label>
+        <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div>
+        <label className="field-label">{t("op.city")}</label>
+        <input className="input" value={city} onChange={(e) => setCity(e.target.value)} />
+      </div>
+      <div className="flex items-center gap-3">
+        <button onClick={save} disabled={busy} className="btn-lime">
+          {busy ? t("common.loading") : t("op.saveCourse")}
+        </button>
+        {ok && <span className="text-sm font-semibold text-lime-dark">✓ {t("op.saved")}</span>}
       </div>
     </div>
   );

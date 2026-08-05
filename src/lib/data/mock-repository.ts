@@ -29,7 +29,6 @@ import type {
   Repository,
 } from "./repository";
 import { isBlackedOut } from "../availability";
-import { computePrice } from "../pricing";
 import { bandForHour, localHour } from "../time";
 import { buildSeed, type SeedData } from "./seed";
 import { BOOKING_FEE_CENTS, freeCancellationDeadline, resolveCancellation } from "../policy";
@@ -245,51 +244,95 @@ export class MockRepository implements Repository {
       courseId,
     });
     this.s.availability.push({ courseId, closedDays: [], blackout: [] });
+    // A new business starts with an empty tee sheet — they create their own
+    // slots at their own price (see createSlot).
+    return { courseId, course: { ...course }, operatorId };
+  }
 
-    // Seed a starter tee sheet (unlisted) so the new business has gaps to
-    // release from day one.
-    const now = Date.now();
-    let n = 0;
-    for (let day = 0; day < 3; day++) {
-      for (const h of [7, 9, 11, 14, 16]) {
-        const tee = new Date();
-        tee.setDate(tee.getDate() + day);
-        tee.setHours(h, h % 2 === 0 ? 10 : 40, 0, 0);
-        if (tee.getTime() <= now + 60 * 60 * 1000) continue;
-        const iso = tee.toISOString();
-        const rack = 55 + Math.round(Math.random() * 40);
-        const floor = Math.round(rack * 0.4);
-        const teeHour = localHour(iso);
-        const price = computePrice({
-          hoursUntilTeeTime: (tee.getTime() - now) / 3600000,
-          rackRate: rack,
-          floorPrice: floor,
-          dayOfWeek: localDayOfWeek(iso),
-          band: bandForHour(teeHour),
-          teeHour,
-          weather: "sun",
-          fillRate: 0.5,
-        }).price;
-        this.s.slots.push({
-          id: `s-${courseId}-${++n}`,
-          courseId,
-          teeTimeISO: iso,
-          holes: 18,
-          cart: true,
-          walking: true,
-          players: 4,
-          spotsLeft: 4,
-          rackRate: rack,
-          floorPrice: floor,
-          currentPrice: price,
-          status: "unlisted",
-          band: bandForHour(teeHour),
-          weather: "sun",
-          fillRate: 0.5,
+  /** Notify alert-holders whose criteria match a newly live slot. Returns count. */
+  private notifyAlerts(slot: Slot): number {
+    const course = this.s.courses.find((c) => c.id === slot.courseId);
+    if (!course) return 0;
+    let notified = 0;
+    for (const alert of this.s.alerts) {
+      if (slotMatchesAlert(slot, course, alert)) {
+        notified++;
+        this.s.notifications.unshift({
+          id: `n${Date.now()}-${notified}`,
+          golferId: alert.golferId,
+          kind: "match",
+          title: {
+            en: `New match: ${course.name}`,
+            fr: `Nouvelle correspondance : ${course.name}`,
+          },
+          body: {
+            en: `A slot matching '${alert.label}' just went live for $${slot.currentPrice} (was $${slot.rackRate}).`,
+            fr: `Un départ correspondant à « ${alert.label} » vient d'être publié à ${slot.currentPrice} $ (avant ${slot.rackRate} $).`,
+          },
+          createdAtISO: new Date().toISOString(),
+          read: false,
+          slotId: slot.id,
         });
       }
     }
-    return { courseId, course: { ...course }, operatorId };
+    return notified;
+  }
+
+  async createSlot(input: {
+    courseId: string;
+    teeTimeISO: string;
+    holes: 9 | 18;
+    pricePerPlayer: number;
+    rackRate?: number;
+    cart?: boolean;
+    players?: number;
+  }): Promise<{ slot: Slot; notified: number }> {
+    const course = this.s.courses.find((c) => c.id === input.courseId);
+    if (!course) throw new Error("course_not_found");
+    // Concept rule: an empty slot must be listed at least 1h30 before tee time.
+    const tee = new Date(input.teeTimeISO);
+    if (tee.getTime() < Date.now() + 90 * 60 * 1000) {
+      throw new Error("too_soon");
+    }
+    const teeHour = localHour(input.teeTimeISO);
+    const rack =
+      input.rackRate && input.rackRate > input.pricePerPlayer
+        ? input.rackRate
+        : Math.round(input.pricePerPlayer * 1.6);
+    const players = input.players ?? 4;
+    const slot: Slot = {
+      id: `s-${input.courseId}-${Date.now()}`,
+      courseId: input.courseId,
+      teeTimeISO: input.teeTimeISO,
+      holes: input.holes,
+      cart: input.cart ?? course.cartAvailable,
+      walking: true,
+      players,
+      spotsLeft: players,
+      rackRate: rack,
+      floorPrice: input.pricePerPlayer,
+      currentPrice: input.pricePerPlayer, // the business sets their price
+      status: "released",
+      band: bandForHour(teeHour),
+      weather: "sun",
+      fillRate: 0.5,
+    };
+    this.s.slots.unshift(slot);
+    const notified = this.notifyAlerts(slot);
+    return { slot: { ...slot }, notified };
+  }
+
+  async updateCourse(
+    courseId: string,
+    patch: { name?: string; city?: string; rackRateLow?: number; rackRateHigh?: number },
+  ): Promise<Course | null> {
+    const c = this.s.courses.find((x) => x.id === courseId);
+    if (!c) return null;
+    if (patch.name?.trim()) c.name = patch.name.trim();
+    if (patch.city?.trim()) c.city = patch.city.trim();
+    if (typeof patch.rackRateLow === "number") c.rackRateLow = patch.rackRateLow;
+    if (typeof patch.rackRateHigh === "number") c.rackRateHigh = patch.rackRateHigh;
+    return { ...c };
   }
 
   async getAvailability(courseId: string): Promise<CourseAvailability> {

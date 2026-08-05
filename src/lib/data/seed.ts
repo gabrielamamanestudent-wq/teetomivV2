@@ -32,15 +32,16 @@ export interface SeedData {
 }
 
 // Unsplash golf photos (source pool — public hotlinkable images).
+const PH = "?auto=format&fit=crop&w=1200&q=70";
 const PHOTOS = [
-  "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&q=70",
-  "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&q=70",
-  "https://images.unsplash.com/photo-1600861195091-690c92f1d2cc?w=1200&q=70",
-  "https://images.unsplash.com/photo-1600783245906-2c67d0a1e2a3?w=1200&q=70",
-  "https://images.unsplash.com/photo-1592919505780-303950717480?w=1200&q=70",
-  "https://images.unsplash.com/photo-1611374243147-44a702c2d44c?w=1200&q=70",
-  "https://images.unsplash.com/photo-1500932334442-8761ee4810a7?w=1200&q=70",
-  "https://images.unsplash.com/photo-1519160732537-4e6e4c9c9c0a?w=1200&q=70",
+  `https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa${PH}`,
+  `https://images.unsplash.com/photo-1535131749006-b7f58c99034b${PH}`,
+  `https://images.unsplash.com/photo-1600861195091-690c92f1d2cc${PH}`,
+  `https://images.unsplash.com/photo-1592919505780-303950717480${PH}`,
+  `https://images.unsplash.com/photo-1611374243147-44a702c2d44c${PH}`,
+  `https://images.unsplash.com/photo-1465188162913-8fb5709d6d57${PH}`,
+  `https://images.unsplash.com/photo-1470137237906-d8a4f71e1966${PH}`,
+  `https://images.unsplash.com/photo-1500932334442-8761ee4810a7${PH}`,
 ];
 
 const COURSES: Omit<Course, "photoUrl" | "approved">[] = [

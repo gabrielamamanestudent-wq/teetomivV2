@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import type { Course, Slot } from "@/lib/data/types";
 import { useI18n } from "@/lib/i18n/context";
 import { formatLocalDate, formatLocalTime, formatCAD } from "@/lib/time";
 import { Countdown } from "./Countdown";
+import { CourseImage } from "./CourseImage";
 import { Badge } from "./ui";
 
 export function DealCard({ slot, course }: { slot: Slot; course: Course }) {
@@ -18,10 +18,10 @@ export function DealCard({ slot, course }: { slot: Slot; course: Course }) {
       className="card group block overflow-hidden transition-transform hover:-translate-y-0.5 hover:shadow-card-lg"
     >
       <div className="relative h-40 w-full overflow-hidden bg-forest/10">
-        <Image
+        <CourseImage
           src={course.photoUrl}
           alt={course.name}
-          fill
+          label={course.logoLabel}
           sizes="(max-width: 768px) 100vw, 384px"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />

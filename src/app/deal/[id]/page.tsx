@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
 import type { Course, Slot } from "@/lib/data/types";
 import { formatLocalDate, formatLocalTime, formatCAD } from "@/lib/time";
 import { Countdown } from "@/components/Countdown";
+import { CourseImage } from "@/components/CourseImage";
 import { Badge, EmptyState, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
@@ -59,7 +59,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </button>
 
       <div className="relative h-56 overflow-hidden rounded-3xl bg-forest/10 sm:h-72">
-        <Image src={course.photoUrl} alt={course.name} fill sizes="100vw" className="object-cover" priority />
+        <CourseImage src={course.photoUrl} alt={course.name} label={course.logoLabel} sizes="100vw" className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-forest/10 to-transparent" />
         <div className="absolute left-4 right-4 top-4 flex items-start justify-between">
           {discountPct > 0 && <Badge tone="lime" className="text-sm font-bold">−{discountPct}%</Badge>}

@@ -436,6 +436,10 @@ export const dict = {
 
   // --- help center ----------------------------------------------------------
   "help.title": { en: "Help Center", fr: "Centre d'aide" },
+  "help.greeting": {
+    en: "Hi! I'm the TEETOMIC assistant. Ask me anything, or tap a question below. 👇",
+    fr: "Salut ! Je suis l'assistant TEETOMIC. Posez-moi une question, ou touchez-en une ci-dessous. 👇",
+  },
   "help.intro": {
     en: "Ask a question or tap a common one below.",
     fr: "Posez une question ou touchez-en une ci-dessous.",
@@ -450,6 +454,37 @@ export const dict = {
   "op.businessOnly": { en: "The Business Corner is for course operators.", fr: "L'Espace affaires est réservé aux exploitants de clubs." },
   "op.enterCode": { en: "Enter your business code", fr: "Entrez votre code affaires" },
   "op.activity": { en: "Activity", fr: "Activité" },
+  "op.add": { en: "Add slot", fr: "Ajouter" },
+  "op.addTitle": { en: "Add a tee time", fr: "Ajouter un départ" },
+  "op.addHint": {
+    en: "Create an empty slot at your price. Golfers on standby get pinged and can book it.",
+    fr: "Créez un départ vide à votre prix. Les golfeurs en attente sont pingés et peuvent réserver.",
+  },
+  "op.date": { en: "Date", fr: "Date" },
+  "op.time": { en: "Tee time", fr: "Heure de départ" },
+  "op.holesLabel": { en: "Holes", fr: "Trous" },
+  "op.yourPrice": { en: "Your price /player", fr: "Votre prix /joueur" },
+  "op.rackOptional": { en: "Was (optional)", fr: "Avant (facultatif)" },
+  "op.addSlot": { en: "Add to TEETOMIC", fr: "Ajouter à TEETOMIC" },
+  "op.addRule": {
+    en: "Slots must be added at least 1h30 before the tee time.",
+    fr: "Les départs doivent être ajoutés au moins 1 h 30 avant l'heure de départ.",
+  },
+  "op.tooSoon": {
+    en: "Too soon — a slot must be at least 1h30 before its tee time.",
+    fr: "Trop tôt — un départ doit être au moins 1 h 30 avant son heure.",
+  },
+  "op.fillPrice": { en: "Enter a valid time and price.", fr: "Entrez une heure et un prix valides." },
+  "op.slotLive": { en: "Slot is live! {n} alert-holders pinged.", fr: "Départ en ligne ! {n} détenteurs d'alertes pingés." },
+  "op.yourLive": { en: "Your upcoming slots", fr: "Vos départs à venir" },
+  "op.noSlots": { en: "No slots yet — add your first tee time above.", fr: "Aucun départ — ajoutez votre premier ci-dessus." },
+  "op.settings": { en: "Settings", fr: "Réglages" },
+  "op.settingsTitle": { en: "Course settings", fr: "Réglages du club" },
+  "op.saveCourse": { en: "Save changes", fr: "Enregistrer" },
+  "op.saved": { en: "Saved", fr: "Enregistré" },
+  "op.newBusiness": { en: "New", fr: "Nouveau" },
+  "op.haveBusiness": { en: "Log in", fr: "Connexion" },
+  "op.loginFailed": { en: "Wrong email or PIN.", fr: "Courriel ou NIP incorrect." },
   "op.pendingTitle": { en: "Account under review", fr: "Compte en révision" },
   "op.pendingBody": {
     en: "Thanks for signing up! We've emailed our team to approve {course}. You'll be live shortly — check back soon.",

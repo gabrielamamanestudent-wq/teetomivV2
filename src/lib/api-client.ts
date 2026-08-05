@@ -161,6 +161,38 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }).then(json<CreateCourseResult>),
+  createSlot: (payload: {
+    courseId: string;
+    teeTimeISO: string;
+    holes: 9 | 18;
+    pricePerPlayer: number;
+    rackRate?: number;
+    cart?: boolean;
+    players?: number;
+  }) =>
+    fetch(`/api/operator/slot`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(json<{ slot: Slot; notified: number }>),
+  updateCourse: (payload: {
+    courseId: string;
+    name?: string;
+    city?: string;
+    rackRateLow?: number;
+    rackRateHigh?: number;
+  }) =>
+    fetch(`/api/operator/course`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(json<{ course: Course }>),
+  operatorLogin: (email: string, password: string) =>
+    fetch(`/api/auth`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    }).then(json<{ user: { id: string; role: string; courseId?: string } }>),
   adminMetrics: () =>
     fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics; pending: Course[] }>),
   resetDemo: () => fetch(`/api/admin`, { method: "POST" }).then(json<{ ok: boolean }>),

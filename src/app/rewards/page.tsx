@@ -63,6 +63,7 @@ export default function RewardsPage() {
 
   const { account, ledger, tier, perks, next, matchmaking } = data;
   const tierLabel = t(`tier.${tier}` as never);
+  const onDark = tier === "standby"; // dark-green hero -> light text
   const progressMax = tier === "standby" ? GOLD_AT : GOLD_PLUS_AT;
   const progressPct = Math.min(100, (account.lifetimePoints / progressMax) * 100);
 
@@ -73,11 +74,18 @@ export default function RewardsPage() {
         <p className="text-sm text-forest/60">{t("rewards.subtitle")}</p>
       </div>
 
-      {/* Tier hero */}
-      <div className={cn("rounded-3xl bg-gradient-to-br p-6 text-forest shadow-card-lg", TIER_HERO[tier])}>
+      {/* Tier hero — standby has a dark green ground (light text); Gold/Gold+
+          have bright grounds (dark text). */}
+      <div
+        className={cn(
+          "rounded-3xl bg-gradient-to-br p-6 shadow-card-lg",
+          TIER_HERO[tier],
+          onDark ? "text-cream" : "text-forest",
+        )}
+      >
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide opacity-70">{t("rewards.tier")}</p>
+            <p className="text-xs font-bold uppercase tracking-wide opacity-75">{t("rewards.tier")}</p>
             <p className="font-display text-3xl font-bold">
               {tier === "gold-plus" ? "✦ " : tier === "gold" ? "★ " : "◇ "}
               {tierLabel}
@@ -90,15 +98,18 @@ export default function RewardsPage() {
           </div>
           <div className="text-right">
             <p className="font-display text-4xl font-bold tabular-nums">{account.lifetimePoints}</p>
-            <p className="text-xs font-semibold opacity-70">{t("rewards.points")}</p>
+            <p className="text-xs font-semibold opacity-75">{t("rewards.points")}</p>
           </div>
         </div>
 
         <div className="mt-5">
-          <div className="h-2.5 overflow-hidden rounded-full bg-forest/15">
-            <div className="h-full rounded-full bg-forest/70" style={{ width: `${progressPct}%` }} />
+          <div className={cn("h-2.5 overflow-hidden rounded-full", onDark ? "bg-cream/20" : "bg-forest/15")}>
+            <div
+              className={cn("h-full rounded-full", onDark ? "bg-lime" : "bg-forest/70")}
+              style={{ width: `${progressPct}%` }}
+            />
           </div>
-          <p className="mt-1.5 text-xs font-semibold opacity-80">
+          <p className="mt-1.5 text-xs font-semibold opacity-90">
             {next.next
               ? t("rewards.toNext", { n: String(next.remaining), tier: t(`tier.${next.next}` as never) })
               : t("rewards.topTier")}

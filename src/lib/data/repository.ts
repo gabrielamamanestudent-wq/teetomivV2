@@ -106,6 +106,19 @@ export interface Repository {
   setAvailability(availability: CourseAvailability): Promise<CourseAvailability>;
   approveCourse(courseId: string): Promise<Course | null>;
   listPendingCourses(): Promise<Course[]>;
+  createSlot(input: {
+    courseId: string;
+    teeTimeISO: string;
+    holes: 9 | 18;
+    pricePerPlayer: number;
+    rackRate?: number;
+    cart?: boolean;
+    players?: number;
+  }): Promise<{ slot: Slot; notified: number }>;
+  updateCourse(
+    courseId: string,
+    patch: { name?: string; city?: string; rackRateLow?: number; rackRateHigh?: number },
+  ): Promise<Course | null>;
 
   // bookings
   createBooking(input: CreateBookingInput): Promise<BookingResult>;

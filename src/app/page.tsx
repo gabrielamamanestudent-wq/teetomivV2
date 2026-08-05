@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
 import type { Course, Slot } from "@/lib/data/types";
 import { formatLocalTime, formatCAD } from "@/lib/time";
+import { CourseImage } from "@/components/CourseImage";
 import { Skeleton } from "@/components/ui";
 
 export default function LandingPage() {
@@ -85,7 +85,7 @@ export default function LandingPage() {
                     className="flex w-60 shrink-0 items-center gap-3 rounded-2xl border border-forest/10 bg-white p-3 shadow-card"
                   >
                     <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl">
-                      <Image src={course.photoUrl} alt="" fill sizes="44px" className="object-cover" />
+                      <CourseImage src={course.photoUrl} alt={course.name} label={course.logoLabel} sizes="44px" className="object-cover" />
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-forest">{course.name}</p>
