@@ -25,10 +25,12 @@ export async function POST(req: NextRequest) {
   const repo = getRepository();
   const result = await repo.createCourseAccount(parsed.data);
 
-  // New business accounts require approval — email the review inbox.
+  // New business accounts require approval — email the review inbox. If email
+  // isn't configured (or Resend rejects), the signup still succeeds: the pending
+  // course always shows in the /admin dashboard, which is the source of truth.
   const origin = req.nextUrl.origin;
   const approveUrl = `${origin}/api/operator/approve?courseId=${result.courseId}`;
-  await sendEmail({
+  const emailResult = await sendEmail({
     to: APPROVALS_INBOX,
     subject: `TEETOMIC — new business needs approval: ${parsed.data.courseName}`,
     text: `${parsed.data.courseName} (${parsed.data.city}, ${parsed.data.region}) signed up.\nContact: ${parsed.data.contactName} · ${parsed.data.email}\n\nApprove: ${approveUrl}`,
@@ -43,5 +45,5 @@ export async function POST(req: NextRequest) {
       </div>`,
   });
 
-  return NextResponse.json({ ...result, pending: true });
+  return NextResponse.json({ ...result, pending: true, approvalEmailSent: emailResult.sent });
 }

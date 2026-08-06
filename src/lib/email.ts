@@ -26,7 +26,7 @@ export async function sendEmail(input: EmailInput): Promise<{ sent: boolean; moc
   }
 
   try {
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${key}`,
@@ -34,8 +34,18 @@ export async function sendEmail(input: EmailInput): Promise<{ sent: boolean; moc
       },
       body: JSON.stringify({ from, to: input.to, subject: input.subject, html: input.html }),
     });
+    if (!res.ok) {
+      // Surface the real reason (bad key, unverified domain, disallowed
+      // recipient) instead of silently claiming success — this is exactly what
+      // makes "the email never arrived and I don't know why" so hard to debug.
+      /* eslint-disable-next-line no-console */
+      console.error(`📧 Resend rejected (${res.status}): ${await res.text().catch(() => "")}`);
+      return { sent: false, mock: false };
+    }
     return { sent: true, mock: false };
-  } catch {
+  } catch (err) {
+    /* eslint-disable-next-line no-console */
+    console.error("📧 Resend request failed:", err);
     return { sent: false, mock: false };
   }
 }

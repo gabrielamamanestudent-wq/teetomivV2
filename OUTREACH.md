@@ -31,8 +31,7 @@ Canadian anti-spam law applies to these emails. Keep it clean:
 |---|---|
 | `{{course_name}}` | e.g. "Golf Métropolitain" |
 | `{{contact_name}}` | the GM / pro-shop manager, if you know it (else drop the greeting to "Bonjour,") |
-| `{{your_name}}` | your name |
-| `{{your_phone}}` | a number they can call |
+| `{{your_phone}}` | a number they can call (still to fill in) |
 | `{{your_city}}` | where you're based |
 | `{{signup_url}}` | your live Business Corner link, e.g. `https://teetomic.golf/operator/signup` |
 | `{{business_code}}` | the access code (currently `5432`) |
@@ -45,7 +44,7 @@ Canadian anti-spam law applies to these emails. Keep it clean:
 
 Hi {{contact_name}},
 
-I'm {{your_name}}, based in {{your_city}}. I built **TEETOMIC**, a last-minute
+I'm Gabriel, based in {{your_city}}. I built **TEETOMIC**, a last-minute
 "standby list" for Greater Montréal golf. When a course has tee times that would
 otherwise go empty, they list them on TEETOMIC and local golfers grab them.
 
@@ -64,7 +63,7 @@ by hand, usually same day.
 Happy to walk you through it on a quick call — {{your_phone}}.
 
 Cheers,
-{{your_name}}
+Gabriel
 TEETOMIC · {{your_phone}}
 
 _You're receiving this because TEETOMIC helps Montréal-area courses fill empty
@@ -78,7 +77,7 @@ tee times. Reply "unsubscribe" and I won't email again._
 
 Bonjour {{contact_name}},
 
-Je m'appelle {{your_name}}, de {{your_city}}. J'ai créé **TEETOMIC**, une liste
+Je m'appelle Gabriel, de {{your_city}}. J'ai créé **TEETOMIC**, une liste
 d'attente de dernière minute pour le golf dans le Grand Montréal. Quand un club a
 des départs qui resteraient vides, il les affiche sur TEETOMIC et des golfeurs
 de la région les réservent.
@@ -101,7 +100,7 @@ approuvés à la main, généralement la journée même.
 Je peux vous faire un survol rapide par téléphone — {{your_phone}}.
 
 Cordialement,
-{{your_name}}
+Gabriel
 TEETOMIC · {{your_phone}}
 
 _Vous recevez ce message parce que TEETOMIC aide les clubs de la région de
@@ -123,7 +122,7 @@ local golfers looking to play same-day.
 Worth a 5-minute call? {{your_phone}}. If it's not for you, no worries at all —
 just reply "unsubscribe" and I'll leave it there.
 
-{{your_name}}
+Gabriel
 TEETOMIC · {{your_phone}}
 
 ---
@@ -142,7 +141,7 @@ jour même.
 Un appel de 5 minutes vous conviendrait ? {{your_phone}}. Si ce n'est pas pour
 vous, aucun souci — répondez « désabonnement » et j'en resterai là.
 
-{{your_name}}
+Gabriel
 TEETOMIC · {{your_phone}}
 
 ---
