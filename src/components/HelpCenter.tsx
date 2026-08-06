@@ -42,13 +42,15 @@ export function HelpCenter({ open, onClose }: { open: boolean; onClose: () => vo
     const q = text.trim();
     if (!q || thinking) return;
     setInput("");
+    // Snapshot the thread before this turn so the assistant gets prior context.
+    const history = msgs.filter((m) => m.text.trim());
     setMsgs((m) => [...m, { role: "user", text: q }]);
     setThinking(true);
     try {
       const res = await fetch("/api/help", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: q, locale }),
+        body: JSON.stringify({ message: q, locale, history }),
       });
       const data = await res.json();
       setMsgs((m) => [...m, { role: "bot", text: data.reply || t("help.noMatch") }]);
