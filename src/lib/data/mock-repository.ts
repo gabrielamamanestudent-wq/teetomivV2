@@ -438,6 +438,7 @@ export class MockRepository implements Repository {
     };
     this.s.bookings.unshift(booking);
     const pointsPreview = pointsForCheckin(BOOKING_FEE_CENTS);
+    let refundOnRefill: BookingResult["refundOnRefill"];
 
     // Update slot inventory.
     slot.spotsLeft = Math.max(0, slot.spotsLeft - 1);
@@ -454,6 +455,10 @@ export class MockRepository implements Repository {
     );
     if (priorLateCancel) {
       priorLateCancel.depositStatus = "refunded-on-refill";
+      refundOnRefill = {
+        bookingId: priorLateCancel.id,
+        paymentIntentId: priorLateCancel.paymentIntentId,
+      };
       const course = this.s.courses.find((c) => c.id === slot.courseId)!;
       this.s.notifications.unshift({
         id: `n${Date.now()}-refill`,
@@ -495,6 +500,7 @@ export class MockRepository implements Repository {
       creditAppliedCents,
       chargedCents,
       pointsPreview,
+      refundOnRefill,
     };
   }
 

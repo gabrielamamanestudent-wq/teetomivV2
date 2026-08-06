@@ -48,6 +48,10 @@ export interface BookingResult {
   creditAppliedCents: number; // TeeCredit spent
   chargedCents: number; // actually charged to card
   pointsPreview: number; // points they'll earn on check-in
+  // Set when this booking re-filled a slot whose prior late-cancel was
+  // forfeited: the earlier golfer is now owed their fee back to card. The
+  // caller (booking-service) issues the real refund via the payment provider.
+  refundOnRefill?: { bookingId: string; paymentIntentId: string };
 }
 
 export interface MatchmakingCandidate {

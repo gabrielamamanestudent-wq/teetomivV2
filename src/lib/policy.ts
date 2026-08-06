@@ -2,7 +2,7 @@
 // TEETOMIC deposit & cancellation policy
 // ----------------------------------------------------------------------------
 // Pure, deterministic, unit-tested. Encapsulates the entire deposit lifecycle:
-//   • $15 CAD refundable deposit per BOOKING (not per player)
+//   • $10 CAD refundable booking fee per BOOKING (not per player)
 //   • Tiered free-cancellation window based on how far ahead the golfer booked
 //   • Late-cancel / no-show forfeiture, split 50/50 course / TEETOMIC (display)
 //   • Refund-on-refill: a late cancel is refunded if the slot re-books in time

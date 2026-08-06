@@ -3,6 +3,7 @@
 // return, so the two never drift.
 
 import { getRepository, type BookingResult, type CreateBookingInput } from "./data";
+import { getPaymentProvider } from "./payments";
 import { sendEmail, bookingConfirmationEmail } from "./email";
 import { formatLocalDateTime, formatLocalTime } from "./time";
 
@@ -12,6 +13,16 @@ export async function createBookingAndNotify(
   const repo = getRepository();
   const result = await repo.createBooking(input);
   const booking = result.booking;
+
+  // Refund-on-refill: this booking re-filled a slot whose earlier late-cancel
+  // was forfeited, so that golfer is owed their $10 back to card. The repo has
+  // already flipped their booking to "refunded-on-refill"; issue the real money
+  // movement here (no-op for the mock provider).
+  if (result.refundOnRefill) {
+    await getPaymentProvider()
+      .refundDeposit(result.refundOnRefill.paymentIntentId)
+      .catch(() => {});
+  }
 
   const course = await repo.getCourse(booking.courseId);
   const email = bookingConfirmationEmail({

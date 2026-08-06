@@ -106,6 +106,48 @@ describe("booking fee waiver + check-in crediting", () => {
     expect(feeCents).toBe(0);
   });
 
+  it("flags refund-on-refill when a forfeited slot is re-booked", async () => {
+    // A slot 2h out: booked now, its free-cancel deadline (tee - 4h) is already
+    // in the past, so cancelling forfeits the fee.
+    const teeISO = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+    const { slot } = await repo.createSlot({
+      courseId: "c1",
+      teeTimeISO: teeISO,
+      holes: 18,
+      pricePerPlayer: 40,
+      players: 4,
+    });
+
+    const first = await repo.createBooking({
+      slotId: slot.id,
+      golferId: "m-a",
+      golferName: "First A",
+      golferEmail: "a@example.com",
+      players: 1,
+      paymentIntentId: "pi_first",
+    });
+    const cancelled = await repo.cancelBooking(first.booking.id);
+    expect(cancelled.depositStatus).toBe("forfeited");
+
+    // Someone else re-books the freed slot before tee time.
+    const second = await repo.createBooking({
+      slotId: slot.id,
+      golferId: "m-b",
+      golferName: "Second B",
+      golferEmail: "b@example.com",
+      players: 1,
+      paymentIntentId: "pi_second",
+    });
+    expect(second.refundOnRefill).toEqual({
+      bookingId: first.booking.id,
+      paymentIntentId: "pi_first",
+    });
+
+    // And the prior booking is now marked refunded-on-refill.
+    const reread = await repo.getBookingByReference(first.booking.reference);
+    expect(reread?.depositStatus).toBe("refunded-on-refill");
+  });
+
   it("is idempotent: double check-in does not double-award", async () => {
     const slot = await firstReleasedSlot();
     const golferId = "m-once";
