@@ -31,10 +31,9 @@ Canadian anti-spam law applies to these emails. Keep it clean:
 |---|---|
 | `{{course_name}}` | e.g. "Golf Métropolitain" |
 | `{{contact_name}}` | the GM / pro-shop manager, if you know it (else drop the greeting to "Bonjour,") |
-| `{{your_city}}` | where you're based (fill in) |
 | `{{signup_url}}` | your live Business Corner link — Vercel URL or `https://teetomic.golf/operator/signup` (fill in) |
 
-_Already filled in: sender name (Gabriel), phone (438-370-5222), access code (5432)._
+_Already filled in: sender name (Gabriel), phone (438-370-5222), city (Montréal and Miami), access code (5432)._
 
 ---
 
@@ -44,7 +43,7 @@ _Already filled in: sender name (Gabriel), phone (438-370-5222), access code (54
 
 Hi {{contact_name}},
 
-I'm Gabriel, based in {{your_city}}. I built **TEETOMIC**, a last-minute
+I'm Gabriel, based in Montréal and Miami. I built **TEETOMIC**, a last-minute
 "standby list" for Greater Montréal golf. When a course has tee times that would
 otherwise go empty, they list them on TEETOMIC and local golfers grab them.
 
@@ -77,7 +76,7 @@ tee times. Reply "unsubscribe" and I won't email again._
 
 Bonjour {{contact_name}},
 
-Je m'appelle Gabriel, de {{your_city}}. J'ai créé **TEETOMIC**, une liste
+Je m'appelle Gabriel, de Montréal et Miami. J'ai créé **TEETOMIC**, une liste
 d'attente de dernière minute pour le golf dans le Grand Montréal. Quand un club a
 des départs qui resteraient vides, il les affiche sur TEETOMIC et des golfeurs
 de la région les réservent.
