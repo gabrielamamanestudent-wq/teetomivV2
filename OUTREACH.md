@@ -31,10 +31,10 @@ Canadian anti-spam law applies to these emails. Keep it clean:
 |---|---|
 | `{{course_name}}` | e.g. "Golf Métropolitain" |
 | `{{contact_name}}` | the GM / pro-shop manager, if you know it (else drop the greeting to "Bonjour,") |
-| `{{your_phone}}` | a number they can call (still to fill in) |
-| `{{your_city}}` | where you're based |
-| `{{signup_url}}` | your live Business Corner link, e.g. `https://teetomic.golf/operator/signup` |
-| `{{business_code}}` | the access code (currently `5432`) |
+| `{{your_city}}` | where you're based (fill in) |
+| `{{signup_url}}` | your live Business Corner link — Vercel URL or `https://teetomic.golf/operator/signup` (fill in) |
+
+_Already filled in: sender name (Gabriel), phone (438-370-5222), access code (5432)._
 
 ---
 
@@ -57,14 +57,14 @@ How it works for you:
   contract, no software to install — it's a web page.
 
 It's free to join. If you'd like to try it, create your Business Corner here:
-{{signup_url}} (access code: **{{business_code}}**). New accounts are approved
+{{signup_url}} (access code: **5432**). New accounts are approved
 by hand, usually same day.
 
-Happy to walk you through it on a quick call — {{your_phone}}.
+Happy to walk you through it on a quick call — 438-370-5222.
 
 Cheers,
 Gabriel
-TEETOMIC · {{your_phone}}
+TEETOMIC · 438-370-5222
 
 _You're receiving this because TEETOMIC helps Montréal-area courses fill empty
 tee times. Reply "unsubscribe" and I won't email again._
@@ -94,14 +94,14 @@ Comment ça marche pour vous :
   à l'avance. Aucun contrat, aucun logiciel à installer — c'est une page web.
 
 L'inscription est gratuite. Pour l'essayer, créez votre Espace affaires ici :
-{{signup_url}} (code d'accès : **{{business_code}}**). Les nouveaux comptes sont
+{{signup_url}} (code d'accès : **5432**). Les nouveaux comptes sont
 approuvés à la main, généralement la journée même.
 
-Je peux vous faire un survol rapide par téléphone — {{your_phone}}.
+Je peux vous faire un survol rapide par téléphone — 438-370-5222.
 
 Cordialement,
 Gabriel
-TEETOMIC · {{your_phone}}
+TEETOMIC · 438-370-5222
 
 _Vous recevez ce message parce que TEETOMIC aide les clubs de la région de
 Montréal à remplir leurs départs vides. Répondez « désabonnement » et je ne vous
@@ -119,11 +119,11 @@ Quick nudge in case this slipped by. TEETOMIC is free, you set your own prices,
 and you keep the full green fee — it just puts your empty slots in front of
 local golfers looking to play same-day.
 
-Worth a 5-minute call? {{your_phone}}. If it's not for you, no worries at all —
+Worth a 5-minute call? 438-370-5222. If it's not for you, no worries at all —
 just reply "unsubscribe" and I'll leave it there.
 
 Gabriel
-TEETOMIC · {{your_phone}}
+TEETOMIC · 438-370-5222
 
 ---
 
@@ -138,11 +138,11 @@ vous fixez vos prix et vous gardez tout le droit de jeu — ça met simplement v
 départs vides sous les yeux des golfeurs de la région qui cherchent à jouer le
 jour même.
 
-Un appel de 5 minutes vous conviendrait ? {{your_phone}}. Si ce n'est pas pour
+Un appel de 5 minutes vous conviendrait ? 438-370-5222. Si ce n'est pas pour
 vous, aucun souci — répondez « désabonnement » et j'en resterai là.
 
 Gabriel
-TEETOMIC · {{your_phone}}
+TEETOMIC · 438-370-5222
 
 ---
 
