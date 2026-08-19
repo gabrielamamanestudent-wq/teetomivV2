@@ -475,11 +475,15 @@ function SettingsTab({ course, onSaved }: { course: Course | null; onSaved: () =
   const [city, setCity] = useState("");
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imgErr, setImgErr] = useState<string | null>(null);
 
   useEffect(() => {
     if (course) {
       setName(course.name);
       setCity(course.city);
+      setPhoto(course.photoUrl);
     }
   }, [course]);
 
@@ -494,9 +498,63 @@ function SettingsTab({ course, onSaved }: { course: Course | null; onSaved: () =
     setTimeout(() => setOk(false), 2000);
   }
 
+  function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file
+    if (!file) return;
+    setImgErr(null);
+    if (file.size > 4 * 1024 * 1024) {
+      setImgErr(t("op.photoTooLarge"));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = String(reader.result);
+      setUploading(true);
+      try {
+        const { course: updated } = await api.uploadCourseImage(course!.id, dataUrl);
+        setPhoto(updated.photoUrl);
+        onSaved();
+      } catch {
+        setImgErr(t("op.photoFailed"));
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
   return (
-    <div className="card max-w-lg space-y-4 p-5">
+    <div className="card max-w-lg space-y-5 p-5">
       <h2 className="font-display text-lg font-bold text-forest">{t("op.settingsTitle")}</h2>
+
+      {/* Course photo — golfers see this on your listings */}
+      <div>
+        <label className="field-label">{t("op.photo")}</label>
+        <div className="mt-1 overflow-hidden rounded-2xl border border-forest/10 bg-forest/5">
+          {photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} alt={course.name} className="h-40 w-full object-cover" />
+          ) : (
+            <div className="flex h-40 items-center justify-center text-4xl text-forest/30">🏌️</div>
+          )}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <label className="btn-ghost cursor-pointer text-sm">
+            {uploading ? t("op.uploading") : t("op.updatePhoto")}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={onPickImage}
+              disabled={uploading}
+            />
+          </label>
+          <span className="text-xs text-forest/50">{t("op.photoHint")}</span>
+        </div>
+        {imgErr && <p className="mt-1 text-xs font-semibold text-red-500">{imgErr}</p>}
+      </div>
+
       <div>
         <label className="field-label">{t("op.courseName")}</label>
         <input className="input" value={name} onChange={(e) => setName(e.target.value)} />

@@ -10,6 +10,9 @@ const schema = z.object({
   city: z.string().min(1).max(60).optional(),
   rackRateLow: z.number().min(1).max(600).optional(),
   rackRateHigh: z.number().min(1).max(600).optional(),
+  description: z
+    .object({ en: z.string().max(600), fr: z.string().max(600) })
+    .optional(),
 });
 
 export async function POST(req: NextRequest) {

@@ -121,7 +121,14 @@ export interface Repository {
   }): Promise<{ slot: Slot; notified: number }>;
   updateCourse(
     courseId: string,
-    patch: { name?: string; city?: string; rackRateLow?: number; rackRateHigh?: number },
+    patch: {
+      name?: string;
+      city?: string;
+      rackRateLow?: number;
+      rackRateHigh?: number;
+      photoUrl?: string;
+      description?: { en: string; fr: string };
+    },
   ): Promise<Course | null>;
 
   // bookings

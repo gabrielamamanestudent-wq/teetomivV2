@@ -324,7 +324,14 @@ export class MockRepository implements Repository {
 
   async updateCourse(
     courseId: string,
-    patch: { name?: string; city?: string; rackRateLow?: number; rackRateHigh?: number },
+    patch: {
+      name?: string;
+      city?: string;
+      rackRateLow?: number;
+      rackRateHigh?: number;
+      photoUrl?: string;
+      description?: { en: string; fr: string };
+    },
   ): Promise<Course | null> {
     const c = this.s.courses.find((x) => x.id === courseId);
     if (!c) return null;
@@ -332,6 +339,8 @@ export class MockRepository implements Repository {
     if (patch.city?.trim()) c.city = patch.city.trim();
     if (typeof patch.rackRateLow === "number") c.rackRateLow = patch.rackRateLow;
     if (typeof patch.rackRateHigh === "number") c.rackRateHigh = patch.rackRateHigh;
+    if (patch.photoUrl?.trim()) c.photoUrl = patch.photoUrl.trim();
+    if (patch.description) c.description = { ...patch.description };
     return { ...c };
   }
 

@@ -181,11 +181,18 @@ export const api = {
     city?: string;
     rackRateLow?: number;
     rackRateHigh?: number;
+    description?: { en: string; fr: string };
   }) =>
     fetch(`/api/operator/course`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+    }).then(json<{ course: Course }>),
+  uploadCourseImage: (courseId: string, dataUrl: string) =>
+    fetch(`/api/operator/image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ courseId, dataUrl }),
     }).then(json<{ course: Course }>),
   operatorLogin: (email: string, password: string) =>
     fetch(`/api/auth`, {
