@@ -1,0 +1,64 @@
+region,course,city,website,email,status,language
+MTL,Club de Golf Le Cardinal,Laval,golfcardinal.com,contact@golfcardinal.com,VERIFIED,fr
+MTL,Golf Métropolitain Anjou,Anjou (Montréal),golfmetropolitainanjou.com,info@golfmetropolitainanjou.com,VERIFIED,fr
+MTL,Centre de Golf Le Versant,Terrebonne,golfleversant.com,info@golfleversant.com,VERIFIED,fr
+MTL,Club de Golf Mirabel,Mirabel,golfmirabel.com,info@golfmirabel.com,VERIFIED,fr
+MTL,Golf Dorval,Dorval,golfdorval.com,info@golfdorval.com,VERIFIED,fr
+MTL,Le Parcours du Cerf,Longueuil,parcoursducerf.com,,FIND,fr
+MTL,Club de Golf Le Mirage,Terrebonne,golfmirage.ca,,FIND,fr
+MTL,Club de Golf Rive-Sud,St-Basile-le-Grand,golfrivesud.ca,,FIND,fr
+MTL,Club de Golf de l'Île de Montréal,Île-Bizard,cgimgolf.com,,FIND,fr
+MTL,Golf Municipal de Montréal,Montréal,golfmunicipaldemontreal.com,,FIND,fr
+MTL,Club de Golf de Boucherville,Boucherville,,,FIND,fr
+MTL,Golf Sainte-Rose,Laval,,,FIND,fr
+MTL,Mulligan's Golf Experience,Dollard-des-Ormeaux,,,FIND,en
+MTL,Mystic Pines Golf,Kahnawake,,,FIND,en
+MTL,Golf Bel-Air,Mirabel,,,FIND,fr
+MTL,Golf Glendale,Mirabel,,,FIND,fr
+MTL,Golf Les Quatre Domaines,Mirabel,,,FIND,fr
+MTL,Golf Continental,St-Hubert,,,FIND,fr
+MTL,Golf Griffon des Sources,Mirabel,,,FIND,fr
+MTL,Golf Lac Carling,Grenville-sur-la-Rouge,,,FIND,fr
+MTL,Club de Golf Lorraine,Lorraine,,,FIND,fr
+MTL,Centre de Golf de Lanaudière,Notre-Dame-des-Prairies,,,FIND,fr
+MTL,Golf Île à Pinard,Îles-de-Boucherville,,,FIND,fr
+MTL,Golf de la Vallée du Richelieu,Sainte-Julie,,,FIND,fr
+MTL,Club de Golf Belle Vue,Lévis area,,,FIND,fr
+MTL,Golf Base de Roc,Joliette,,,FIND,fr
+MTL,Golf Montcalm,Saint-Liguori,,,FIND,fr
+MTL,Club de Golf Saint-Jean,Saint-Jean-sur-Richelieu,,,FIND,fr
+MTL,Golf Vercheres,Verchères,,,FIND,fr
+MTL,Golf Sainte-Julie,Sainte-Julie,,,FIND,fr
+MTL,Club de Golf Longchamp,Saint-Liguori,,,FIND,fr
+MTL,Golf des Îles,Saint-Jean-de-la-Rivière area,,,FIND,fr
+MTL,Golf Les Cèdres,Les Cèdres,,,FIND,fr
+MTL,Club de Golf Candiac,Candiac,,,FIND,fr
+MTL,Golf Atlantide,Terrebonne,,,FIND,fr
+MTL,Golf Le Blainvillier,Blainville,,,FIND,fr
+MIAMI,Miami-Dade County Golf (Palmetto/Briar Bay/Greynolds/Crandon/CC Miami),Miami,golfmiamidade.com,golf@miamidade.gov,VERIFIED,en
+MIAMI,Trump National Doral,Doral,trumpgolfdoral.com,doral.golf@trumphotels.com,VERIFIED,en
+MIAMI,Miami Springs Golf & Country Club,Miami Springs,miamispringsgolfcourse.com,,FIND,en
+MIAMI,Miami Beach Golf Club,Miami Beach,miamibeachgolfclub.com,,FIND,en
+MIAMI,Normandy Shores Golf Club,Miami Beach,,,FIND,en
+MIAMI,Country Club of Miami,Miami,golfccmiami.com,,FIND,en
+MIAMI,Greynolds Golf Course,North Miami Beach,greynoldsgolf.com,,FIND,en
+MIAMI,Palmetto Golf Course,Miami,,,FIND,en
+MIAMI,Briar Bay Golf Course,Miami,,,FIND,en
+MIAMI,Crandon Golf at Key Biscayne,Key Biscayne,,,FIND,en
+MIAMI,Miccosukee Golf & Country Club,Kendall,,,FIND,en
+MIAMI,Doral Park Country Club,Doral,doralparkcc.com,,FIND,en
+MIAMI,International Links Melreese,Miami,melreesegolf.com,,FIND,en
+MIAMI,Killian Greens Golf Club,Miami,,,FIND,en
+MIAMI,Costa Del Sol Golf Club,Doral,,,FIND,en
+MIAMI,Shula's Golf Club,Miami Lakes,,,FIND,en
+MIAMI,Biltmore Golf Course,Coral Gables,,,FIND,en
+MIAMI,Granada Golf Course,Coral Gables,,,FIND,en
+MIAMI,Redland Golf & Country Club,Homestead,,,FIND,en
+MIAMI,Presidential Country Club,Miami,,,FIND,en
+MIAMI,Orangebrook Golf & Country Club,Hollywood,orangebrook.com,,FIND,en
+MIAMI,Hollywood Beach Golf Club,Hollywood,,,FIND,en
+MIAMI,Diplomat Golf & Tennis Club,Hallandale Beach,,,FIND,en
+MIAMI,Miami Shores Country Club,Miami Shores,,,FIND,en
+MIAMI,Palm Aire Country Club,Pompano Beach,,,FIND,en
+MIAMI,Jacaranda Golf Club,Plantation,,,FIND,en
+MIAMI,Grande Oaks Golf Club,Davie,,,FIND,en

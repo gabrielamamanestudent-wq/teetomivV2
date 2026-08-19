@@ -65,8 +65,11 @@ Cheers,
 Gabriel
 TEETOMIC · 438-370-5222
 
-_You're receiving this because TEETOMIC helps Montréal-area courses fill empty
-tee times. Reply "unsubscribe" and I won't email again._
+P.S. — Not in Montréal or Miami yet? Just reply and we'll add your region so you
+can list your tee times too.
+
+_You're receiving this because TEETOMIC helps courses fill empty tee times.
+Reply "unsubscribe" and I won't email again._
 
 ---
 
@@ -102,9 +105,11 @@ Cordialement,
 Gabriel
 TEETOMIC · 438-370-5222
 
-_Vous recevez ce message parce que TEETOMIC aide les clubs de la région de
-Montréal à remplir leurs départs vides. Répondez « désabonnement » et je ne vous
-écrirai plus._
+P.-S. — Pas encore à Montréal ou Miami ? Répondez simplement et nous ajouterons
+votre région pour que vous puissiez aussi publier vos départs.
+
+_Vous recevez ce message parce que TEETOMIC aide les clubs à remplir leurs
+départs vides. Répondez « désabonnement » et je ne vous écrirai plus._
 
 ---
 
