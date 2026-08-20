@@ -59,6 +59,10 @@ It's free to join. If you'd like to try it, create your Business Corner here:
 {{signup_url}} (access code: **5432**). New accounts are approved
 by hand, usually same day.
 
+One more thing — if you'd be open to giving your members a quick heads-up that
+they can now grab your last-minute tee times on TEETOMIC, your sheets fill even
+faster. Happy to send you a ready-to-share blurb for your email or socials.
+
 Happy to walk you through it on a quick call — 438-370-5222.
 
 Cheers,
@@ -98,6 +102,11 @@ Comment ça marche pour vous :
 L'inscription est gratuite. Pour l'essayer, créez votre Espace affaires ici :
 {{signup_url}} (code d'accès : **5432**). Les nouveaux comptes sont
 approuvés à la main, généralement la journée même.
+
+Un dernier point — si vous êtes ouvert à informer vos membres qu'ils peuvent
+désormais réserver vos départs de dernière minute sur TEETOMIC, vos plages se
+remplissent encore plus vite. Je peux vous envoyer un court texte prêt à
+partager par courriel ou sur vos réseaux.
 
 Je peux vous faire un survol rapide par téléphone — 438-370-5222.
 
