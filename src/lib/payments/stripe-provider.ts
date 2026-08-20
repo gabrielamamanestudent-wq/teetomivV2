@@ -109,4 +109,25 @@ export class StripePaymentProvider implements PaymentProvider {
       metadata: s.metadata ?? {},
     };
   }
+
+  async createSubscriptionCheckout(params: {
+    priceId: string;
+    golferId: string;
+    golferEmail: string;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<CheckoutSession> {
+    const body: Record<string, string> = {
+      mode: "subscription",
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+      customer_email: params.golferEmail,
+      "line_items[0][price]": params.priceId,
+      "line_items[0][quantity]": "1",
+      "metadata[golferId]": params.golferId,
+      "subscription_data[metadata][golferId]": params.golferId,
+    };
+    const session = await this.post("checkout/sessions", body);
+    return { url: session.url, sessionId: session.id, mock: false };
+  }
 }

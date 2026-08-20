@@ -215,10 +215,17 @@ export const api = {
     golferId: string;
     action: "subscribe" | "unsubscribe" | "handicap";
     handicap?: number;
+    golferEmail?: string;
   }) =>
     fetch(`/api/account`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+    }).then(json<{ account?: GolferAccount; checkoutUrl?: string }>),
+  finalizeSubscription: (sessionId: string) =>
+    fetch(`/api/account/subscribe`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
     }).then(json<{ account: GolferAccount }>),
 };

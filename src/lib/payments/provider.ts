@@ -59,5 +59,14 @@ export interface PaymentProvider {
   /** Read back a Checkout session on return to confirm payment + recover metadata. */
   retrieveFeeCheckout(sessionId: string): Promise<CheckoutStatus>;
 
+  /** Hosted Checkout for the TEETOMIC+ monthly subscription (mode: subscription). */
+  createSubscriptionCheckout(params: {
+    priceId: string;
+    golferId: string;
+    golferEmail: string;
+    successUrl: string; // must contain the literal {CHECKOUT_SESSION_ID}
+    cancelUrl: string;
+  }): Promise<CheckoutSession>;
+
   readonly isMock: boolean;
 }

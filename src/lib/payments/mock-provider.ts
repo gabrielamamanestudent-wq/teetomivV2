@@ -46,4 +46,17 @@ export class MockPaymentProvider implements PaymentProvider {
   async retrieveFeeCheckout(sessionId: string): Promise<CheckoutStatus> {
     return { paid: true, paymentIntentId: `pi_mock_${sessionId}`, metadata: {} };
   }
+
+  async createSubscriptionCheckout(params: {
+    successUrl: string;
+  }): Promise<CheckoutSession> {
+    // Demo mode never redirects to Stripe; the account route flips the flag
+    // directly. This stub only exists to satisfy the interface.
+    const sessionId = `cs_mock_sub_${Date.now()}`;
+    return {
+      url: params.successUrl.replace("{CHECKOUT_SESSION_ID}", sessionId),
+      sessionId,
+      mock: true,
+    };
+  }
 }

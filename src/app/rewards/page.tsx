@@ -35,9 +35,34 @@ export default function RewardsPage() {
     load();
   }, [load]);
 
+  // Returning from Stripe subscription Checkout (?plus_session=...): confirm it
+  // and flip the account to TEETOMIC+, then clean the URL.
+  useEffect(() => {
+    const session = new URLSearchParams(window.location.search).get("plus_session");
+    if (!session) return;
+    api
+      .finalizeSubscription(session)
+      .catch(() => {})
+      .finally(() => {
+        window.history.replaceState({}, "", "/rewards");
+        load();
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function act(action: "subscribe" | "unsubscribe" | "handicap", handicap?: number) {
     setBusy(true);
-    await api.accountAction({ golferId: golfer.id, action, handicap });
+    const res = await api.accountAction({
+      golferId: golfer.id,
+      action,
+      handicap,
+      golferEmail: member?.email,
+    });
+    // Real Stripe path returns a Checkout URL — send the golfer there.
+    if (res.checkoutUrl) {
+      window.location.href = res.checkoutUrl;
+      return;
+    }
     await load();
     setBusy(false);
   }
