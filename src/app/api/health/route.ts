@@ -12,6 +12,7 @@ export async function GET() {
   const flags = {
     supabase: hasSupabase(),
     stripe: !!process.env.STRIPE_SECRET_KEY,
+    stripePlusPrice: !!process.env.STRIPE_PLUS_PRICE_ID,
     resend: !!process.env.RESEND_API_KEY,
     anthropic: !!process.env.ANTHROPIC_API_KEY,
   };
@@ -27,8 +28,8 @@ export async function GET() {
       flags,
       note:
         mode === "supabase"
-          ? "Running on Supabase — data persists."
-          : "Running on the in-memory mock — data resets on cold starts. Add Supabase keys to persist.",
+          ? "Running on Supabase - data persists."
+          : "Running on the in-memory mock - data resets on cold starts. Add Supabase keys to persist.",
       time: new Date().toISOString(),
     });
   } catch (err) {
