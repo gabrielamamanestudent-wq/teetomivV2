@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
-import type { Region } from "@/lib/data/types";
+import { ALL_REGIONS, type Region } from "@/lib/data/types";
 import { cn } from "@/lib/cn";
 
-const REGIONS: Region[] = ["west-island", "south-shore", "laval", "north-shore"];
+const REGIONS: Region[] = ALL_REGIONS;
 
 export default function OperatorSignupPage() {
   const { t } = useI18n();

@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { useSession } from "@/lib/session";
 import { api } from "@/lib/api-client";
-import type { Alert, Notification } from "@/lib/data/types";
+import { ALL_REGIONS, type Alert, type Notification } from "@/lib/data/types";
 import { Badge, EmptyState, Skeleton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
-const REGIONS = ["west-island", "south-shore", "laval", "north-shore"] as const;
+const REGIONS = ALL_REGIONS;
 const BANDS = ["dawn", "morning", "midday", "twilight"] as const;
 const DAYS = [
   { n: 0, en: "Sun", fr: "Dim" },

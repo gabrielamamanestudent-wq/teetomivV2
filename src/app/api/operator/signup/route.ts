@@ -8,7 +8,15 @@ export const dynamic = "force-dynamic";
 const schema = z.object({
   courseName: z.string().min(2).max(80),
   city: z.string().min(1).max(60),
-  region: z.enum(["west-island", "south-shore", "laval", "north-shore"]),
+  region: z.enum([
+    "west-island",
+    "south-shore",
+    "laval",
+    "north-shore",
+    "miami-dade",
+    "broward",
+    "other",
+  ]),
   contactName: z.string().min(1).max(80),
   email: z.string().email(),
   pin: z.string().regex(/^\d{4}$/),

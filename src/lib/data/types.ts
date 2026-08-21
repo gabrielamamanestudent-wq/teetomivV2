@@ -5,10 +5,27 @@
 // ============================================================================
 
 export type Region =
+  // Greater Montréal
   | "west-island"
   | "south-shore"
   | "laval"
-  | "north-shore";
+  | "north-shore"
+  // South Florida
+  | "miami-dade"
+  | "broward"
+  // Anywhere else in the world (courses can still sign up)
+  | "other";
+
+/** Single source of truth for the region picker + filters. */
+export const ALL_REGIONS: Region[] = [
+  "west-island",
+  "south-shore",
+  "laval",
+  "north-shore",
+  "miami-dade",
+  "broward",
+  "other",
+];
 
 export type TimeBand = "dawn" | "morning" | "midday" | "twilight";
 

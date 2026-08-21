@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { api } from "@/lib/api-client";
-import type { Course, Slot } from "@/lib/data/types";
+import { ALL_REGIONS, type Course, type Slot } from "@/lib/data/types";
 import { DealCard } from "@/components/DealCard";
 import { DealCardSkeleton, EmptyState, ErrorState, Badge } from "@/components/ui";
 import { BrowseMap } from "@/components/BrowseMap";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 const BANDS = ["dawn", "morning", "midday", "twilight"] as const;
-const REGIONS = ["west-island", "south-shore", "laval", "north-shore"] as const;
+const REGIONS = ALL_REGIONS;
 
 export default function BrowsePage() {
   const { t } = useI18n();

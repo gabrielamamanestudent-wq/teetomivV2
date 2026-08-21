@@ -7,7 +7,17 @@ export const dynamic = "force-dynamic";
 const createSchema = z.object({
   golferId: z.string().min(1),
   label: z.string().min(1).max(60),
-  regions: z.array(z.enum(["west-island", "south-shore", "laval", "north-shore"])),
+  regions: z.array(
+    z.enum([
+      "west-island",
+      "south-shore",
+      "laval",
+      "north-shore",
+      "miami-dade",
+      "broward",
+      "other",
+    ]),
+  ),
   bands: z.array(z.enum(["dawn", "morning", "midday", "twilight"])),
   days: z.array(z.number().int().min(0).max(6)),
   maxPrice: z.number().min(10).max(300),

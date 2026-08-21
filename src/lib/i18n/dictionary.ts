@@ -106,6 +106,9 @@ export const dict = {
   "region.south-shore": { en: "South Shore", fr: "Rive-Sud" },
   "region.laval": { en: "Laval", fr: "Laval" },
   "region.north-shore": { en: "North Shore", fr: "Rive-Nord" },
+  "region.miami-dade": { en: "Miami-Dade", fr: "Miami-Dade" },
+  "region.broward": { en: "Broward / Ft. Lauderdale", fr: "Broward / Ft. Lauderdale" },
+  "region.other": { en: "Elsewhere", fr: "Ailleurs" },
 
   // --- deal / booking -------------------------------------------------------
   "deal.expiresIn": { en: "Expires in", fr: "Expire dans" },
