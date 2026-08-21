@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRepository } from "@/lib/data";
 import { hasSupabase } from "@/lib/supabase";
+import { adminConfigured } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,9 @@ export async function GET() {
     stripePlusPrice: !!process.env.STRIPE_PLUS_PRICE_ID,
     resend: !!process.env.RESEND_API_KEY,
     anthropic: !!process.env.ANTHROPIC_API_KEY,
+    adminProtected: adminConfigured(),
+    emailFrom: process.env.EMAIL_FROM || "(default) TEETOMIC <bookings@teetomic.golf>",
+    seedDemo: process.env.SEED_DEMO === "true",
   };
 
   try {

@@ -38,6 +38,32 @@ async function json<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// Admin password (entered on the /admin gate) is sent as x-admin-token on admin
+// requests. Persisted per-browser so it survives reloads.
+let adminToken = "";
+export function setAdminToken(token: string) {
+  adminToken = token;
+  try {
+    if (token) window.localStorage.setItem("ttm.adminToken", token);
+    else window.localStorage.removeItem("ttm.adminToken");
+  } catch {
+    /* ignore */
+  }
+}
+export function getAdminToken(): string {
+  if (adminToken) return adminToken;
+  try {
+    adminToken = window.localStorage.getItem("ttm.adminToken") || "";
+  } catch {
+    /* ignore */
+  }
+  return adminToken;
+}
+function adminHeaders(): Record<string, string> {
+  const t = getAdminToken();
+  return t ? { "x-admin-token": t } : {};
+}
+
 export const api = {
   deals: (qs: string) =>
     fetch(`/api/deals?${qs}`, { cache: "no-store" }).then(
@@ -201,12 +227,15 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }).then(json<{ user: { id: string; role: string; courseId?: string } }>),
   adminMetrics: () =>
-    fetch(`/api/admin`, { cache: "no-store" }).then(json<{ metrics: AdminMetrics; pending: Course[] }>),
-  resetDemo: () => fetch(`/api/admin`, { method: "POST" }).then(json<{ ok: boolean }>),
+    fetch(`/api/admin`, { cache: "no-store", headers: adminHeaders() }).then(
+      json<{ metrics: AdminMetrics; pending: Course[] }>,
+    ),
+  resetDemo: () =>
+    fetch(`/api/admin`, { method: "POST", headers: adminHeaders() }).then(json<{ ok: boolean }>),
   approveCourse: (courseId: string) =>
     fetch(`/api/operator/approve`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...adminHeaders() },
       body: JSON.stringify({ courseId }),
     }).then(json<{ course: Course }>),
   account: (golferId: string) =>

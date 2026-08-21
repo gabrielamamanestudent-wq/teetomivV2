@@ -964,11 +964,14 @@ export class SupabaseRepository implements Repository {
 
   // ---- seeding / reset -----------------------------------------------------
   /**
-   * Seeds the demo dataset (courses, slots, users, accounts, ledger,
-   * availability) ONLY when the database is empty — safe to call on boot. It
-   * never deletes real data, so it will not wipe live signups.
+   * Seeds the demo dataset ONLY when the DB is empty AND SEED_DEMO=true is set.
+   * For a real launch the flag stays unset, so production shows ONLY real
+   * courses that actually sign up — no fake demo courses on the homepage.
+   * Never deletes real data.
    */
   async seedIfEmpty(): Promise<{ seeded: boolean }> {
+    // Production launch: do not seed demo courses unless explicitly opted in.
+    if (process.env.SEED_DEMO !== "true") return { seeded: false };
     const { count } = await this.db.from("courses").select("*", { count: "exact", head: true });
     if ((count ?? 0) > 0) return { seeded: false };
     const seed = buildSeed(new Date());

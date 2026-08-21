@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRepository } from "@/lib/data";
+import { adminTokenValid, isAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -7,6 +8,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const courseId = req.nextUrl.searchParams.get("courseId");
   if (!courseId) return NextResponse.json({ error: "courseId required" }, { status: 400 });
+  // The email link carries the admin token so only the recipient can approve.
+  if (!adminTokenValid(req.nextUrl.searchParams.get("token"))) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
   const repo = getRepository();
   const course = await repo.approveCourse(courseId);
   if (!course) return NextResponse.json({ error: "not_found" }, { status: 404 });
@@ -17,6 +22,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!isAdminRequest(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { courseId } = await req.json().catch(() => ({}));
   if (!courseId) return NextResponse.json({ error: "courseId required" }, { status: 400 });
   const repo = getRepository();

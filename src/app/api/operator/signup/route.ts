@@ -37,7 +37,10 @@ export async function POST(req: NextRequest) {
   // isn't configured (or Resend rejects), the signup still succeeds: the pending
   // course always shows in the /admin dashboard, which is the source of truth.
   const origin = req.nextUrl.origin;
-  const approveUrl = `${origin}/api/operator/approve?courseId=${result.courseId}`;
+  const adminToken = process.env.ADMIN_PASSWORD;
+  const approveUrl =
+    `${origin}/api/operator/approve?courseId=${result.courseId}` +
+    (adminToken ? `&token=${encodeURIComponent(adminToken)}` : "");
   const emailResult = await sendEmail({
     to: APPROVALS_INBOX,
     subject: `TEETOMIC — new business needs approval: ${parsed.data.courseName}`,
