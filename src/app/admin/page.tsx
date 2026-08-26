@@ -29,12 +29,17 @@ export default function AdminPage() {
   const { t } = useI18n();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [pending, setPending] = useState<Course[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [resetting, setResetting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [gate, setGate] = useState(false); // show login prompt when locked
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState(false);
+
+  const loadCourses = useCallback(() => {
+    api.adminCourses().then((r) => setAllCourses(r.courses)).catch(() => {});
+  }, []);
 
   const load = useCallback(() => {
     api
@@ -43,11 +48,18 @@ export default function AdminPage() {
         setMetrics(metrics);
         setPending(pending);
         setGate(false);
+        loadCourses();
       })
       .catch((e) => {
         if (String(e?.message).includes("unauthorized")) setGate(true);
       });
-  }, []);
+  }, [loadCourses]);
+
+  async function removeCourse(courseId: string, name: string) {
+    if (!window.confirm(`Remove "${name}"? This deletes the course and its tee times.`)) return;
+    await api.deleteCourse(courseId);
+    load();
+  }
 
   function submitPassword() {
     setAdminAuth(email.trim(), pw.trim());
@@ -58,6 +70,7 @@ export default function AdminPage() {
         setMetrics(metrics);
         setPending(pending);
         setGate(false);
+        loadCourses();
       })
       .catch(() => {
         setPwError(true);
@@ -159,6 +172,44 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* Manage all courses — view + remove */}
+      <div className="card p-5">
+        <h2 className="mb-3 font-display font-bold text-forest">
+          🏌️ All courses <Badge>{allCourses.length}</Badge>
+        </h2>
+        {allCourses.length === 0 ? (
+          <p className="py-6 text-center text-sm text-forest/50">
+            No courses yet — they’ll appear here when businesses sign up.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {allCourses.map((c) => (
+              <div key={c.id} className="flex items-center justify-between rounded-2xl bg-forest/5 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-forest">
+                    {c.name}{" "}
+                    {c.approved ? (
+                      <Badge tone="lime">Live</Badge>
+                    ) : (
+                      <Badge tone="amber">Pending</Badge>
+                    )}
+                  </p>
+                  <p className="truncate text-xs text-forest/50">
+                    {c.city} · {t(`region.${c.region}` as never)}
+                  </p>
+                </div>
+                <button
+                  onClick={() => removeCourse(c.id, c.name)}
+                  className="ml-3 shrink-0 rounded-full border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-500 hover:bg-red-50"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {!metrics ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

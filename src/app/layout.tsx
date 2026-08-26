@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
@@ -40,7 +41,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <SessionProvider>
             <Header />
-            <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-4">{children}</main>
+            <main className="mx-auto w-full max-w-6xl px-4 pt-4">{children}</main>
+            <footer className="mx-auto mb-24 mt-8 w-full max-w-6xl px-4 pb-6 text-center text-xs text-forest/40 md:mb-6">
+              <div className="flex items-center justify-center gap-3">
+                <Link href="/operator" className="font-semibold hover:text-forest/70">
+                  Business Corner
+                </Link>
+                <span aria-hidden>·</span>
+                <Link href="/admin" className="font-semibold hover:text-forest/70">
+                  Admin login
+                </Link>
+              </div>
+              <p className="mt-2">© TEETOMIC</p>
+            </footer>
             <WelcomeGate />
             <ConceptDemoHost />
             <GuidedTour />

@@ -344,6 +344,16 @@ export class MockRepository implements Repository {
     return { ...c };
   }
 
+  async deleteCourse(courseId: string): Promise<boolean> {
+    const before = this.s.courses.length;
+    this.s.courses = this.s.courses.filter((c) => c.id !== courseId);
+    if (this.s.courses.length === before) return false;
+    this.s.slots = this.s.slots.filter((sl) => sl.courseId !== courseId);
+    this.s.availability = this.s.availability.filter((a) => a.courseId !== courseId);
+    this.s.users = this.s.users.filter((u) => u.courseId !== courseId);
+    return true;
+  }
+
   async getAvailability(courseId: string): Promise<CourseAvailability> {
     let av = this.s.availability.find((a) => a.courseId === courseId);
     if (!av) {

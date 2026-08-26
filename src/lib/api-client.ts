@@ -240,6 +240,15 @@ export const api = {
     fetch(`/api/admin`, { cache: "no-store", headers: adminHeaders() }).then(
       json<{ metrics: AdminMetrics; pending: Course[] }>,
     ),
+  adminCourses: () =>
+    fetch(`/api/admin/courses`, { cache: "no-store", headers: adminHeaders() }).then(
+      json<{ courses: Course[] }>,
+    ),
+  deleteCourse: (courseId: string) =>
+    fetch(`/api/admin/courses?courseId=${encodeURIComponent(courseId)}`, {
+      method: "DELETE",
+      headers: adminHeaders(),
+    }).then(json<{ ok: boolean }>),
   resetDemo: () =>
     fetch(`/api/admin`, { method: "POST", headers: adminHeaders() }).then(json<{ ok: boolean }>),
   approveCourse: (courseId: string) =>

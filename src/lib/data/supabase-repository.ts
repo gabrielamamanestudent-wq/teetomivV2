@@ -442,6 +442,15 @@ export class SupabaseRepository implements Repository {
     return { courseId, course, operatorId };
   }
 
+  async deleteCourse(courseId: string): Promise<boolean> {
+    const existing = await this.getCourse(courseId);
+    if (!existing) return false;
+    // slots + course_availability cascade via FK; clear the operator user too.
+    await this.db.from("users").delete().eq("course_id", courseId);
+    await this.db.from("courses").delete().eq("id", courseId);
+    return true;
+  }
+
   async getAvailability(courseId: string): Promise<CourseAvailability> {
     const { data } = await this.db
       .from("course_availability")

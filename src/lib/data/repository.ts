@@ -130,6 +130,8 @@ export interface Repository {
       description?: { en: string; fr: string };
     },
   ): Promise<Course | null>;
+  /** Remove a course and its slots/availability. Returns false if not found. */
+  deleteCourse(courseId: string): Promise<boolean>;
 
   // bookings
   createBooking(input: CreateBookingInput): Promise<BookingResult>;
