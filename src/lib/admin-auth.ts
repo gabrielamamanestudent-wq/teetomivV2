@@ -20,7 +20,17 @@ export function adminTokenValid(token: string | null): boolean {
   return token === expected;
 }
 
-/** True if the request may perform admin actions (via the x-admin-token header). */
+/**
+ * True if the request may perform admin actions. Checks the password
+ * (x-admin-token) and, when ADMIN_EMAIL is set, the email (x-admin-email) too —
+ * so the admin gate is a real email + password login.
+ */
 export function isAdminRequest(req: NextRequest): boolean {
-  return adminTokenValid(req.headers.get("x-admin-token"));
+  if (!adminTokenValid(req.headers.get("x-admin-token"))) return false;
+  const expectedEmail = process.env.ADMIN_EMAIL;
+  if (expectedEmail) {
+    const got = (req.headers.get("x-admin-email") || "").trim().toLowerCase();
+    if (got !== expectedEmail.trim().toLowerCase()) return false;
+  }
+  return true;
 }

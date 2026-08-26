@@ -10,7 +10,7 @@ import {
   XAxis,
 } from "recharts";
 import { useI18n } from "@/lib/i18n/context";
-import { api, setAdminToken } from "@/lib/api-client";
+import { api, setAdminAuth } from "@/lib/api-client";
 import type { AdminMetrics } from "@/lib/data/repository";
 import type { Course } from "@/lib/data/types";
 import { formatCADCents } from "@/lib/time";
@@ -31,7 +31,8 @@ export default function AdminPage() {
   const [pending, setPending] = useState<Course[]>([]);
   const [resetting, setResetting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [gate, setGate] = useState(false); // show password prompt when locked
+  const [gate, setGate] = useState(false); // show login prompt when locked
+  const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState(false);
 
@@ -49,7 +50,7 @@ export default function AdminPage() {
   }, []);
 
   function submitPassword() {
-    setAdminToken(pw.trim());
+    setAdminAuth(email.trim(), pw.trim());
     setPwError(false);
     api
       .adminMetrics()
@@ -60,7 +61,7 @@ export default function AdminPage() {
       })
       .catch(() => {
         setPwError(true);
-        setAdminToken("");
+        setAdminAuth("", "");
       });
   }
 
@@ -96,19 +97,27 @@ export default function AdminPage() {
         <div className="card w-full max-w-sm space-y-4 p-6 text-center">
           <div className="text-4xl">🔒</div>
           <h1 className="font-display text-xl font-bold text-forest">{t("admin.title")}</h1>
-          <p className="text-sm text-forest/60">Enter the admin password to continue.</p>
+          <p className="text-sm text-forest/60">Sign in to the admin dashboard.</p>
+          <input
+            type="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitPassword()}
+            placeholder="Admin email"
+            className="input text-center"
+          />
           <input
             type="password"
-            autoFocus
             value={pw}
             onChange={(e) => setPw(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitPassword()}
-            placeholder="Admin password"
+            placeholder="Password"
             className="input text-center"
           />
-          {pwError && <p className="text-sm font-semibold text-red-500">Wrong password.</p>}
+          {pwError && <p className="text-sm font-semibold text-red-500">Wrong email or password.</p>}
           <button onClick={submitPassword} className="btn-lime w-full">
-            Unlock
+            Sign in
           </button>
         </div>
       </div>

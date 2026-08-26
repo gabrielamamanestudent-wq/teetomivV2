@@ -38,30 +38,40 @@ async function json<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// Admin password (entered on the /admin gate) is sent as x-admin-token on admin
-// requests. Persisted per-browser so it survives reloads.
+// Admin email + password (entered on the /admin gate) are sent as x-admin-email
+// / x-admin-token headers on admin requests. Persisted per-browser.
 let adminToken = "";
-export function setAdminToken(token: string) {
+let adminEmail = "";
+export function setAdminAuth(email: string, token: string) {
+  adminEmail = email;
   adminToken = token;
   try {
-    if (token) window.localStorage.setItem("ttm.adminToken", token);
-    else window.localStorage.removeItem("ttm.adminToken");
+    if (token) {
+      window.localStorage.setItem("ttm.adminToken", token);
+      window.localStorage.setItem("ttm.adminEmail", email);
+    } else {
+      window.localStorage.removeItem("ttm.adminToken");
+      window.localStorage.removeItem("ttm.adminEmail");
+    }
   } catch {
     /* ignore */
   }
 }
-export function getAdminToken(): string {
-  if (adminToken) return adminToken;
+function loadAdmin() {
+  if (adminToken) return;
   try {
     adminToken = window.localStorage.getItem("ttm.adminToken") || "";
+    adminEmail = window.localStorage.getItem("ttm.adminEmail") || "";
   } catch {
     /* ignore */
   }
-  return adminToken;
 }
 function adminHeaders(): Record<string, string> {
-  const t = getAdminToken();
-  return t ? { "x-admin-token": t } : {};
+  loadAdmin();
+  const h: Record<string, string> = {};
+  if (adminToken) h["x-admin-token"] = adminToken;
+  if (adminEmail) h["x-admin-email"] = adminEmail;
+  return h;
 }
 
 export const api = {
