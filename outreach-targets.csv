@@ -17,14 +17,14 @@ MTL,Golf Bel-Air,Mirabel,,,FIND,fr
 MTL,Golf Glendale,Mirabel,,,FIND,fr
 MTL,Golf Les Quatre Domaines,Mirabel,,,FIND,fr
 MTL,Golf Continental,St-Hubert,,,FIND,fr
-MTL,Golf Griffon des Sources,Mirabel,golfgriffon.com,,FIND,fr
+MTL,Golf Griffon des Sources,Mirabel,golfgriffon.com,info@golfgriffon.com,VERIFIED,fr
 MTL,Golf Lac Carling,Grenville-sur-la-Rouge,,,FIND,fr
 MTL,Club de Golf Lorraine,Lorraine,,,FIND,fr
 MTL,Centre de Golf de Lanaudière,Notre-Dame-des-Prairies,,,FIND,fr
 MTL,Golf Île à Pinard,Îles-de-Boucherville,,,FIND,fr
 MTL,Golf de la Vallée du Richelieu,Sainte-Julie,,,FIND,fr
 MTL,Club de Golf Belle Vue,Lévis area,,,FIND,fr
-MTL,Golf Base de Roc,Joliette,,,FIND,fr
+MTL,Golf Base de Roc,Joliette,golfbasederoc.com,,FIND,fr
 MTL,Golf Montcalm,Saint-Liguori,,,FIND,fr
 MTL,Club de Golf Saint-Jean,Saint-Jean-sur-Richelieu,,,FIND,fr
 MTL,Golf Vercheres,Verchères,,,FIND,fr
@@ -52,13 +52,14 @@ MIAMI,Killian Greens Golf Club,Miami,killiangreens.com,golf@killiangreens.com,VE
 MIAMI,Costa Del Sol Golf Club,Doral,,,FIND,en
 MIAMI,Shula's Golf Club,Miami Lakes,,,FIND,en
 MIAMI,Biltmore Golf Course,Coral Gables,,,FIND,en
-MIAMI,Granada Golf Course,Coral Gables,,,FIND,en
+MIAMI,Granada Golf Course,Coral Gables,coralgables.com,Parks@CoralGables.com,VERIFIED,en
 MIAMI,Redland Golf & Country Club,Homestead,,,FIND,en
 MIAMI,Presidential Country Club,Miami,,,FIND,en
 MIAMI,Orangebrook Golf & Country Club,Hollywood,orangebrook.com,,FIND,en
 MIAMI,Hollywood Beach Golf Club,Hollywood,hollywoodbeachgolf.com,info@hollywoodbeachgolf.com,VERIFIED,en
-MIAMI,Diplomat Golf & Tennis Club,Hallandale Beach,,,FIND,en
+MIAMI,Diplomat Golf & Tennis Club,Hallandale Beach,,,CLOSED,en
 MIAMI,Miami Shores Country Club,Miami Shores,,,FIND,en
 MIAMI,Palm Aire Country Club,Pompano Beach,palmaire.clublink.com,rvital@clublink.ca,VERIFIED,en
 MIAMI,Jacaranda Golf Club,Plantation,,,FIND,en
 MIAMI,Grande Oaks Golf Club,Davie,,,FIND,en
+MTL,Club de Golf de Joliette,Joliette,golfjoliette.ca,,FIND,fr
