@@ -4,8 +4,8 @@ MTL,Golf Métropolitain Anjou,Anjou (Montréal),golfmetropolitainanjou.com,info@
 MTL,Centre de Golf Le Versant,Terrebonne,golfleversant.com,info@golfleversant.com,VERIFIED,fr
 MTL,Club de Golf Mirabel,Mirabel,golfmirabel.com,info@golfmirabel.com,VERIFIED,fr
 MTL,Golf Dorval,Dorval,golfdorval.com,info@golfdorval.com,VERIFIED,fr
-MTL,Le Parcours du Cerf,Longueuil,parcoursducerf.com,,FIND,fr
-MTL,Club de Golf Le Mirage,Terrebonne,golfmirage.ca,,FIND,fr
+MTL,Le Parcours du Cerf,Longueuil,parcoursducerf.com,golf@parcoursducerf.com,VERIFIED,fr
+MTL,Club de Golf Le Mirage,Terrebonne,golfmirage.ca,nicolasb@golfmirage.ca,VERIFIED,fr
 MTL,Club de Golf Rive-Sud,St-Basile-le-Grand,golfrivesud.com,info@golfrivesud.com,VERIFIED,fr
 MTL,Club de Golf de l'Île de Montréal,Île-Bizard,cgimgolf.com,,FIND,fr
 MTL,Golf Municipal de Montréal,Montréal,golfmunicipaldemontreal.com,,FIND,fr
@@ -24,7 +24,7 @@ MTL,Centre de Golf de Lanaudière,Notre-Dame-des-Prairies,,,FIND,fr
 MTL,Golf Île à Pinard,Îles-de-Boucherville,,,FIND,fr
 MTL,Golf de la Vallée du Richelieu,Sainte-Julie,,,FIND,fr
 MTL,Club de Golf Belle Vue,Lévis area,,,FIND,fr
-MTL,Golf Base de Roc,Joliette,golfbasederoc.com,,FIND,fr
+MTL,Golf Base de Roc,Joliette,golfbasederoc.com,golfbasederoc@hotmail.com,VERIFIED,fr
 MTL,Golf Montcalm,Saint-Liguori,,,FIND,fr
 MTL,Club de Golf Saint-Jean,Saint-Jean-sur-Richelieu,,,FIND,fr
 MTL,Golf Vercheres,Verchères,,,FIND,fr
@@ -33,11 +33,11 @@ MTL,Club de Golf Longchamp,Saint-Liguori,,,FIND,fr
 MTL,Golf des Îles,Saint-Jean-de-la-Rivière area,,,FIND,fr
 MTL,Golf Les Cèdres,Les Cèdres,,,FIND,fr
 MTL,Club de Golf Candiac,Candiac,,,FIND,fr
-MTL,Golf Atlantide,Terrebonne,,,FIND,fr
+MTL,Golf Atlantide,Île Perrot,golfatlantide.com,iracette@golfatlantide.com,VERIFIED,fr
 MTL,Golf Le Blainvillier,Blainville,golfblainvillier.com,info@golfblainvillier.com,VERIFIED,fr
 MIAMI,Miami-Dade County Golf (Palmetto/Briar Bay/Greynolds/Crandon/CC Miami),Miami,golfmiamidade.com,golf@miamidade.gov,VERIFIED,en
 MIAMI,Trump National Doral,Doral,trumpgolfdoral.com,doral.golf@trumphotels.com,VERIFIED,en
-MIAMI,Miami Springs Golf & Country Club,Miami Springs,miamispringsgolfcourse.com,,FIND,en
+MIAMI,Miami Springs Golf & Country Club,Miami Springs,miamispringsgolfcourse.com,info@miamispringsgolfcourse.com,VERIFIED,en
 MIAMI,Miami Beach Golf Club,Miami Beach,miamibeachgolfclub.com,,FIND,en
 MIAMI,Normandy Shores Golf Club,Miami Beach,normandyshoresgolfclub.com,bwilcox@normandyshoresgolfclub.com,VERIFIED,en
 MIAMI,Country Club of Miami,Miami,golfccmiami.com,,FIND,en
@@ -47,9 +47,9 @@ MIAMI,Briar Bay Golf Course,Miami,,,FIND,en
 MIAMI,Crandon Golf at Key Biscayne,Key Biscayne,,,FIND,en
 MIAMI,Miccosukee Golf & Country Club,Kendall,,,FIND,en
 MIAMI,Doral Park Country Club,Doral,doralparkcc.com,,FIND,en
-MIAMI,International Links Melreese,Miami,melreesegolf.com,,FIND,en
+MIAMI,International Links Melreese,Miami,melreesegolf.com,,CLOSED,en
 MIAMI,Killian Greens Golf Club,Miami,killiangreens.com,golf@killiangreens.com,VERIFIED,en
-MIAMI,Costa Del Sol Golf Club,Doral,,,FIND,en
+MIAMI,Costa Del Sol Golf Club,Doral,cdsgolfclub.com,costadelsolmarketing@gmail.com,VERIFIED,en
 MIAMI,Shula's Golf Club,Miami Lakes,,,FIND,en
 MIAMI,Biltmore Golf Course,Coral Gables,,,FIND,en
 MIAMI,Granada Golf Course,Coral Gables,coralgables.com,Parks@CoralGables.com,VERIFIED,en
@@ -60,11 +60,11 @@ MIAMI,Hollywood Beach Golf Club,Hollywood,hollywoodbeachgolf.com,info@hollywoodb
 MIAMI,Diplomat Golf & Tennis Club,Hallandale Beach,,,CLOSED,en
 MIAMI,Miami Shores Country Club,Miami Shores,,,FIND,en
 MIAMI,Palm Aire Country Club,Pompano Beach,palmaire.clublink.com,rvital@clublink.ca,VERIFIED,en
-MIAMI,Jacaranda Golf Club,Plantation,,,FIND,en
+MIAMI,Jacaranda Golf Club,Plantation,golfjacaranda.com,gm@golfjacaranda.com,VERIFIED,en
 MIAMI,Grande Oaks Golf Club,Davie,,,FIND,en
-MTL,Club de Golf de Joliette,Joliette,golfjoliette.ca,,FIND,fr
+MTL,Club de Golf de Joliette,Joliette,golfjoliette.ca,info@golfjoliette.ca,VERIFIED,fr
 MIAMI,Plantation Preserve Golf Course,Plantation,plantation.org,,FIND,en
-MIAMI,Country Club of Coral Springs,Coral Springs,ccofcs.com,,FIND,en
+MIAMI,Country Club of Coral Springs,Coral Springs,ccofcs.com,kchernicky@ccofcs.com,VERIFIED,en
 MIAMI,American Golfers Club,Fort Lauderdale,,,FIND,en
 MIAMI,Broward Golf Center,Coconut Creek,,,FIND,en
 MIAMI,Okeeheelee Golf Course,Boynton Beach,discover.pbc.gov,,FIND,en
