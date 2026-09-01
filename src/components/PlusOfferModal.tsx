@@ -16,10 +16,24 @@ export function PlusOfferModal() {
 
   async function subscribe() {
     setBusy(true);
-    await api.accountAction({ golferId: golfer.id, action: "subscribe" }).catch(() => {});
-    setBusy(false);
-    setDone(true);
-    setTimeout(() => dismissPlusOffer(), 1400);
+    try {
+      const res = await api.accountAction({
+        golferId: golfer.id,
+        action: "subscribe",
+        golferEmail: golfer.email || undefined,
+      });
+      // Real Stripe path returns a hosted Checkout URL — send them there to pay.
+      if (res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      // Demo / no-price path: subscription flipped server-side.
+      setBusy(false);
+      setDone(true);
+      setTimeout(() => dismissPlusOffer(), 1400);
+    } catch {
+      setBusy(false);
+    }
   }
 
   return (
