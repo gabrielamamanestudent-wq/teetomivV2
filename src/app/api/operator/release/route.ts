@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepository } from "@/lib/data";
+import { requireOperator } from "@/lib/operator-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,11 @@ export async function POST(req: NextRequest) {
     );
   }
   const repo = getRepository();
+  const slot = await repo.getSlot(parsed.data.slotId);
+  if (!slot) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  if (!(await requireOperator(req, slot.courseId))) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
   try {
     const result = await repo.releaseSlot(parsed.data);
     return NextResponse.json(result);

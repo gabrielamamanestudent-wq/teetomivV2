@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepository } from "@/lib/data";
 import { getSupabaseAdmin, COURSE_PHOTOS_BUCKET } from "@/lib/supabase";
+import { requireOperator } from "@/lib/operator-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
   }
   const { courseId, dataUrl } = parsed.data;
+  if (!(await requireOperator(req, courseId))) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const match = /^data:(image\/[a-z+]+);base64,(.+)$/i.exec(dataUrl);
   if (!match) return NextResponse.json({ error: "invalid_image" }, { status: 400 });

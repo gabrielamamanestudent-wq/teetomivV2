@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
-import { api } from "@/lib/api-client";
+import { api, setOperatorAuth } from "@/lib/api-client";
 import { ALL_REGIONS, type Region } from "@/lib/data/types";
 import { cn } from "@/lib/cn";
 
@@ -43,6 +43,7 @@ export default function OperatorSignupPage() {
         email: email.trim(),
         pin,
       });
+      setOperatorAuth(email.trim(), pin);
       window.localStorage.setItem("teetomic.operatorCourseId", courseId);
       router.push("/operator");
     } catch {

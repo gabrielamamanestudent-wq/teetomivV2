@@ -74,6 +74,37 @@ function adminHeaders(): Record<string, string> {
   return h;
 }
 
+// Operator credentials (email + PIN from the Business Corner login) are sent as
+// headers so course-management endpoints can verify the caller owns the course.
+let opEmail = "";
+let opPin = "";
+export function setOperatorAuth(email: string, pin: string) {
+  opEmail = email;
+  opPin = pin;
+  try {
+    if (email) {
+      window.localStorage.setItem("ttm.opEmail", email);
+      window.localStorage.setItem("ttm.opPin", pin);
+    } else {
+      window.localStorage.removeItem("ttm.opEmail");
+      window.localStorage.removeItem("ttm.opPin");
+    }
+  } catch {
+    /* ignore */
+  }
+}
+function operatorHeaders(): Record<string, string> {
+  if (!opEmail) {
+    try {
+      opEmail = window.localStorage.getItem("ttm.opEmail") || "";
+      opPin = window.localStorage.getItem("ttm.opPin") || "";
+    } catch {
+      /* ignore */
+    }
+  }
+  return opEmail ? { "x-operator-email": opEmail, "x-operator-pin": opPin } : {};
+}
+
 export const api = {
   deals: (qs: string) =>
     fetch(`/api/deals?${qs}`, { cache: "no-store" }).then(
@@ -171,7 +202,7 @@ export const api = {
   releaseSlot: (payload: { slotId: string; floorPrice: number; livePrice: number }) =>
     fetch(`/api/operator/release`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...operatorHeaders() },
       body: JSON.stringify(payload),
     }).then(json<{ slot: Slot; notified: number }>),
   operatorAvailability: (courseId: string) =>
@@ -181,7 +212,7 @@ export const api = {
   setAvailability: (availability: CourseAvailability) =>
     fetch(`/api/operator/availability`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...operatorHeaders() },
       body: JSON.stringify(availability),
     }).then(json<{ availability: CourseAvailability }>),
   operatorSignup: (payload: {
@@ -208,7 +239,7 @@ export const api = {
   }) =>
     fetch(`/api/operator/slot`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...operatorHeaders() },
       body: JSON.stringify(payload),
     }).then(json<{ slot: Slot; notified: number }>),
   updateCourse: (payload: {
@@ -221,13 +252,13 @@ export const api = {
   }) =>
     fetch(`/api/operator/course`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...operatorHeaders() },
       body: JSON.stringify(payload),
     }).then(json<{ course: Course }>),
   uploadCourseImage: (courseId: string, dataUrl: string) =>
     fetch(`/api/operator/image`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...operatorHeaders() },
       body: JSON.stringify({ courseId, dataUrl }),
     }).then(json<{ course: Course }>),
   operatorLogin: (email: string, password: string) =>

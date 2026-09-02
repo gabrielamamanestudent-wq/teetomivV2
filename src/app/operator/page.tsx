@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { COURSE_DEMO_PIN } from "@/lib/session";
 import { Logo } from "@/components/Logo";
-import { api } from "@/lib/api-client";
+import { api, setOperatorAuth } from "@/lib/api-client";
 import type { Booking, Course, CourseAvailability, Notification, Slot } from "@/lib/data/types";
 import type { OperatorStats } from "@/lib/data/repository";
 import { formatBlackoutWindow } from "@/lib/availability";
@@ -46,6 +46,8 @@ function BusinessGate({ onAccess }: { onAccess: (courseId: string) => void }) {
     try {
       const { user } = await api.operatorLogin(email.trim(), pin);
       if (user.role === "operator" && user.courseId) {
+        // Persist credentials so course-management calls can prove ownership.
+        setOperatorAuth(email.trim(), pin);
         window.localStorage.setItem(OPERATOR_KEY, user.courseId);
         onAccess(user.courseId);
       } else {
