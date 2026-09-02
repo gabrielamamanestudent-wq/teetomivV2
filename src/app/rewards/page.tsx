@@ -52,19 +52,24 @@ export default function RewardsPage() {
 
   async function act(action: "subscribe" | "unsubscribe" | "handicap", handicap?: number) {
     setBusy(true);
-    const res = await api.accountAction({
-      golferId: golfer.id,
-      action,
-      handicap,
-      golferEmail: member?.email,
-    });
-    // Real Stripe path returns a Checkout URL — send the golfer there.
-    if (res.checkoutUrl) {
-      window.location.href = res.checkoutUrl;
-      return;
+    try {
+      const res = await api.accountAction({
+        golferId: golfer.id,
+        action,
+        handicap,
+        golferEmail: member?.email,
+      });
+      // Real Stripe path returns a Checkout URL — send the golfer there.
+      if (res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      await load();
+    } catch {
+      // Don't leave the button stuck on "loading" if the request fails.
+    } finally {
+      setBusy(false);
     }
-    await load();
-    setBusy(false);
   }
 
   // Members must enter their 4-digit PIN to unlock the exclusive perks area.

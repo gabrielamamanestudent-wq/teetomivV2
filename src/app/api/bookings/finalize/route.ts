@@ -47,6 +47,15 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ booking: result.booking });
   } catch (e) {
-    return NextResponse.json({ error: "booking_failed", detail: String(e) }, { status: 409 });
+    // The golfer already paid via Checkout, but the booking couldn't be created
+    // (e.g. the slot filled while they were paying). Refund the fee so they are
+    // never charged for a booking they didn't get.
+    if (!payment.isMock) {
+      await payment.refundDeposit(intentId).catch(() => {});
+    }
+    return NextResponse.json(
+      { error: "booking_failed_refunded", detail: String(e) },
+      { status: 409 },
+    );
   }
 }
