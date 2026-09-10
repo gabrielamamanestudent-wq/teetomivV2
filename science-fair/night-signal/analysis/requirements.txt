@@ -1,0 +1,7 @@
+# For record.py (talking to the wearable over Bluetooth)
+pyserial>=3.5
+
+# For analyze.py and simulate.py (analysis + graphs)
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
