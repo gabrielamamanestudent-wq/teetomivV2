@@ -12,6 +12,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type {
   Alert,
+  WaitlistEntry,
   Booking,
   Course,
   CourseAvailability,
@@ -212,6 +213,19 @@ function rowToAlert(r: Row): Alert {
     days: r.days,
     maxPrice: Number(r.max_price),
     active: r.active,
+    createdAtISO: new Date(r.created_at_iso).toISOString(),
+  };
+}
+
+function rowToWaitlist(r: Row): WaitlistEntry {
+  return {
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    phone: r.phone ?? undefined,
+    region: r.region,
+    homeArea: r.home_area ?? undefined,
+    source: r.source ?? undefined,
     createdAtISO: new Date(r.created_at_iso).toISOString(),
   };
 }
@@ -797,6 +811,41 @@ export class SupabaseRepository implements Repository {
   }
 
   // ---- alerts & notifications ---------------------------------------------
+  async addWaitlistEntry(
+    input: Omit<WaitlistEntry, "id" | "createdAtISO">,
+  ): Promise<WaitlistEntry> {
+    const email = input.email.trim().toLowerCase();
+    const created: WaitlistEntry = {
+      ...input,
+      email,
+      id: `wl${Date.now()}`,
+      createdAtISO: new Date().toISOString(),
+    };
+    // Upsert on email so a re-submit refreshes the row instead of duplicating.
+    await this.db.from("waitlist").upsert(
+      {
+        id: created.id,
+        name: created.name,
+        email: created.email,
+        phone: created.phone ?? null,
+        region: created.region,
+        home_area: created.homeArea ?? null,
+        source: created.source ?? null,
+        created_at_iso: created.createdAtISO,
+      },
+      { onConflict: "email" },
+    );
+    return created;
+  }
+
+  async listWaitlist(): Promise<WaitlistEntry[]> {
+    const { data } = await this.db
+      .from("waitlist")
+      .select("*")
+      .order("created_at_iso", { ascending: false });
+    return (data ?? []).map(rowToWaitlist);
+  }
+
   async listAlerts(golferId: string): Promise<Alert[]> {
     const { data } = await this.db
       .from("alerts")

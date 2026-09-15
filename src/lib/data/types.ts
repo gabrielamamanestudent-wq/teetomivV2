@@ -147,6 +147,22 @@ export interface Alert {
   createdAtISO: string;
 }
 
+/**
+ * A golfer who joined the pre-launch standby list. Captured before we have
+ * live supply in a market — the demand-side proof we show pro shops to get
+ * them to list their empty tee times.
+ */
+export interface WaitlistEntry {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  region: Region;
+  homeArea?: string; // free-text neighbourhood / city the golfer typed
+  createdAtISO: string;
+  source?: string; // where they came from (reddit, facebook, ig, referral…)
+}
+
 export interface Notification {
   id: string;
   golferId: string;

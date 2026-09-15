@@ -166,3 +166,28 @@ describe("booking fee waiver + check-in crediting", () => {
     expect(acct.teeCreditCents).toBe(BOOKING_FEE_CENTS);
   });
 });
+
+describe("pre-launch waitlist", () => {
+  it("captures a signup and lists it back", async () => {
+    await repo.addWaitlistEntry({
+      name: "Alex Rivera",
+      email: "alex@example.com",
+      region: "miami-dade",
+      source: "reddit",
+    });
+    const list = await repo.listWaitlist();
+    expect(list).toHaveLength(1);
+    expect(list[0].email).toBe("alex@example.com");
+    expect(list[0].id).toMatch(/^wl/);
+    expect(list[0].createdAtISO).toBeTruthy();
+  });
+
+  it("de-dupes on email (case-insensitive) instead of stacking", async () => {
+    await repo.addWaitlistEntry({ name: "Alex", email: "Alex@Example.com", region: "miami-dade" });
+    await repo.addWaitlistEntry({ name: "Alex R", email: "alex@example.com", region: "broward" });
+    const list = await repo.listWaitlist();
+    expect(list).toHaveLength(1);
+    expect(list[0].name).toBe("Alex R");
+    expect(list[0].region).toBe("broward");
+  });
+});

@@ -41,8 +41,8 @@ export default function LandingPage() {
             <Link href="/browse" className="btn-lime text-base">
               {t("landing.ctaBrowse")}
             </Link>
-            <Link href="/alerts" className="btn-ghost border-cream/20 bg-cream/10 text-cream hover:bg-cream/20">
-              {t("landing.ctaAlert")}
+            <Link href="/waitlist" className="btn-ghost border-cream/20 bg-cream/10 text-cream hover:bg-cream/20">
+              Join the standby list
             </Link>
           </div>
           <p className="mt-4 flex items-center gap-2 text-sm text-lime">

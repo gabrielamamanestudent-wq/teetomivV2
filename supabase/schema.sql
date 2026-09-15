@@ -145,6 +145,21 @@ create table if not exists course_availability (
   blackout    jsonb not null default '[]'
 );
 
+-- ---- Pre-launch golfer waitlist -------------------------------------------
+-- Demand-side signups captured before a market has live supply. Unique on
+-- email so a re-submit refreshes rather than duplicates.
+create table if not exists waitlist (
+  id             text primary key,
+  name           text not null,
+  email          text not null unique,
+  phone          text,
+  region         text not null,
+  home_area      text,
+  source         text,
+  created_at_iso timestamptz not null default now()
+);
+create index if not exists waitlist_region_idx on waitlist(region);
+
 -- ---- Row Level Security ----------------------------------------------------
 -- Server uses the service-role key (bypasses RLS). Enabling RLS with no public
 -- policy means the anon/browser key cannot read or write these tables.
@@ -157,6 +172,7 @@ alter table alerts              enable row level security;
 alter table notifications       enable row level security;
 alter table users               enable row level security;
 alter table course_availability enable row level security;
+alter table waitlist            enable row level security;
 
 -- ---- Storage bucket for Business Corner course photos ----------------------
 -- Public read (course photos show on the site); writes go through the server.

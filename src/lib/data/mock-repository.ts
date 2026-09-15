@@ -7,6 +7,7 @@
 
 import type {
   Alert,
+  WaitlistEntry,
   Booking,
   Course,
   CourseAvailability,
@@ -43,6 +44,7 @@ import { localDayOfWeek } from "../time";
 
 interface Store extends SeedData {
   funnel: { views: number; starts: number; completed: number };
+  waitlist: WaitlistEntry[];
 }
 
 declare global {
@@ -55,6 +57,7 @@ function freshStore(): Store {
   return {
     ...seed,
     funnel: { views: 1840, starts: 512, completed: 337 },
+    waitlist: [],
   };
 }
 
@@ -620,6 +623,32 @@ export class MockRepository implements Repository {
       .sort(
         (a, b) => new Date(a.teeTimeISO).getTime() - new Date(b.teeTimeISO).getTime(),
       );
+  }
+
+  async addWaitlistEntry(
+    input: Omit<WaitlistEntry, "id" | "createdAtISO">,
+  ): Promise<WaitlistEntry> {
+    // De-dupe on email so a golfer who re-submits doesn't stack up.
+    const email = input.email.trim().toLowerCase();
+    const existing = this.s.waitlist.find((w) => w.email.toLowerCase() === email);
+    if (existing) {
+      Object.assign(existing, input, { email });
+      return { ...existing };
+    }
+    const created: WaitlistEntry = {
+      ...input,
+      email,
+      id: `wl${Date.now()}`,
+      createdAtISO: new Date().toISOString(),
+    };
+    this.s.waitlist.unshift(created);
+    return { ...created };
+  }
+
+  async listWaitlist(): Promise<WaitlistEntry[]> {
+    return this.s.waitlist
+      .slice()
+      .sort((a, b) => (b.createdAtISO > a.createdAtISO ? 1 : -1));
   }
 
   async listAlerts(golferId: string): Promise<Alert[]> {

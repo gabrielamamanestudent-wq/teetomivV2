@@ -6,6 +6,7 @@
 
 import type {
   Alert,
+  WaitlistEntry,
   Booking,
   Course,
   CourseAvailability,
@@ -140,6 +141,12 @@ export interface Repository {
   cancelBooking(bookingId: string): Promise<Booking>;
   checkInBooking(bookingId: string): Promise<Booking>;
   courseCheckins(courseId: string): Promise<Booking[]>;
+
+  // pre-launch golfer waitlist (demand-side capture before a market has supply)
+  addWaitlistEntry(
+    input: Omit<WaitlistEntry, "id" | "createdAtISO">,
+  ): Promise<WaitlistEntry>;
+  listWaitlist(): Promise<WaitlistEntry[]>;
 
   // alerts & notifications
   listAlerts(golferId: string): Promise<Alert[]>;

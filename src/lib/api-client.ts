@@ -288,6 +288,19 @@ export const api = {
       headers: { "Content-Type": "application/json", ...adminHeaders() },
       body: JSON.stringify({ courseId }),
     }).then(json<{ course: Course }>),
+  joinWaitlist: (payload: {
+    name: string;
+    email: string;
+    phone?: string;
+    region: Region;
+    homeArea?: string;
+    source?: string;
+  }) =>
+    fetch(`/api/waitlist`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(json<{ ok: boolean; id: string }>),
   account: (golferId: string) =>
     fetch(`/api/account?golferId=${golferId}`, { cache: "no-store" }).then(json<AccountResponse>),
   accountAction: (payload: {
