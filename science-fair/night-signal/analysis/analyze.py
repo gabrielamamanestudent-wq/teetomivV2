@@ -114,37 +114,52 @@ def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
 
 
 def make_plot(df, events, out_png, title):
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 6), sharex=True,
-                                   gridspec_kw={"height_ratios": [2, 1]})
-    fig.suptitle(title, fontsize=14, fontweight="bold")
+    """One combined chart: SpO2 (left axis) and heart rate (right axis) on the
+    same time line, so each apnea event's oxygen drop and heart-rate reaction
+    line up under the same red band."""
+    from matplotlib.patches import Patch
 
-    # --- SpO2 panel ---
-    ax1.plot(df["timestamp"], df["spo2_smooth"], color="#1f8a9c",
-             lw=1.4, label="SpO₂")
-    ax1.plot(df["timestamp"], df["baseline"], color="#6b7889",
-             lw=1.0, ls="--", label="baseline")
-    for ev in events:
-        ax1.axvspan(ev["start_time"], ev["end_time"],
-                    color="#cf4747", alpha=0.25)
-    ax1.set_ylabel("SpO₂ (%)")
-    ax1.set_ylim(min(80, df["spo2"].min() - 2), 100)
-    ax1.legend(loc="lower left", fontsize=9)
-    ax1.grid(alpha=0.25)
-    ax1.set_title(f"{len(events)} desaturation event(s) marked in red",
+    TEAL = "#1f8a9c"    # SpO2
+    PULSE = "#e4568a"   # heart rate
+    GREY = "#6b7889"    # baseline
+    RED = "#cf4747"     # events
+
+    fig, ax1 = plt.subplots(figsize=(12, 5.5))
+    fig.suptitle(title, fontsize=14, fontweight="bold")
+    ax1.set_title(f"{len(events)} desaturation event(s) marked in red — "
+                  f"oxygen drop and heart-rate reaction shown together",
                   fontsize=10, color="#42505f")
 
-    # --- Heart-rate panel ---
-    hr = df[df["hr_valid"] == 1]
-    ax2.plot(hr["timestamp"], hr["heart_rate"], color="#e4568a", lw=1.2)
+    # Red event bands drawn first, behind the lines.
     for ev in events:
-        ax2.axvspan(ev["start_time"], ev["end_time"],
-                    color="#cf4747", alpha=0.20)
-    ax2.set_ylabel("Heart rate\n(bpm)")
-    ax2.set_xlabel("Time")
-    ax2.grid(alpha=0.25)
-    ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+        ax1.axvspan(ev["start_time"], ev["end_time"], color=RED, alpha=0.22, zorder=0)
 
-    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    # --- Left axis: SpO2 ---
+    l_spo2, = ax1.plot(df["timestamp"], df["spo2_smooth"], color=TEAL, lw=1.6,
+                       label="SpO₂ (%)", zorder=3)
+    l_base, = ax1.plot(df["timestamp"], df["baseline"], color=GREY, lw=1.0,
+                       ls="--", label="SpO₂ baseline", zorder=2)
+    ax1.set_ylabel("SpO₂ (%)", color=TEAL)
+    ax1.tick_params(axis="y", labelcolor=TEAL)
+    ax1.set_ylim(min(80, df["spo2"].min() - 2), 100)
+    ax1.set_xlabel("Time")
+    ax1.grid(alpha=0.2)
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+
+    # --- Right axis: heart rate (same time line) ---
+    ax2 = ax1.twinx()
+    hr = df[df["hr_valid"] == 1]
+    l_hr, = ax2.plot(hr["timestamp"], hr["heart_rate"], color=PULSE, lw=1.2,
+                     alpha=0.9, label="Heart rate (bpm)", zorder=3)
+    ax2.set_ylabel("Heart rate (bpm)", color=PULSE)
+    ax2.tick_params(axis="y", labelcolor=PULSE)
+
+    # One combined legend, including a swatch for the event bands.
+    event_patch = Patch(facecolor=RED, alpha=0.22, label="Apnea event")
+    ax1.legend(handles=[l_spo2, l_base, l_hr, event_patch],
+               loc="lower left", fontsize=9, framealpha=0.9)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
     fig.savefig(out_png, dpi=150)
     print(f"Saved graph -> {out_png}")
 
