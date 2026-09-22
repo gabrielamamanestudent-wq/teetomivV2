@@ -1,7 +1,10 @@
 # For record.py (talking to the wearable over Bluetooth)
 pyserial>=3.5
 
-# For analyze.py and simulate.py (analysis + graphs)
+# For analyze.py, simulate.py, position.py, signals.py, validate.py (analysis + graphs)
 numpy>=1.24
 pandas>=2.0
 matplotlib>=3.7
+
+# For train_model.py (machine-learning detector)
+scikit-learn>=1.3

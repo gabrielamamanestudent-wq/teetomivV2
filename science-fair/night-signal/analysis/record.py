@@ -42,9 +42,12 @@ except ImportError:
 
 def parse_line(raw: str):
     """Turn one CSV line from the ESP32 into numbers, or return None if it
-    isn't a valid data row (e.g. the header, or noise)."""
+    isn't a valid data row (e.g. the header, or noise).
+
+    Accepts both the basic format (5 fields) and the advanced format with the
+    accelerometer (8 fields). Missing accel values default to 0."""
     parts = raw.strip().split(",")
-    if len(parts) != 5:
+    if len(parts) not in (5, 8):
         return None
     try:
         device_ms = int(parts[0])
@@ -52,9 +55,13 @@ def parse_line(raw: str):
         hr_valid = int(parts[2])
         spo2 = int(parts[3])
         spo2_valid = int(parts[4])
+        if len(parts) == 8:
+            ax, ay, az = float(parts[5]), float(parts[6]), float(parts[7])
+        else:
+            ax = ay = az = 0.0
     except ValueError:
         return None  # this was probably the header line
-    return device_ms, heart_rate, hr_valid, spo2, spo2_valid
+    return device_ms, heart_rate, hr_valid, spo2, spo2_valid, ax, ay, az
 
 
 def main():
@@ -84,16 +91,17 @@ def main():
         writer = csv.writer(f)
         # Our log format: real timestamp + everything the device sent.
         writer.writerow(["timestamp", "device_ms", "heart_rate",
-                         "hr_valid", "spo2", "spo2_valid"])
+                         "hr_valid", "spo2", "spo2_valid", "ax", "ay", "az"])
         try:
             while True:
                 raw = ser.readline().decode("utf-8", errors="ignore")
                 parsed = parse_line(raw)
                 if parsed is None:
                     continue
-                device_ms, hr, hr_valid, spo2, spo2_valid = parsed
+                device_ms, hr, hr_valid, spo2, spo2_valid, ax, ay, az = parsed
                 now = dt.datetime.now().isoformat(timespec="seconds")
-                writer.writerow([now, device_ms, hr, hr_valid, spo2, spo2_valid])
+                writer.writerow([now, device_ms, hr, hr_valid, spo2,
+                                 spo2_valid, ax, ay, az])
                 f.flush()  # save each line immediately, in case of crash
                 rows_written += 1
 
