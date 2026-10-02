@@ -44,6 +44,7 @@
 #define BATTERY_PIN      34
 #define LED_PIN          2
 #define FINGER_IR_MIN    50000  // IR level above this means a finger is on the sensor
+#define I2C_SPEED        I2C_SPEED_FAST   // use I2C_SPEED_STANDARD if the motion sensor is on a long chest wire
 
 BluetoothSerial SerialBT;
 MAX30105 sensor;
@@ -117,7 +118,7 @@ void setup() {
   SerialBT.begin("NightSignal");
   Wire.begin();
 
-  maxOK = sensor.begin(Wire, I2C_SPEED_FAST);
+  maxOK = sensor.begin(Wire, I2C_SPEED);
   if (maxOK) {
     // SparkFun's recommended SpO2 settings: 100 Hz sampling averaged by 4 = 25 samples/s.
     sensor.setup(60, 4, 2, 100, 411, 4096);
@@ -131,7 +132,7 @@ void setup() {
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));  // fast blink = fault
     delay(250);
     if (millis() - lastStatus > 2000) {
-      maxOK = sensor.begin(Wire, I2C_SPEED_FAST);
+      maxOK = sensor.begin(Wire, I2C_SPEED);
       if (maxOK) sensor.setup(60, 4, 2, 100, 411, 4096);
       sendStatus();
     }

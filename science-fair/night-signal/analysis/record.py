@@ -15,13 +15,15 @@ SETUP
 1. Pair your computer with the Bluetooth device named "NightSignal"
    (Windows/Mac Bluetooth settings). Pairing creates a serial port:
      - Windows: something like  COM5
-     - Mac:     something like  /dev/tty.NightSignal-SPPSlave  (or similar)
+     - Mac:     something like  /dev/cu.NightSignal   (list them with: ls /dev/cu.*)
      - Linux:   bind an rfcomm port, e.g. /dev/rfcomm0
 2. Install the one dependency:
      pip install pyserial
 3. Run it, passing your port:
      python record.py --port COM5
-     python record.py --port /dev/tty.NightSignal-SPPSlave
+     python3 record.py --port /dev/cu.NightSignal
+   On a Mac, stop the laptop sleeping during the night with:
+     caffeinate -i python3 record.py --port /dev/cu.NightSignal
 
 It writes a file like  night_2026-09-10_2230.csv  in this folder.
 

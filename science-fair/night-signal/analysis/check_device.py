@@ -17,6 +17,7 @@ It listens to the device for a short time and checks:
 USAGE
 -----
     python check_device.py --port COM5               # Windows
+    python3 check_device.py --port /dev/cu.NightSignal   # Mac (ls /dev/cu.* to find it)
     python check_device.py --port /dev/rfcomm0       # Linux
     python check_device.py --port COM5 --seconds 40  # listen longer
 

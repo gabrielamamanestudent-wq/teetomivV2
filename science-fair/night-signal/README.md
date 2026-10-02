@@ -15,6 +15,7 @@ position all night, streams it over **Bluetooth**, and automatically detects
 ```
 night-signal/
 ├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
+├── BUILD_GUIDE.md                   # assembly, wiring, case, Bluetooth pairing, troubleshooting
 ├── firmware/
 │   └── night_signal_esp32.ino        # v3: sensors + self-test + finger + battery, 1 reading/s
 ├── analysis/
@@ -76,6 +77,8 @@ python fake_device.py --broken-mpu   # check_device should now say NOT READY
 
 ## The real device
 
+**Step-by-step assembly and Bluetooth pairing: see [`BUILD_GUIDE.md`](BUILD_GUIDE.md).**
+
 ### Parts (exact sizes)
 
 | Part (Amazon.ca) | Size |
@@ -109,10 +112,10 @@ for full nights, plug the case into a small USB power bank.
 
 ### Every session
 
-1. Flash `firmware/night_signal_esp32.ino` (see the Arduino setup guide).
-2. Pair **NightSignal** over Bluetooth (or use the USB cable).
+1. Flash `firmware/night_signal_esp32.ino` (see `BUILD_GUIDE.md`, Phase A).
+2. Pair **NightSignal** over Bluetooth (or use the USB cable). On a Mac the port is `/dev/cu.NightSignal`; on Windows a COM port such as `COM5`.
 3. `python check_device.py --port COM5` → must say **READY**.
-4. `python record.py --port COM5` all night, Ctrl+C in the morning.
+4. `python record.py --port COM5` all night, Ctrl+C in the morning (Mac: `caffeinate -i python3 record.py --port /dev/cu.NightSignal`).
 5. Run the analysis scripts, then rebuild the app and slides with your real data:
 
 ```bash
