@@ -33,7 +33,7 @@ Sleep apnea is when the airway collapses during sleep and breathing stops for te
 
 ## 4. Design  (40 s)
 
-Here's the design. A small case — a 60 by 35 millimetre Hammond box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.
+Here's the design. A small case — a 70 by 45 millimetre project box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.
 
 ## 5. How it works  (35 s)
 

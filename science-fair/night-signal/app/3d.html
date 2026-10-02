@@ -112,25 +112,25 @@
 (function(){
   var INFO={
     whole:{t:"Whole wearable",d:"A small case on a soft velcro strap connects to a separate finger sensor. The case streams readings to the app over Bluetooth; all the graphs live in the app, so the wearable stays simple.",
-      s:[["Case","60 × 35 × 20 mm"],["Strap","25 mm wide velcro"],["Cable","≈ 25 cm"],["Weight","≈ 50 g (estimate)"],["Readings","1 per second"]],
+      s:[["Case","70 × 45 × 29 mm"],["Strap","25 mm wide velcro"],["Cable","≈ 25 cm"],["Weight","≈ 65 g (estimate)"],["Readings","1 per second"]],
       n:"Wear the case on the upper arm for the most accurate sleep-position readings, with the cuff on the index finger."},
-    case:{t:"Sensor case",d:"A Hammond 1551HBK black ABS box with a USB-C cut-out and a status light that blinks while it records.",
-      s:[["Outside","60 × 35 × 20 mm"],["Inside height","16 mm"],["Fits boards up to","54 × 29 mm"],["Rating","IP54 splash-resistant"]],
-      n:"Solder wires straight to the boards (no header pins) so everything stacks inside the 16 mm height."},
+    case:{t:"Sensor case",d:"A HoHaing black ABS project box (Amazon.ca) with a USB-C cut-out and a status light that blinks while it records.",
+      s:[["Outside","70 × 45 × 29 mm"],["Inside","66 × 41 × 25 mm"],["Material","ABS — easy to drill"]],
+      n:"Inside, the parts stack about 22 mm high: battery 6 mm, ESP32 with its pins ≈ 13 mm, motion sensor ≈ 3 mm. That leaves 3 mm spare."},
     esp:{t:"ESP32 processor",d:"The brain. It reads both sensors, runs a self-test at start-up, and streams one line of data every second to the app.",
-      s:[["Board","≈ 51 × 28 mm"],["Chip","ESP32-WROOM-32"],["Wireless","Bluetooth Classic"],["Logic","3.3 V"]],
+      s:[["Board","≈ 52 × 28 mm (≈ 13 mm tall with pins)"],["Chip","ESP32-WROOM-32"],["Wireless","Bluetooth Classic"],["Logic","3.3 V"]],
       n:"Must be a classic ESP32 (WROOM-32). C3, S2 and S3 chips can’t do Bluetooth Classic."},
     power:{t:"Battery & charging",d:"A LiPo cell powers the case; a USB-C board recharges it and a 3.3 V regulator keeps the ESP32 stable as the battery drains.",
-      s:[["Battery","3.7 V 500 mAh · 36 × 29 × 4.75 mm"],["Charger","TP4056 USB-C · ≈ 28 × 17 mm"],["Regulator","3.3 V · ≈ 11 × 17 mm"],["Runtime","≈ 4–5 h (estimate)"]],
+      s:[["Battery","3.7 V 500 mAh · 35 × 30 × 6 mm"],["Charger","TP4056 USB-C · ≈ 28 × 17 mm"],["Regulator","TPS63020 3.3 V buck-boost"],["Runtime","≈ 4–5 h (estimate)"]],
       n:"Bluetooth draws roughly 100 mA, so 500 mAh may not last a full night. Measure it with the battery runtime test; for full nights, plug the case into a small USB power bank."},
     mpu:{t:"Motion sensor",d:"The MPU-6050 feels which way gravity pulls, so the app knows if you’re on your back, side or stomach.",
-      s:[["Board","26.0 × 17.8 × 4.6 mm"],["Measures","Tilt + motion (6 axes)"],["Address","I²C 0x68"]],
+      s:[["Board","GY-521 · ≈ 21 × 16 mm"],["Measures","Tilt + motion (6 axes)"],["Address","I²C 0x68"]],
       n:"Shares the same two data wires (SDA/SCL) as the oxygen sensor."},
     strap:{t:"Velcro strap",d:"Soft hook-and-loop fabric threads through the case’s lugs and adjusts to any arm.",
-      s:[["Width","25 mm"],["Length","≈ 250 mm"],["Material","Hook-and-loop fabric"]],
-      n:"A 25 mm (1 inch) one-wrap strap from a hardware or dollar store works."},
+      s:[["Width","25 mm (1 inch)"],["Arm strap","cut ≈ 300 mm"],["Finger loop","cut ≈ 80 mm"],["Material","Hook-and-loop fabric"]],
+      n:"Cut both straps from one VELCRO 1-inch roll."},
     finger:{t:"Finger sensor",d:"The MAX30102 shines red and infrared light through the fingertip. Oxygen-rich blood absorbs them differently, which gives SpO₂ and pulse.",
-      s:[["Sensor board","≈ 18 × 14 mm"],["Light","Red 660 nm + IR 880 nm"],["Sampling","25 averaged samples/s → 1 reading/s"],["Cuff","15–20 mm velcro loop"]],
+      s:[["Sensor board","14 × 14 mm"],["Light","Red 660 nm + IR 880 nm"],["Sampling","25 averaged samples/s → 1 reading/s"],["Cuff","15–20 mm velcro loop"]],
       n:"Keep the finger still and the cuff snug but not tight — pressing too hard blocks blood flow."}
   };
 
@@ -209,7 +209,7 @@
   function grp(name){ var g=new THREE.Group(); GROUPS[name]=g; return g; }
 
   // ---- strap: arc from lug to lug under the case ----
-  var LUGX=2.95, LUGY=0.7, RS=Math.sqrt(LUGX*LUGX+LUGY*LUGY), TH=0.24, phi=Math.atan2(LUGY,LUGX);
+  var LUGX=3.45, LUGY=0.7, RS=Math.sqrt(LUGX*LUGX+LUGY*LUGY), TH=0.24, phi=Math.atan2(LUGY,LUGX);
   var GROUND=-RS-TH/2-0.02;
   var strapG=grp("strap"); root.add(strapG);
   strapG.add(arcStrap(RS,2.5,TH,phi,-Math.PI-phi,M.loop));   // lug → under the arm → lug
@@ -217,17 +217,17 @@
   var gnd=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.ShadowMaterial({opacity:.45}));
   gnd.rotation.x=-Math.PI/2; gnd.position.y=GROUND; gnd.receiveShadow=true; scene.add(gnd);
 
-  // ---- case (Hammond 1551, 60 × 35 × 20 mm) ----
+  // ---- case (HoHaing ABS box, 70 × 45 × 29 mm outside, 66 × 41 × 25 mm inside) ----
   var CASEY=0.95;
   var caseG=grp("case"); caseG.position.y=CASEY; root.add(caseG);
-  var base=rbox(6.0,3.5,1.45,.5,.08,M.abs); caseG.add(base);
-  var lid=new THREE.Group(); lid.add(rbox(6.0,3.5,.55,.5,.1,M.lid)); caseG.add(lid);
-  [[-2.55,-1.3],[2.55,-1.3],[-2.55,1.3],[2.55,1.3]].forEach(function(p){ var s=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.04,16),M.screw); s.position.set(p[0],.565,p[1]); lid.add(s); });
-  var led=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.05,20),M.led); led.position.set(-1.9,.57,-.95); lid.add(led);
-  var ledL=new THREE.PointLight(0x2bd17e,.55,2.2); ledL.position.set(-1.9,.9,-.95); lid.add(ledL);
+  var base=rbox(7.0,4.5,2.35,.5,.08,M.abs); caseG.add(base);
+  var lid=new THREE.Group(); lid.add(rbox(7.0,4.5,.55,.5,.1,M.lid)); caseG.add(lid);
+  [[-3.05,-1.8],[3.05,-1.8],[-3.05,1.8],[3.05,1.8]].forEach(function(p){ var s=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.04,16),M.screw); s.position.set(p[0],.565,p[1]); lid.add(s); });
+  var led=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.05,20),M.led); led.position.set(-2.4,.57,-1.3); lid.add(led);
+  var ledL=new THREE.PointLight(0x2bd17e,.55,2.2); ledL.position.set(-2.4,.9,-1.3); lid.add(ledL);
   // USB-C cut-out on the front face
-  var usbFrame=box(1.25,.42,.06,M.port); usbFrame.position.set(.2,.72,1.85); base.add(usbFrame);
-  var usbHole=box(1.0,.24,.07,M.hole); usbHole.position.set(.2,.72,1.87); base.add(usbHole);
+  var usbFrame=box(1.25,.42,.06,M.port); usbFrame.position.set(-1.4,.6,2.35); base.add(usbFrame);
+  var usbHole=box(1.0,.24,.07,M.hole); usbHole.position.set(-1.4,.6,2.37); base.add(usbHole);
   // lugs + strap bars at both ends
   [-1,1].forEach(function(sd){ [-1.3,1.3].forEach(function(z){ var p=box(.18,1.0,.16,M.lug); p.position.set(sd*LUGX,LUGY+.4-CASEY,z); caseG.add(p); });
     var bar=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,2.8,14),M.lug); bar.rotation.x=Math.PI/2; bar.position.set(sd*LUGX,LUGY-CASEY,0); caseG.add(bar); });
@@ -235,22 +235,26 @@
   // ---- internal parts ----
   function part(name,build){ var g=grp(name); build(g); caseG.add(g); return g; }
   part("power",function(g){
-    var bat=new THREE.Group(); bat.add(rbox(3.6,2.9,.475,.25,.06,M.pouch));
+    var bat=new THREE.Group(); bat.add(rbox(3.5,3.0,.6,.25,.06,M.pouch));
     var lbl=new THREE.Mesh(new THREE.PlaneGeometry(2.4,1.2),new THREE.MeshStandardMaterial({map:board("#2b5fa6","LiPo 3.7V","500mAh"),roughness:.6}));
-    lbl.rotation.x=-Math.PI/2; lbl.position.y=.48; bat.add(lbl); bat.position.set(.95,0,0); g.add(bat); g.userData.bat=bat;
+    lbl.rotation.x=-Math.PI/2; lbl.position.y=.61; bat.add(lbl); bat.position.set(1.45,0,0); g.add(bat); g.userData.bat=bat;
     var ch=new THREE.Group(); var cp=box(1.7,.12,2.8,new THREE.MeshStandardMaterial({map:board("#1d4f9c","TP4056","USB-C"),roughness:.55})); cp.position.y=.06; ch.add(cp);
-    var cc=box(.75,.32,.9,M.port); cc.position.set(-.55,.28,0); ch.add(cc); ch.position.set(-1.95,0,0); g.add(ch); g.userData.ch=ch;
+    var cc=box(.75,.32,.9,M.port); cc.position.set(-.55,.28,0); ch.add(cc); ch.position.set(-1.4,0,0); g.add(ch); g.userData.ch=ch;
     var rg=new THREE.Group(); var rp=box(1.1,.1,1.65,new THREE.MeshStandardMaterial({map:board("#2a7a3a","3.3V REG",""),roughness:.55})); rp.position.y=.05; rg.add(rp);
-    var ic=box(.35,.1,.35,M.chip); ic.position.y=.15; rg.add(ic); rg.position.set(-1.95,.0,1.15); rg.scale.set(.9,.9,.6); g.add(rg); g.userData.rg=rg; });
-  part("esp",function(g){ var p=box(5.1,.16,2.8,new THREE.MeshStandardMaterial({map:board("#141820","ESP32 DEVKIT","WROOM-32"),roughness:.5})); p.position.y=.08; g.add(p);
+    var ic=box(.35,.1,.35,M.chip); ic.position.y=.15; rg.add(ic); rg.position.set(-2.75,.0,0); rg.scale.set(.8,.9,.9); g.add(rg); g.userData.rg=rg; });
+  part("esp",function(g){
+    // header pins under the board (most Amazon boards ship with them soldered)
+    [-1.27,1.27].forEach(function(z){ var h=box(4.9,.25,.25,M.chip); h.position.set(0,-.12,z); g.add(h);
+      var pins=box(4.8,.6,.08,M.port); pins.position.set(0,-.55,z); g.add(pins); });
+    var p=box(5.2,.16,2.8,new THREE.MeshStandardMaterial({map:board("#141820","ESP32 DEVKIT","WROOM-32"),roughness:.5})); p.position.y=.08; g.add(p);
     var sh=box(1.75,.3,1.6,M.shield); sh.position.set(1.15,.31,0); g.add(sh);
     var ant=box(.6,.03,1.6,new THREE.MeshStandardMaterial({color:0x22324f,roughness:.6})); ant.position.set(2.2,.18,0); g.add(ant);
     var um=box(.55,.28,.75,M.port); um.position.set(-2.3,.3,0); g.add(um); });
-  part("mpu",function(g){ var p=box(2.6,.16,1.78,new THREE.MeshStandardMaterial({map:board("#1a2f6b","MPU-6050","6-DoF"),roughness:.5})); p.position.y=.08; g.add(p);
+  part("mpu",function(g){ var p=box(2.1,.16,1.6,new THREE.MeshStandardMaterial({map:board("#1a2f6b","MPU-6050","6-DoF"),roughness:.5})); p.position.y=.08; g.add(p);
     var ic=box(.4,.1,.4,M.chip); ic.position.y=.21; g.add(ic); });
 
   // ---- finger sensor clip ----
-  var CLIP=new THREE.Vector3(8.4,GROUND+1.2,.9);
+  var CLIP=new THREE.Vector3(9.2,GROUND+1.2,.9);
   var fingerG=grp("finger"); fingerG.position.copy(CLIP); root.add(fingerG);
   var RC=.98;
   fingerG.add(arcStrap(RC,1.7,.2,0,Math.PI*2,M.loop));
@@ -265,11 +269,11 @@
   // ---- cable arching from the case to the clip ----
   var cableG=grp("cable"); root.add(cableG);
   var cEnd=new THREE.Vector3(CLIP.x,CLIP.y+RC+.08+.62+.05,CLIP.z);
-  var curve=new THREE.CatmullRomCurve3([new THREE.Vector3(3.05,CASEY+1.1,0),new THREE.Vector3(4.6,CASEY+3.7,.2),
-    new THREE.Vector3(7.1,CASEY+3.4,.6),new THREE.Vector3(8.45,cEnd.y+2.0,.9),new THREE.Vector3(cEnd.x,cEnd.y+.35,cEnd.z)]);
+  var curve=new THREE.CatmullRomCurve3([new THREE.Vector3(3.55,CASEY+1.6,0),new THREE.Vector3(5.2,CASEY+4.3,.2),
+    new THREE.Vector3(7.9,CASEY+3.9,.6),new THREE.Vector3(9.25,cEnd.y+2.0,.9),new THREE.Vector3(cEnd.x,cEnd.y+.35,cEnd.z)]);
   cableG.add(Object.assign(new THREE.Mesh(new THREE.TubeGeometry(curve,90,.07,12,false),M.cable),{castShadow:true}));
   var relief=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.55,16),M.relief); relief.position.set(cEnd.x,cEnd.y+.25,cEnd.z); cableG.add(relief);
-  var relief2=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.45,16),M.relief); relief2.rotation.z=Math.PI/2.4; relief2.position.set(3.15,CASEY+1.15,0); cableG.add(relief2);
+  var relief2=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.45,16),M.relief); relief2.rotation.z=Math.PI/2.4; relief2.position.set(3.65,CASEY+1.65,0); cableG.add(relief2);
 
   // give every mesh its own material (so one part can be highlighted while others fade),
   // tag it with its nearest owning group, and convert hex colours from sRGB to linear once.
@@ -283,28 +287,28 @@
   function meshesOf(name){ var out=[]; GROUPS[name].traverse(function(o){ if(o.isMesh && o.userData.group===name) out.push(o); }); return out; }
 
   // ---- exploded layout (case space) ----
-  var LAYOUT={ lid:{a:[0,1.45,0],e:[0,9.6,0],o:lid}, mpu:{a:[-1.2,1.05,0],e:[-1.2,7.9,0],o:GROUPS.mpu},
-    esp:{a:[0,.75,0],e:[0,5.6,0],o:GROUPS.esp}, power:{a:[0,.12,0],e:[0,3.1,0],o:GROUPS.power} };
+  var LAYOUT={ lid:{a:[0,2.35,0],e:[0,10.6,0],o:lid}, mpu:{a:[1.2,1.85,0],e:[1.2,8.6,0],o:GROUPS.mpu},
+    esp:{a:[0,1.4,0],e:[0,6.2,0],o:GROUPS.esp}, power:{a:[0,.12,0],e:[0,3.4,0],o:GROUPS.power} };
 
   // ---- labels ----
   var labelsEl=document.getElementById("labels"), LABELS=[];
   function addLabel(obj,off,title,mm,when,left){ var d=document.createElement("div"); d.className="lab"+(left?" left":"");
     d.innerHTML='<div class="pin"></div><div class="tag"><b>'+title+'</b><span>'+mm+'</span></div>'; labelsEl.appendChild(d);
     LABELS.push({el:d,obj:obj,off:new THREE.Vector3(off[0],off[1],off[2]),when:when}); }
-  addLabel(lid,[2.9,.55,1.7],"Lid + status light","60 × 35 mm","exp");
-  addLabel(GROUPS.mpu,[1.3,.2,.9],"MPU-6050","26.0 × 17.8 × 4.6 mm","exp");
-  addLabel(GROUPS.esp,[2.55,.3,1.4],"ESP32 DevKit","≈ 51 × 28 mm","exp");
-  addLabel(GROUPS.power,[2.75,.45,1.45],"LiPo 3.7 V 500 mAh","36 × 29 × 4.75 mm","exp");
-  addLabel(GROUPS.power,[-2.8,.3,1.3],"TP4056 + 3.3 V regulator","≈ 28 × 17 · 11 × 17 mm","exp",true);
-  addLabel(base,[-3.0,.4,1.75],"Case base","inside 16 mm tall","exp",true);
-  addLabel(caseG,[3.0,2.0,1.75],"Hammond 1551HBK","60 × 35 × 20 mm","asm");
+  addLabel(lid,[3.4,.55,2.2],"Lid + status light","70 × 45 mm","exp");
+  addLabel(GROUPS.mpu,[1.05,.2,.8],"GY-521 MPU-6050","≈ 21 × 16 mm","exp");
+  addLabel(GROUPS.esp,[2.6,.3,1.4],"ESP32 30-pin board","≈ 52 × 28 mm · 13 mm with pins","exp");
+  addLabel(GROUPS.power,[3.2,.6,1.5],"LiPo 3.7 V 500 mAh","35 × 30 × 6 mm","exp");
+  addLabel(GROUPS.power,[-2.3,.3,1.4],"TP4056 charger + 3.3 V regulator","≈ 28 × 17 mm","exp",true);
+  addLabel(base,[-3.5,.6,2.25],"Case base","inside 66 × 41 × 25 mm","exp",true);
+  addLabel(caseG,[3.5,2.9,2.25],"HoHaing project box","70 × 45 × 29 mm","asm");
   addLabel(strapG,[0,-RS,1.25],"Velcro strap","25 mm wide","asm",true);
-  addLabel(fingerG,[1.1,RC+.4,.9],"MAX30102 finger clip","≈ 18 × 14 mm sensor","asm");
+  addLabel(fingerG,[1.1,RC+.4,.9],"MAX30102 finger clip","14 × 14 mm sensor","asm");
 
   // ---- view state ----
   var S={ex:0,exT:0,spin:false,sel:"whole",yaw:20*Math.PI/180,pitch:38*Math.PI/180,zoom:.35,
-    tgt:new THREE.Vector3(3.2,.2,0), dist:0};
-  var DEF_TGT=new THREE.Vector3(3.2,.2,0);
+    tgt:new THREE.Vector3(3.7,.4,0), dist:0};
+  var DEF_TGT=new THREE.Vector3(3.7,.4,0);
   var elZoom=document.getElementById("zoom"), elRot=document.getElementById("rot"), elTilt=document.getElementById("tilt");
   var bE=document.getElementById("bExplode"), bS=document.getElementById("bSpin"), bR=document.getElementById("bReset"), sel=document.getElementById("comp");
   function setEx(v){ S.exT=v?1:0; bE.setAttribute("aria-pressed",v?"true":"false"); }
@@ -350,7 +354,7 @@
     Object.keys(LAYOUT).forEach(function(n){ var L=LAYOUT[n]; L.o.position.set(L.a[0]+(L.e[0]-L.a[0])*k,L.a[1]+(L.e[1]-L.a[1])*k,L.a[2]+(L.e[2]-L.a[2])*k); });
     if(S.spin){ elRot.value=((+elRot.value+0.25+180)%360)-180; readSliders(); }
     var focused=S.sel!=="whole";
-    var baseDist=(camera.aspect<1.1?36:27)*(1.55-S.zoom*1.05)*(focused?.62:1)*(1+.32*k*(focused?0:1));
+    var baseDist=(camera.aspect<1.1?39:30)*(1.55-S.zoom*1.05)*(focused?.62:1)*(1+.32*k*(focused?0:1));
     var want=focusPoint(); if(!focused){ want.y+=5.3*k; want.x-=1.6*k; }
     curTgt.lerp(want,.08); curDist+=(baseDist-curDist)*.08;
     var pitch=S.pitch*(1-.55*k);

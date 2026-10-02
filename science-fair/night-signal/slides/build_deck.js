@@ -100,12 +100,12 @@ notes(s, "Scientific background", 50, "Sleep apnea is when the airway collapses 
 s = slide(true); eyebrow(s, "DESIGN PROTOTYPE", C.TEALL); title(s, "The wearable", C.WHITE);
 const dh = img(s, "3d_assembled.jpg", 0.7, 1.75, 5.85); caption(s, "Assembled — case on a velcro strap, cable to the finger clip", 0.7, 1.75 + dh + 0.05, 5.85, C.NSOFT);
 img(s, "3d_exploded.jpg", 6.75, 1.75, 5.85); caption(s, "Exploded — every part at its real size", 6.75, 1.75 + dh + 0.05, 5.85, C.NSOFT);
-[["60 × 35 × 20 mm", "sensor case"], ["25 mm", "velcro strap"], ["18 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
+[["70 × 45 × 29 mm", "sensor case"], ["25 mm", "velcro strap"], ["14 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
   const x = 0.7 + i * 2.55; s.addText(k[0], { isTextBox: true, x, y: 6.0, w: 2.45, h: 0.45, margin: 0, fontFace: F, fontSize: 20, bold: true, color: C.TEALL });
   s.addText(k[1], { isTextBox: true, x, y: 6.45, w: 2.45, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: C.NSOFT }); });
 s.addImage({ path: A("qr_3d.png"), x: 11.55, y: 5.9, w: 1.05, h: 1.05, hyperlink: { url: LINKS.d3, tooltip: "Interactive 3D model" } });
 link(s, "Interactive 3D →", LINKS.d3, 10.15, 6.25, 1.35, C.TEALL, 12);
-notes(s, "Design", 40, "Here's the design. A small case — a 60 by 35 millimetre Hammond box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.");
+notes(s, "Design", 40, "Here's the design. A small case — a 70 by 45 millimetre project box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.");
 
 /* ---------------- 5. HOW IT WORKS ---------------- */
 s = slide(false); eyebrow(s, "DESIGN PROTOTYPE · HOW IT WORKS", C.TEAL); title(s, "From fingertip to sleep report", C.INK);
@@ -238,19 +238,19 @@ notes(s, "Conclusion", 35, "Back to my hypothesis: so far it's supported — a l
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX A · MATERIALS", C.TEAL); title(s, "Parts, exact sizes and where to buy", C.INK, 28);
 const L = (t, u) => ({ text: t, options: { hyperlink: { url: u, tooltip: u }, color: C.TEAL } });
 const parts = [
-  ["ESP32 DevKit (ESP-WROOM-32)", "≈ 51 × 28 mm", "Processor + Bluetooth", L("Canada Robotix", "https://www.canadarobotix.com/products/2594"), "$10"],
-  ["MAX30102 oxygen sensor", "≈ 18 × 14 mm", "SpO₂ + pulse", L("X2 Robotics", "https://x2robotics.ca/pulse-oximeter-and-heart-rate-sensor-max30102"), "≈ $10"],
-  ["MPU-6050 (Adafruit 3886)", "26.0 × 17.8 × 4.6 mm", "Position + coughs", L("Adafruit", "https://www.adafruit.com/product/3886"), "≈ $10"],
-  ["LiPo 3.7 V 500 mAh (Adafruit 1578)", "36 × 29 × 4.75 mm", "Battery (≈ 4–5 h)", L("Adafruit", "https://www.adafruit.com/product/1578"), "≈ $12"],
-  ["TP4056 USB-C charger", "≈ 28 × 17 mm", "Charges battery", L("Amazon.ca", "https://www.amazon.ca/s?k=TP4056+type+c+lithium+charger+module+protection"), "≈ $3"],
-  ["Pololu 3.3 V regulator S7V8F3", "11 × 17 × 3 mm", "Steady 3.3 V", L("Pololu", "https://www.pololu.com/product/2122"), "≈ $8"],
-  ["Hammond 1551HBK case", "60 × 35 × 20 mm", "Holds the boards", L("Hammond", "https://www.hammfg.com/electronics/small-case/plastic/1551"), "≈ $6"],
-  ["Velcro one-wrap strap", "25 mm × ≈ 250 mm", "Arm strap + finger cuff", L("Amazon.ca", "https://www.amazon.ca/s?k=velcro+one-wrap+strap+1+inch"), "≈ $5"],
-  ["2 × 100 kΩ resistors, wire", "—", "Battery level", L("Amazon.ca", "https://www.amazon.ca/s?k=resistor+kit+100k"), "≈ $5"],
-  ["Fingertip pulse oximeter", "—", "Accuracy reference", L("Amazon.ca", "https://www.amazon.ca/s?k=fingertip+pulse+oximeter"), "≈ $25"]];
-s.addTable([[H("Part"), H("Size"), H("Purpose"), H("Where"), H("≈ CAD")]].concat(parts.map((r) => [r[0], r[1], r[2], { text: [r[3]] }, r[4]])),
-  { x: 0.7, y: 1.6, w: 11.9, colW: [3.7, 2.4, 2.4, 2.2, 1.2], fontFace: F, fontSize: 11.5, color: C.INK, border: { type: "solid", color: C.LINE, pt: 1 }, valign: "middle", rowH: 0.42 });
-s.addText("Total ≈ $65 for the wearable + ≈ $25 reference oximeter. Board sizes vary about ±2 mm between sellers — measure before assembling.", { isTextBox: true, x: 0.7, y: 6.35, w: 11.9, h: 0.5, margin: 0, fontFace: F, fontSize: 11.5, italic: true, color: C.FAINT });
+  ["AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)", "≈ 52 × 28 mm · 13 mm tall with pins", "Processor + Bluetooth Classic", L("Amazon.ca", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN")],
+  ["HiLetgo MAX30102 sensor", "14 × 14 mm", "SpO₂ + heart rate (finger clip)", L("Amazon.ca", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ")],
+  ["HiLetgo GY-521 MPU-6050 (3-pack)", "≈ 21 × 16 mm", "Sleep position + cough jolts", L("Amazon.ca", "https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A")],
+  ["LiPo 3.7 V 500 mAh 503035, JST PH2.0", "35 × 30 × 6 mm", "Battery (≈ 4–5 h — test it)", L("Amazon.ca", "https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3")],
+  ["Treedix TP4056 USB-C charger (6-pack)", "≈ 28 × 17 mm", "Charges the battery safely", L("Amazon.ca", "https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J")],
+  ["Rakstore TPS63020 3.3 V buck-boost", "1.8–5 V in → 3.3 V out", "Steady 3.3 V as the battery drains", L("Amazon.ca", "https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ")],
+  ["HoHaing ABS project box (8-pack)", "70 × 45 × 29 mm · inside 66 × 41 × 25 mm", "The sensor case", L("Amazon.ca", "https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG")],
+  ["VELCRO Brand 1 in × 30 ft roll", "25 mm wide · cut ≈ 300 mm + ≈ 80 mm", "Arm strap + finger loop", L("Amazon.ca", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1")],
+  ["100 kΩ resistors (2) + jumper wires", "1/4 W", "Battery-level reading on GPIO 34", L("Amazon.ca", "https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w")],
+  ["Elite Medica fingertip pulse oximeter", "Health Canada authorized", "Reference for the accuracy test", L("Amazon.ca", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB")]];
+s.addTable([[H("Part"), H("Size"), H("Purpose"), H("Buy")]].concat(parts.map((r) => [r[0], r[1], r[2], { text: [r[3]] }])),
+  { x: 0.7, y: 1.6, w: 11.9, colW: [4.2, 3.5, 2.8, 1.4], fontFace: F, fontSize: 11, color: C.INK, border: { type: "solid", color: C.LINE, pt: 1 }, valign: "middle", rowH: 0.42 });
+s.addText("Every part is on Amazon.ca (click Buy). Prices change and several items are multi-packs. Sizes from the listings — boards vary about ±2 mm, so measure yours.", { isTextBox: true, x: 0.7, y: 6.35, w: 11.9, h: 0.5, margin: 0, fontFace: F, fontSize: 11.5, italic: true, color: C.FAINT });
 notes(s, "Appendix A — materials", 0, "Appendix — not presented. Full parts list with exact dimensions, links and prices.");
 
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX B · FULL PROTOCOL", C.TEAL); title(s, "Full experimental protocol", C.INK, 28);
@@ -271,12 +271,12 @@ notes(s, "Appendix B — protocol", 0, "Appendix — not presented. Step-by-step
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX C · DESIGN PLANS", C.TEAL); title(s, "Wiring and case layout", C.INK, 28);
 s.addTable([[H("From"), H("To (ESP32)"), H("Notes")],
   ["MAX30102 VIN / GND", "3V3 / GND", "never 5 V"], ["MAX30102 SDA / SCL", "GPIO 21 / 22", "shared I²C bus"],
-  ["MPU-6050 VCC / GND", "3V3 / GND", "address 0x68"], ["MPU-6050 SDA / SCL", "GPIO 21 / 22", "wired in parallel"],
-  ["Battery + / −", "TP4056 B+ / B−", "500 mAh LiPo"], ["TP4056 OUT+ / OUT−", "Regulator VIN / GND", "Pololu S7V8F3"],
+  ["GY-521 (MPU-6050) VCC / GND", "3V3 / GND", "address 0x68"], ["MPU-6050 SDA / SCL", "GPIO 21 / 22", "wired in parallel"],
+  ["Battery + / −", "TP4056 B+ / B−", "500 mAh LiPo"], ["TP4056 OUT+ / OUT−", "Regulator VIN / GND", "TPS63020 3.3 V"],
   ["Regulator VOUT", "3V3", "steady 3.3 V"], ["Battery divider (2 × 100 kΩ)", "GPIO 34", "battery %"], ["Status LED", "GPIO 2", "blinks each reading"]],
   { x: 0.7, y: 1.6, w: 6.7, colW: [3.0, 1.9, 1.8], fontFace: F, fontSize: 11.5, color: C.INK, border: { type: "solid", color: C.LINE, pt: 1 }, valign: "middle", rowH: 0.42 });
-const eh = img(s, "3d_exploded.jpg", 7.7, 1.6, 4.9); caption(s, "Stack inside the 16 mm-tall case", 7.7, 1.6 + eh + 0.05, 4.9);
-s.addText("Layer heights: battery 4.75 mm + ESP32 (no header pins) ≈ 5 mm + MPU-6050 4.6 mm ≈ 15 mm ≤ 16 mm inside height. With header pins soldered, use a case at least 30 mm deep.",
+const eh = img(s, "3d_exploded.jpg", 7.7, 1.6, 4.9); caption(s, "Stack inside the 25 mm-tall case", 7.7, 1.6 + eh + 0.05, 4.9);
+s.addText("Layer heights: battery 6 mm + ESP32 with pins ≈ 13 mm + GY-521 ≈ 3 mm ≈ 22 mm, inside the box’s 25 mm. Battery and TP4056 sit side by side on the bottom (35 + 17 = 52 mm of the 66 mm length).",
   { isTextBox: true, x: 7.7, y: 1.6 + eh + 0.45, w: 4.9, h: 1.2, margin: 0, fontFace: F, fontSize: 12, color: C.SOFT, valign: "top" });
 notes(s, "Appendix C — design plans", 0, "Appendix — not presented. Wiring table and the internal layout with layer heights.");
 

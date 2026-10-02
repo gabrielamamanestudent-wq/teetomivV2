@@ -78,20 +78,20 @@ python fake_device.py --broken-mpu   # check_device should now say NOT READY
 
 ### Parts (exact sizes)
 
-| Part | Size | Notes |
-|------|------|-------|
-| ESP32 DevKit (ESP-WROOM-32) | ≈ 51 × 28 mm | must be the classic ESP32 (Bluetooth Classic) |
-| MAX30102 sensor | ≈ 18 × 14 mm | in the velcro finger cuff |
-| MPU-6050 (Adafruit 3886) | 26.0 × 17.8 × 4.6 mm | sleep position + cough jolts |
-| LiPo 3.7 V 500 mAh (Adafruit 1578) | 36 × 29 × 4.75 mm | ≈ 4–5 h on Bluetooth — test it |
-| TP4056 USB-C charger | ≈ 28 × 17 mm | charges the battery |
-| Pololu 3.3 V regulator S7V8F3 | 11 × 17 × 3 mm | steady 3.3 V as the battery drains |
-| Hammond 1551HBK case | 60 × 35 × 20 mm, 16 mm inside | fits boards up to 54 × 29 mm |
-| Velcro one-wrap strap | 25 mm wide, ≈ 250 mm | case on the upper arm |
+| Part (Amazon.ca) | Size |
+|------|------|
+| [AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm · 13 mm tall with pins |
+| [HiLetgo MAX30102 sensor](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | 14 × 14 mm |
+| [HiLetgo GY-521 MPU-6050 (3-pack)](https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A) | ≈ 21 × 16 mm |
+| [LiPo 3.7 V 500 mAh 503035, JST PH2.0](https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3) | 35 × 30 × 6 mm |
+| [Treedix TP4056 USB-C charger (6-pack)](https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J) | ≈ 28 × 17 mm |
+| [Rakstore TPS63020 3.3 V buck-boost](https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ) | 1.8–5 V in → 3.3 V out |
+| [HoHaing ABS project box (8-pack)](https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG) | 70 × 45 × 29 mm · inside 66 × 41 × 25 mm |
+| [VELCRO Brand 1 in × 30 ft roll](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 25 mm wide · cut ≈ 300 mm + ≈ 80 mm |
+| [100 kΩ resistors (2) + jumper wires](https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w) | 1/4 W |
+| [Elite Medica fingertip pulse oximeter](https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB) | Health Canada authorized |
 
-Links and prices are in the app's **Progress** tab and the deck's Appendix A.
-Boards vary about ±2 mm between sellers — measure yours. Solder wires directly
-(no header pins) so the stack fits the 16 mm inside height.
+All parts on Amazon.ca. Prices change — check each listing. Several items come in multi-packs, so you'll have spares. Sizes are from the listings; clone boards can vary by about ±2 mm, so measure yours. Inside the box the stack is about 22 mm (battery 6 + ESP32 with pins ≈ 13 + GY-521 ≈ 3), which fits the 25 mm inside height. The resistor link is an Amazon.ca search.
 
 ### Wiring
 

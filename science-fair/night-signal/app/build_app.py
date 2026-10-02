@@ -159,29 +159,18 @@ PROTOCOL = [
 ]
 
 PARTS = [
-    {"name": "ESP32 DevKit (ESP-WROOM-32)", "size": "≈ 51 × 28 mm", "why": "Processor + Bluetooth Classic",
-     "links": [["Canada Robotix", "https://www.canadarobotix.com/products/2594"], ["Universal Solder (CA)", "https://www.universal-solder.ca/product/esp32-devkit-esp-wroom-32-4mb-cp2101-usb-uart/"]], "price": "$10"},
-    {"name": "MAX30102 oxygen sensor", "size": "≈ 18 × 14 mm", "why": "SpO₂ + heart rate (finger cuff)",
-     "links": [["X2 Robotics (CA)", "https://x2robotics.ca/pulse-oximeter-and-heart-rate-sensor-max30102"]], "price": "≈ $10"},
-    {"name": "MPU-6050 motion sensor (Adafruit 3886)", "size": "26.0 × 17.8 × 4.6 mm", "why": "Sleep position + cough jolts",
-     "links": [["Adafruit", "https://www.adafruit.com/product/3886"], ["DigiKey", "https://www.digikey.com/en/products/detail/adafruit-industries-llc/3886/10709725"]], "price": "≈ $10"},
-    {"name": "LiPo 3.7 V 500 mAh (Adafruit 1578)", "size": "36 × 29 × 4.75 mm", "why": "Portable power (≈ 4–5 h, test it)",
-     "links": [["Adafruit", "https://www.adafruit.com/product/1578"], ["DigiKey", "https://www.digikey.com/en/products/detail/adafruit-industries-llc/1578/5054539"]], "price": "≈ $12"},
-    {"name": "TP4056 USB-C charger board", "size": "≈ 28 × 17 mm", "why": "Recharges the battery safely",
-     "links": [["Amazon.ca search", "https://www.amazon.ca/s?k=TP4056+type+c+lithium+charger+module+protection"]], "price": "≈ $3"},
-    {"name": "Pololu 3.3 V regulator S7V8F3", "size": "11 × 17 × 3 mm", "why": "Steady 3.3 V as the battery drains",
-     "links": [["Pololu", "https://www.pololu.com/product/2122"], ["X2 Robotics (CA)", "https://x2robotics.ca/pololu-3-3v-step-up-step-down-voltage-regulator-s7v8f3"]], "price": "≈ $8"},
-    {"name": "Hammond 1551HBK case", "size": "60 × 35 × 20 mm (16 mm inside)", "why": "Holds boards up to 54 × 29 mm",
-     "links": [["Hammond", "https://www.hammfg.com/electronics/small-case/plastic/1551"], ["Amazon.ca search", "https://www.amazon.ca/s?k=Hammond+1551HBK"]], "price": "≈ $6"},
-    {"name": "Velcro one-wrap strap", "size": "25 mm wide · ≈ 250 mm", "why": "Holds the case on the arm",
-     "links": [["Amazon.ca search", "https://www.amazon.ca/s?k=velcro+one-wrap+strap+1+inch"]], "price": "≈ $5"},
-    {"name": "2 × 100 kΩ resistors, wire", "size": "—", "why": "Battery-level reading on GPIO 34",
-     "links": [["Amazon.ca search", "https://www.amazon.ca/s?k=resistor+kit+100k"]], "price": "≈ $5"},
-    {"name": "Fingertip pulse oximeter", "size": "—", "why": "Reference for the accuracy test",
-     "links": [["Amazon.ca search", "https://www.amazon.ca/s?k=fingertip+pulse+oximeter"]], "price": "≈ $25"},
+    {"name": 'AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)', "size": '≈ 52 × 28 mm · 13 mm tall with pins', "why": 'Processor + Bluetooth Classic', "links": [["Amazon.ca", 'https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN']], "price": "see listing"},
+    {"name": 'HiLetgo MAX30102 sensor', "size": '14 × 14 mm', "why": 'SpO₂ + heart rate (finger clip)', "links": [["Amazon.ca", 'https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ']], "price": "see listing"},
+    {"name": 'HiLetgo GY-521 MPU-6050 (3-pack)', "size": '≈ 21 × 16 mm', "why": 'Sleep position + cough jolts', "links": [["Amazon.ca", 'https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A']], "price": "see listing"},
+    {"name": 'LiPo 3.7 V 500 mAh 503035, JST PH2.0', "size": '35 × 30 × 6 mm', "why": 'Battery (≈ 4–5 h — test it)', "links": [["Amazon.ca", 'https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3']], "price": "see listing"},
+    {"name": 'Treedix TP4056 USB-C charger (6-pack)', "size": '≈ 28 × 17 mm', "why": 'Charges the battery safely', "links": [["Amazon.ca", 'https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J']], "price": "see listing"},
+    {"name": 'Rakstore TPS63020 3.3 V buck-boost', "size": '1.8–5 V in → 3.3 V out', "why": 'Steady 3.3 V as the battery drains', "links": [["Amazon.ca", 'https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ']], "price": "see listing"},
+    {"name": 'HoHaing ABS project box (8-pack)', "size": '70 × 45 × 29 mm · inside 66 × 41 × 25 mm', "why": 'The sensor case', "links": [["Amazon.ca", 'https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG']], "price": "see listing"},
+    {"name": 'VELCRO Brand 1 in × 30 ft roll', "size": '25 mm wide · cut ≈ 300 mm + ≈ 80 mm', "why": 'Arm strap + finger loop', "links": [["Amazon.ca", 'https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1']], "price": "see listing"},
+    {"name": '100 kΩ resistors (2) + jumper wires', "size": '1/4 W', "why": 'Battery-level reading on GPIO 34', "links": [["Amazon.ca", 'https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w']], "price": "see listing"},
+    {"name": 'Elite Medica fingertip pulse oximeter', "size": 'Health Canada authorized', "why": 'Reference for the accuracy test', "links": [["Amazon.ca", 'https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB']], "price": "see listing"},
 ]
-PARTS_NOTE = ("Total ≈ $65 CAD for the wearable + ≈ $25 for the reference oximeter (prices approximate). "
-              "Clone boards vary by about ±2 mm — measure yours. Solder wires directly (no header pins) so it all fits the 16 mm inside height.")
+PARTS_NOTE = "All parts on Amazon.ca. Prices change — check each listing. Several items come in multi-packs, so you'll have spares. Sizes are from the listings; clone boards can vary by about ±2 mm, so measure yours. Inside the box the stack is about 22 mm (battery 6 + ESP32 with pins ≈ 13 + GY-521 ≈ 3), which fits the 25 mm inside height. The resistor link is an Amazon.ca search."
 
 REFS = [
     "American Academy of Sleep Medicine. (2014). International classification of sleep disorders (3rd ed.).",
