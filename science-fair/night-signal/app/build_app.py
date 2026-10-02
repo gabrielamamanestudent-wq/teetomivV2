@@ -142,35 +142,35 @@ PROGRESS = [
     {"date": "Sep–Oct", "title": "Advanced analyses + spin-offs", "detail": "Accuracy test, sleep position, breathing/HRV, machine learning, heart and asthma screening.", "status": "done", "label": "Done"},
     {"date": "Oct", "title": "3D design, firmware v3 and app", "detail": "Exploded 3D model with real part sizes; device self-test; this app with live connection.", "status": "done", "label": "Done"},
     {"date": "Oct 13", "title": "Ethics committee forms", "detail": "Human-subject project — submit the pre-questionnaire on the Technoscience site.", "status": "next", "label": "Due"},
-    {"date": "Oct", "title": "Order parts and build the prototype", "detail": "Wire, flash firmware v3, pass check_device.py, photograph each step.", "status": "next", "label": "Next"},
-    {"date": "Oct–Dec", "title": "Validation + recorded nights", "detail": "Reference-oximeter test, battery runtime test, supervised breath-hold tests, full nights.", "status": "todo", "label": "To do"},
+    {"date": "Oct", "title": "Order parts and build the prototype", "detail": "Plug in the wires, flash firmware v3.1, pass check_device.py, photograph each step.", "status": "next", "label": "Next"},
+    {"date": "Oct–Dec", "title": "Validation + recorded nights", "detail": "Reference-oximeter test, full-night power test, supervised breath-hold tests, full nights.", "status": "todo", "label": "To do"},
     {"date": "Jan 11", "title": "Final slides for correction", "detail": "Replace example data with real results.", "status": "todo", "label": "To do"},
     {"date": "Jan 18–22", "title": "Class presentation", "detail": "7–10 minutes + 3 minutes of questions.", "status": "todo", "label": "To do"},
 ]
 
 PROTOCOL = [
     ("Device check", "run check_device.py before every session; all checks must pass (data at 1/s, self-test OK, finger on, values believable)."),
-    ("Battery runtime test", "fully charge, stream with a finger on the sensor, and log the time until the device stops — repeat 3 times."),
+    ("Full-night power test", "on USB power, stream with a finger on the sensor for 8 hours and confirm there are no gaps in the data."),
     ("Accuracy test", "while seated and awake, read a store-bought fingertip oximeter every 2 minutes for 30 minutes alongside the wearable; analyse with validate.py (Bland–Altman)."),
     ("Detection test", "supervised, awake breath-holds of 10, 15 and 20 s (5 of each, logged by time) — the known events used to score the rule and the machine-learning detector."),
-    ("Recorded nights", "at least 5 nights; case on the upper arm, cuff on the index finger; log bedtime and sleeping position notes."),
+    ("Recorded nights", "at least 5 nights; armband on the forearm, cuff on the index finger; log bedtime and sleeping position notes."),
     ("Analysis", "analyze.py (events, AHI), signals.py, position.py, train_model.py, heart.py and asthma.py on every night."),
     ("Safety", "never hold breath while asleep; stop if dizzy; parent/guardian consent and ethics approval before testing on anyone."),
 ]
 
 PARTS = [
-    {"name": 'AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)', "size": '≈ 52 × 28 mm · 13 mm tall with pins', "why": 'Processor + Bluetooth Classic', "links": [["Amazon.ca", 'https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN']], "price": "see listing"},
-    {"name": 'HiLetgo MAX30102 sensor', "size": '14 × 14 mm', "why": 'SpO₂ + heart rate (finger clip)', "links": [["Amazon.ca", 'https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ']], "price": "see listing"},
-    {"name": 'HiLetgo GY-521 MPU-6050 (3-pack)', "size": '≈ 21 × 16 mm', "why": 'Sleep position + cough jolts', "links": [["Amazon.ca", 'https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A']], "price": "see listing"},
-    {"name": 'LiPo 3.7 V 500 mAh 503035, JST PH2.0', "size": '35 × 30 × 6 mm', "why": 'Battery (≈ 4–5 h — test it)', "links": [["Amazon.ca", 'https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3']], "price": "see listing"},
-    {"name": 'Treedix TP4056 USB-C charger (6-pack)', "size": '≈ 28 × 17 mm', "why": 'Charges the battery safely', "links": [["Amazon.ca", 'https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J']], "price": "see listing"},
-    {"name": 'Rakstore TPS63020 3.3 V buck-boost', "size": '1.8–5 V in → 3.3 V out', "why": 'Steady 3.3 V as the battery drains', "links": [["Amazon.ca", 'https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ']], "price": "see listing"},
-    {"name": 'HoHaing ABS project box (8-pack)', "size": '70 × 45 × 29 mm · inside 66 × 41 × 25 mm', "why": 'The sensor case', "links": [["Amazon.ca", 'https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG']], "price": "see listing"},
-    {"name": 'VELCRO Brand 1 in × 30 ft roll', "size": '25 mm wide · cut ≈ 300 mm + ≈ 80 mm', "why": 'Arm strap + finger loop', "links": [["Amazon.ca", 'https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1']], "price": "see listing"},
-    {"name": '100 kΩ resistors (2) + jumper wires', "size": '1/4 W', "why": 'Battery-level reading on GPIO 34', "links": [["Amazon.ca", 'https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w']], "price": "see listing"},
+    {"name": 'AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)', "size": '≈ 52 × 28 mm · pins pre-soldered', "why": 'Processor + Bluetooth Classic', "links": [["Amazon.ca", 'https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN']], "price": "see listing"},
+    {"name": 'HiLetgo MAX30102 sensor', "size": '14 × 14 mm · 4 pins to solder', "why": 'SpO₂ + heart rate (finger clip)', "links": [["Amazon.ca", 'https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ']], "price": "see listing"},
+    {"name": 'SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)', "size": '≈ 21 × 16 mm', "why": 'Sleep position + cough jolts', "links": [["Amazon.ca", 'https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4']], "price": "see listing"},
+    {"name": 'ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)', "size": '20 cm each', "why": 'Plug-in wiring, no soldering', "links": [["Amazon.ca", 'https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78']], "price": "see listing"},
+    {"name": 'Running armband phone pouch', "size": 'fits phones up to 6.9 in', "why": 'Holds the ESP32 on the forearm', "links": [["Amazon.ca", 'https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4']], "price": "see listing"},
+    {"name": 'Anker Powerline+ USB-A to USB-C cable', "size": '3 m (10 ft)', "why": 'All-night power from a phone charger', "links": [["Amazon.ca", 'https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS']], "price": "see listing"},
+    {"name": 'Anker USB-C to USB-A adapter (2-pack)', "size": 'USB-C → USB-A', "why": 'Plug the cable into a MacBook', "links": [["Amazon.ca", 'https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61']], "price": "see listing"},
+    {"name": 'VELCRO Brand 1 in × 30 ft roll', "size": '25 mm wide · cut ≈ 80 mm', "why": 'Finger loop', "links": [["Amazon.ca", 'https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1']], "price": "see listing"},
     {"name": 'Elite Medica fingertip pulse oximeter', "size": 'Health Canada authorized', "why": 'Reference for the accuracy test', "links": [["Amazon.ca", 'https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB']], "price": "see listing"},
 ]
-PARTS_NOTE = "All parts on Amazon.ca. Prices change — check each listing. Several items come in multi-packs, so you'll have spares. Sizes are from the listings; clone boards can vary by about ±2 mm, so measure yours. Inside the box the stack is about 22 mm (battery 6 + ESP32 with pins ≈ 13 + GY-521 ≈ 3), which fits the 25 mm inside height. The resistor link is an Amazon.ca search."
+
+PARTS_NOTE = "All parts on Amazon.ca. Prices change — check each listing. Several items come in multi-packs, so you'll have spares. Everything plugs together with jumper wires; only the MAX30102's 4 header pins need soldering (about 5 minutes — ask a teacher). Power comes from a phone charger through the 3 m cable, so it runs all night."
 
 REFS = [
     "American Academy of Sleep Medicine. (2014). International classification of sleep disorders (3rd ed.).",

@@ -12,7 +12,7 @@ It listens to the device for a short time and checks:
   3. A finger is on the sensor
   4. Readings are valid and in a believable range
   5. The motion sensor feels gravity (~1 g)
-  6. Battery level (if the battery divider is fitted)
+  6. Battery level (if the battery divider is fitted), otherwise USB power
 
 USAGE
 -----
@@ -85,7 +85,7 @@ def run_checks(rows, statuses, seconds):
         b = batt[-1]
         out.append((PASS if b >= 30 else WARN if b >= 15 else FAIL, "Battery", f"{b}%"))
     else:
-        out.append((WARN, "Battery", "not measured (battery divider not fitted)"))
+        out.append((PASS, "Power", "USB power (no battery measured)"))
     return out
 
 

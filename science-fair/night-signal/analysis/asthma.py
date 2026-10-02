@@ -11,7 +11,7 @@ already measures the signals needed to watch for that:
   - Fast-breathing periods: above 20 breaths/min, or 25% above the person's
     own baseline
   - Oxygen dips per hour (ODI): drops of 3% or more
-  - Cough-like jolts picked up by the motion sensor in the case
+  - Cough-like jolts picked up by the motion sensor
   - Early-morning check: is the last part of the night worse than the start?
 
 USAGE

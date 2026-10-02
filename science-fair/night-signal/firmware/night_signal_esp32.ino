@@ -1,5 +1,5 @@
 /*
-  Night Signal — ESP32 wearable firmware  (v3: self-test + live status)
+  Night Signal — ESP32 wearable firmware  (v3.1: self-test + live status, no-solder wiring)
   ---------------------------------------------------------------------
   Streams blood oxygen (SpO2), heart rate, body position, finger contact and
   battery level over Bluetooth, once per second, and reports its own health so
@@ -8,17 +8,17 @@
   HARDWARE
     - ESP32 dev board (classic ESP32-WROOM-32 — needed for Bluetooth Classic)
     - MAX30102 pulse-oximeter / heart-rate sensor (I2C, in the finger cuff)
-    - MPU-6050 accelerometer (I2C, in the case — gives sleep position)
+    - MPU-6050 accelerometer on a GY-521 board (I2C — gives sleep position)
+    - Power: USB cable from a phone charger or power bank (lasts all night)
     - Optional: 2 x 100 kΩ resistors as a battery divider (BAT+ -> 100k -> GPIO34 -> 100k -> GND)
 
-  WIRING  (both sensors share the same I2C wires)
-    MAX30102 / MPU-6050      ESP32
-    VIN / VCC  ----------->  3V3
-    GND        ----------->  GND
-    SDA        ----------->  GPIO 21
-    SCL        ----------->  GPIO 22
-    Battery divider mid-point -> GPIO 34      (optional)
-    Status LED: on-board LED on GPIO 2 (or an external LED + 220 Ω on GPIO 2)
+  WIRING  (no soldering, no splitting: each sensor has its own pins and its own I2C bus)
+    MAX30102     ESP32 (right side)        GY-521 / MPU-6050   ESP32 (left side)
+    VIN  ------> 3V3                       VCC  -------------> VIN  (5 V from USB; the GY-521 has its own 3.3 V regulator)
+    GND  ------> GND                       GND  -------------> GND
+    SDA  ------> GPIO 21                   SDA  -------------> GPIO 33
+    SCL  ------> GPIO 22                   SCL  -------------> GPIO 32
+    Status LED: on-board LED on GPIO 2
 
   LIBRARY: "SparkFun MAX3010x Pulse and Proximity Sensor Library" (Library Manager)
 
@@ -29,7 +29,7 @@
       battery = percent (0-100), or -1 if no battery divider is fitted
 
   STATUS LINE (at start-up and every 30 s; lines starting with # are not data)
-        #STATUS,fw=3.0,max30102=OK,mpu6050=OK,battery=84
+        #STATUS,fw=3.1,max30102=OK,mpu6050=OK,battery=-1
 
   NOTE: Educational prototype only. Not a medical device.
 */
@@ -39,12 +39,13 @@
 #include "spo2_algorithm.h"    // Maxim SpO2 + heart-rate algorithm (expects 25 samples/s)
 #include "BluetoothSerial.h"
 
-#define FW_VERSION       "3.0"
+#define FW_VERSION       "3.1"
 #define HAS_BATTERY_DIV  0      // set to 1 after fitting the 2 x 100k divider to GPIO34
 #define BATTERY_PIN      34
 #define LED_PIN          2
 #define FINGER_IR_MIN    50000  // IR level above this means a finger is on the sensor
-#define I2C_SPEED        I2C_SPEED_FAST   // use I2C_SPEED_STANDARD if the motion sensor is on a long chest wire
+#define MPU_SDA          33     // the motion sensor has its own I2C bus (Wire1),
+#define MPU_SCL          32     // so the two sensors never share wires
 
 BluetoothSerial SerialBT;
 MAX30105 sensor;
@@ -65,22 +66,22 @@ unsigned long lastStatus = 0;
 void both(const String &s) { SerialBT.println(s); Serial.println(s); }
 
 void mpuWake() {
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x6B); Wire.write(0);                 // wake up (it boots asleep)
-  mpuOK = (Wire.endTransmission() == 0);
+  Wire1.beginTransmission(MPU_ADDR);
+  Wire1.write(0x6B); Wire1.write(0);               // wake up (it boots asleep)
+  mpuOK = (Wire1.endTransmission() == 0);
 }
 
 void mpuReadG(float &ax, float &ay, float &az) {   // acceleration in g
   ax = ay = az = 0.0;
   if (!mpuOK) return;
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x3B);
-  if (Wire.endTransmission(false) != 0) { mpuOK = false; return; }
-  Wire.requestFrom(MPU_ADDR, (uint8_t)6);
-  if (Wire.available() < 6) { mpuOK = false; return; }
-  int16_t rx = (Wire.read() << 8) | Wire.read();
-  int16_t ry = (Wire.read() << 8) | Wire.read();
-  int16_t rz = (Wire.read() << 8) | Wire.read();
+  Wire1.beginTransmission(MPU_ADDR);
+  Wire1.write(0x3B);
+  if (Wire1.endTransmission(false) != 0) { mpuOK = false; return; }
+  Wire1.requestFrom(MPU_ADDR, (uint8_t)6);
+  if (Wire1.available() < 6) { mpuOK = false; return; }
+  int16_t rx = (Wire1.read() << 8) | Wire1.read();
+  int16_t ry = (Wire1.read() << 8) | Wire1.read();
+  int16_t rz = (Wire1.read() << 8) | Wire1.read();
   ax = rx / 16384.0; ay = ry / 16384.0; az = rz / 16384.0;
 }
 
@@ -116,9 +117,10 @@ void setup() {
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
   SerialBT.begin("NightSignal");
-  Wire.begin();
+  Wire.begin();                                    // oxygen sensor: GPIO 21 / 22
+  Wire1.begin(MPU_SDA, MPU_SCL, 100000);           // motion sensor: SDA 33 / SCL 32, 100 kHz (fine on a long chest wire)
 
-  maxOK = sensor.begin(Wire, I2C_SPEED);
+  maxOK = sensor.begin(Wire, I2C_SPEED_FAST);
   if (maxOK) {
     // SparkFun's recommended SpO2 settings: 100 Hz sampling averaged by 4 = 25 samples/s.
     sensor.setup(60, 4, 2, 100, 411, 4096);
@@ -132,7 +134,7 @@ void setup() {
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));  // fast blink = fault
     delay(250);
     if (millis() - lastStatus > 2000) {
-      maxOK = sensor.begin(Wire, I2C_SPEED);
+      maxOK = sensor.begin(Wire, I2C_SPEED_FAST);
       if (maxOK) sensor.setup(60, 4, 2, 100, 411, 4096);
       sendStatus();
     }

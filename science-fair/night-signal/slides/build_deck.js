@@ -98,18 +98,18 @@ notes(s, "Scientific background", 50, "Sleep apnea is when the airway collapses 
 
 /* ---------------- 4. DESIGN ---------------- */
 s = slide(true); eyebrow(s, "DESIGN PROTOTYPE", C.TEALL); title(s, "The wearable", C.WHITE);
-const dh = img(s, "3d_assembled.jpg", 0.7, 1.75, 5.85); caption(s, "Assembled — case on a velcro strap, cable to the finger clip", 0.7, 1.75 + dh + 0.05, 5.85, C.NSOFT);
-img(s, "3d_exploded.jpg", 6.75, 1.75, 5.85); caption(s, "Exploded — every part at its real size", 6.75, 1.75 + dh + 0.05, 5.85, C.NSOFT);
-[["70 × 45 × 29 mm", "sensor case"], ["25 mm", "velcro strap"], ["14 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
+const dh = img(s, "3d_assembled.jpg", 0.7, 1.75, 5.85); caption(s, "3D design (v2) — sealed case on a velcro strap", 0.7, 1.75 + dh + 0.05, 5.85, C.NSOFT);
+img(s, "3d_exploded.jpg", 6.75, 1.75, 5.85); caption(s, "Exploded — every v2 part at its real size", 6.75, 1.75 + dh + 0.05, 5.85, C.NSOFT);
+[["Prototype v1", "armband + plug-in wires"], ["All night", "USB power"], ["14 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
   const x = 0.7 + i * 2.55; s.addText(k[0], { isTextBox: true, x, y: 6.0, w: 2.45, h: 0.45, margin: 0, fontFace: F, fontSize: 20, bold: true, color: C.TEALL });
   s.addText(k[1], { isTextBox: true, x, y: 6.45, w: 2.45, h: 0.3, margin: 0, fontFace: F, fontSize: 12, color: C.NSOFT }); });
 s.addImage({ path: A("qr_3d.png"), x: 11.55, y: 5.9, w: 1.05, h: 1.05, hyperlink: { url: LINKS.d3, tooltip: "Interactive 3D model" } });
 link(s, "Interactive 3D →", LINKS.d3, 10.15, 6.25, 1.35, C.TEALL, 12);
-notes(s, "Design", 40, "Here's the design. A small case — a 70 by 45 millimetre project box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.");
+notes(s, "Design", 40, "Here's the design. My working prototype, version 1, is built to be simple and reliable: the ESP32 sits in a running armband, each sensor plugs into its own pins with no soldered splices, and a USB cable powers it all night. A velcro finger clip holds the MAX30102 oxygen sensor. The 3D model shows version 2 — a 70 by 45 millimetre sealed case with its own battery on a velcro strap. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.");
 
 /* ---------------- 5. HOW IT WORKS ---------------- */
 s = slide(false); eyebrow(s, "DESIGN PROTOTYPE · HOW IT WORKS", C.TEAL); title(s, "From fingertip to sleep report", C.INK);
-const flow = [["Finger sensor", "MAX30102 · red + infrared light"], ["ESP32 in the case", "computes SpO₂ + pulse, reads position"], ["Bluetooth / USB", "one line of data every second"], ["App + analysis", "events, AHI, heart, breathing"]];
+const flow = [["Finger sensor", "MAX30102 · red + infrared light"], ["ESP32 on the arm", "computes SpO₂ + pulse, reads position"], ["Bluetooth / USB", "one line of data every second"], ["App + analysis", "events, AHI, heart, breathing"]];
 flow.forEach((f, i) => { const x = 0.7 + i * 3.1; card(s, x, 1.85, 2.75, 1.35, C.LIGHT, C.LINE);
   s.addText(f[0], { isTextBox: true, x: x + 0.15, y: 2.0, w: 2.45, h: 0.45, margin: 0, align: "center", fontFace: F, fontSize: 16, bold: true, color: C.INK });
   s.addText(f[1], { isTextBox: true, x: x + 0.15, y: 2.45, w: 2.45, h: 0.6, margin: 0, align: "center", fontFace: F, fontSize: 12, color: C.SOFT, valign: "top" });
@@ -133,15 +133,15 @@ s = slide(false); eyebrow(s, "EXPERIMENTAL PROTOCOL · KEY MANIPULATIONS", C.TEA
 [["Device check", "every session must pass check_device.py"],
  ["Accuracy test", "awake, side-by-side with a store-bought oximeter every 2 min for 30 min"],
  ["Detection test", "supervised, awake breath-holds of 10, 15 and 20 s — known events"],
- ["Battery runtime test", "full charge → stream until it stops, 3 times"],
- ["Recorded nights", "≥ 5 nights; case on upper arm, clip on index finger"]].forEach((st, i) => {
+ ["Full-night power test", "USB power → 8 h of data with no gaps"],
+ ["Recorded nights", "≥ 5 nights; armband on forearm, clip on index finger"]].forEach((st, i) => {
   const y = 1.9 + i * 0.95; s.addShape(p.ShapeType.roundRect, { x: 0.7, y, w: 0.55, h: 0.55, rectRadius: 0.1, fill: { color: C.TEAL } });
   s.addText(String(i + 1), { isTextBox: true, x: 0.7, y, w: 0.55, h: 0.55, margin: 0, align: "center", valign: "middle", fontFace: F, fontSize: 18, bold: true, color: C.WHITE });
   s.addText([{ text: st[0] + "  ", options: { bold: true, color: C.INK } }, { text: st[1], options: { color: C.SOFT } }], { isTextBox: true, x: 1.45, y: y + 0.07, w: 6.9, h: 0.5, margin: 0, fontFace: F, fontSize: 15 }); });
 card(s, 8.7, 1.85, 3.9, 4.6, C.LIGHT, C.LINE);
 s.addText("SAFETY", { isTextBox: true, x: 8.95, y: 2.05, w: 3.4, h: 0.3, margin: 0, fontFace: F, fontSize: 12, bold: true, color: C.CRIT, charSpacing: 2 });
 bullets(s, ["Breath-holds only while awake and supervised — never asleep", "Stop at any dizziness", "Parent/guardian consent", "Ethics committee form (human subject) submitted"], 8.95, 2.5, 3.5, C.INK, 14, 0.18);
-notes(s, "Protocol", 45, "My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a battery runtime test. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.");
+notes(s, "Protocol", 45, "My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a full-night power test — eight hours with no gaps. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.");
 
 /* ---------------- 7. THE APP ---------------- */
 s = slide(false); eyebrow(s, "DESIGN PROTOTYPE · THE APP", C.TEAL); title(s, "The companion app measures real data", C.INK);
@@ -206,9 +206,9 @@ bullets(s, ["Finger movement, pressure and cold hands distort the light signal",
 s.addText("Method", { isTextBox: true, x: 6.75, y: 1.8, w: 5.6, h: 0.4, margin: 0, fontFace: F, fontSize: 17, bold: true, color: C.PULSE });
 bullets(s, ["Awake breath-holds aren’t the same as real obstructive apnea", "Oxygen only — no airflow or brain-wave sensors like a lab study", "One person, few nights: can’t generalize yet", "Results so far use simulated example data"], 6.75, 2.3, 5.85, C.NSOFT, 14, 0.15);
 card(s, 0.7, 5.3, 11.9, 1.35, C.NIGHT2, C.GOLD);
-s.addText([{ text: "Engineering finding:  ", options: { bold: true, color: C.GOLD } }, { text: "Bluetooth draws about 100 mA, so the 500 mAh battery lasts roughly 4–5 hours — not a full night. I added a battery runtime test, and full nights use a small USB power bank.", options: { color: C.WHITE } }],
+s.addText([{ text: "Engineering finding:  ", options: { bold: true, color: C.GOLD } }, { text: "Bluetooth draws about 100 mA, so a 500 mAh battery would last only 4–5 hours — not a full night. So prototype v1 runs on USB power, and the sealed v2 case needs a bigger battery or Bluetooth Low Energy.", options: { color: C.WHITE } }],
   { isTextBox: true, x: 1.0, y: 5.45, w: 11.3, h: 1.1, margin: 0, fontFace: F, fontSize: 15, valign: "top" });
-notes(s, "Analysis: sources of error", 35, "Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: the battery only lasts four to five hours with Bluetooth, so I added a runtime test and use a power bank for full nights.");
+notes(s, "Analysis: sources of error", 35, "Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: Bluetooth draws about 100 milliamps, so a small 500 milliamp-hour battery would last only four to five hours. That's why version 1 runs on USB power all night, and version 2 needs a bigger battery or Bluetooth Low Energy.");
 
 /* ---------------- 13. SPIN-OFFS ---------------- */
 s = slide(false); eyebrow(s, "FURTHER CONSIDERATIONS · SPIN-OFFS", C.TEAL); title(s, "Same sensor, two more uses", C.INK); prelim(s);
@@ -238,47 +238,46 @@ notes(s, "Conclusion", 35, "Back to my hypothesis: so far it's supported — a l
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX A · MATERIALS", C.TEAL); title(s, "Parts, exact sizes and where to buy", C.INK, 28);
 const L = (t, u) => ({ text: t, options: { hyperlink: { url: u, tooltip: u }, color: C.TEAL } });
 const parts = [
-  ["AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)", "≈ 52 × 28 mm · 13 mm tall with pins", "Processor + Bluetooth Classic", L("Amazon.ca", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN")],
-  ["HiLetgo MAX30102 sensor", "14 × 14 mm", "SpO₂ + heart rate (finger clip)", L("Amazon.ca", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ")],
-  ["HiLetgo GY-521 MPU-6050 (3-pack)", "≈ 21 × 16 mm", "Sleep position + cough jolts", L("Amazon.ca", "https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A")],
-  ["LiPo 3.7 V 500 mAh 503035, JST PH2.0", "35 × 30 × 6 mm", "Battery (≈ 4–5 h — test it)", L("Amazon.ca", "https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3")],
-  ["Treedix TP4056 USB-C charger (6-pack)", "≈ 28 × 17 mm", "Charges the battery safely", L("Amazon.ca", "https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J")],
-  ["Rakstore TPS63020 3.3 V buck-boost", "1.8–5 V in → 3.3 V out", "Steady 3.3 V as the battery drains", L("Amazon.ca", "https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ")],
-  ["HoHaing ABS project box (8-pack)", "70 × 45 × 29 mm · inside 66 × 41 × 25 mm", "The sensor case", L("Amazon.ca", "https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG")],
-  ["VELCRO Brand 1 in × 30 ft roll", "25 mm wide · cut ≈ 300 mm + ≈ 80 mm", "Arm strap + finger loop", L("Amazon.ca", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1")],
-  ["100 kΩ resistors (2) + jumper wires", "1/4 W", "Battery-level reading on GPIO 34", L("Amazon.ca", "https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w")],
+  ["AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)", "≈ 52 × 28 mm · pins pre-soldered", "Processor + Bluetooth Classic", L("Amazon.ca", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN")],
+  ["HiLetgo MAX30102 sensor", "14 × 14 mm · 4 pins to solder", "SpO₂ + heart rate (finger clip)", L("Amazon.ca", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ")],
+  ["SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)", "≈ 21 × 16 mm", "Sleep position + cough jolts", L("Amazon.ca", "https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4")],
+  ["ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)", "20 cm each", "Plug-in wiring, no soldering", L("Amazon.ca", "https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78")],
+  ["Running armband phone pouch", "fits phones up to 6.9 in", "Holds the ESP32 on the forearm", L("Amazon.ca", "https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4")],
+  ["Anker Powerline+ USB-A to USB-C cable", "3 m (10 ft)", "All-night power from a phone charger", L("Amazon.ca", "https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS")],
+  ["Anker USB-C to USB-A adapter (2-pack)", "USB-C → USB-A", "Plug the cable into a MacBook", L("Amazon.ca", "https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61")],
+  ["VELCRO Brand 1 in × 30 ft roll", "25 mm wide · cut ≈ 80 mm", "Finger loop", L("Amazon.ca", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1")],
   ["Elite Medica fingertip pulse oximeter", "Health Canada authorized", "Reference for the accuracy test", L("Amazon.ca", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB")]];
 s.addTable([[H("Part"), H("Size"), H("Purpose"), H("Buy")]].concat(parts.map((r) => [r[0], r[1], r[2], { text: [r[3]] }])),
   { x: 0.7, y: 1.6, w: 11.9, colW: [4.2, 3.5, 2.8, 1.4], fontFace: F, fontSize: 11, color: C.INK, border: { type: "solid", color: C.LINE, pt: 1 }, valign: "middle", rowH: 0.42 });
-s.addText("Every part is on Amazon.ca (click Buy). Prices change and several items are multi-packs. Sizes from the listings — boards vary about ±2 mm, so measure yours.", { isTextBox: true, x: 0.7, y: 6.35, w: 11.9, h: 0.5, margin: 0, fontFace: F, fontSize: 11.5, italic: true, color: C.FAINT });
+s.addText("Every part is on Amazon.ca (click Buy). Prices change and several items are multi-packs. Only the MAX30102's 4 header pins need soldering (about 5 minutes); everything else plugs in.", { isTextBox: true, x: 0.7, y: 6.35, w: 11.9, h: 0.5, margin: 0, fontFace: F, fontSize: 11.5, italic: true, color: C.FAINT });
 notes(s, "Appendix A — materials", 0, "Appendix — not presented. Full parts list with exact dimensions, links and prices.");
 
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX B · FULL PROTOCOL", C.TEAL); title(s, "Full experimental protocol", C.INK, 28);
 const proto = [
-  "Build: wire MAX30102 and MPU-6050 to the ESP32 (SDA→21, SCL→22, 3V3, GND); battery → TP4056 → 3.3 V regulator → ESP32 3V3; battery divider to GPIO 34. Flash firmware v3.",
+  "Build: plug the MAX30102 into 3V3 / GND / GPIO 21 / 22 and the GY-521 into VIN / GND / SDA→GPIO 33 / SCL→GPIO 32 (two separate I²C buses, no splices); ESP32 in the armband, USB power. Flash firmware v3.1.",
   "Device check: run check_device.py; record the result. Do not continue unless it says READY.",
-  "Battery runtime test: charge fully, stream with a finger on the sensor, record the time until data stops. Repeat 3 times; report the average.",
+  "Full-night power test: on USB power, stream with a finger on the sensor for 8 h; confirm there are no gaps in the data.",
   "Accuracy test: seated, awake, 30 min. Every 2 min write down the reference oximeter value with the time. Analyse with validate.py (Bland–Altman, r).",
   "Detection test: supervised, awake; 5 breath-holds each of 10, 15 and 20 s, 2 min apart; log start/end times as ground-truth labels. Score with train_model.py.",
-  "Recorded nights: ≥ 5 nights; case on the upper arm, finger clip on the index finger; record.py logs all night; note bedtime and wake time.",
+  "Recorded nights: ≥ 5 nights; armband on the forearm, finger clip on the index finger; record.py logs all night; note bedtime and wake time.",
   "Analysis: analyze.py, signals.py, position.py, heart.py, asthma.py on each night; rebuild the app and slides with build_app.py and build_deck.js.",
-  "Controls: same finger, cuff tightness, room temperature, firmware v3 and detection settings (3 % drop, 10 s, 120 s baseline)."];
+  "Controls: same finger, cuff tightness, room temperature, firmware v3.1 and detection settings (3 % drop, 10 s, 120 s baseline)."];
 proto.forEach((t, i) => { const y = 1.6 + i * 0.64;
   s.addText(String(i + 1), { isTextBox: true, x: 0.7, y, w: 0.4, h: 0.4, margin: 0, fontFace: F, fontSize: 14, bold: true, color: C.TEAL });
   s.addText(t, { isTextBox: true, x: 1.1, y, w: 11.5, h: 0.6, margin: 0, fontFace: F, fontSize: 12.5, color: C.INK, valign: "top" }); });
 notes(s, "Appendix B — protocol", 0, "Appendix — not presented. Step-by-step protocol including controls.");
 
-s = slide(false); appendix(s); eyebrow(s, "APPENDIX C · DESIGN PLANS", C.TEAL); title(s, "Wiring and case layout", C.INK, 28);
+s = slide(false); appendix(s); eyebrow(s, "APPENDIX C · DESIGN PLANS", C.TEAL); title(s, "Wiring (v1) and case layout (v2)", C.INK, 28);
 s.addTable([[H("From"), H("To (ESP32)"), H("Notes")],
-  ["MAX30102 VIN / GND", "3V3 / GND", "never 5 V"], ["MAX30102 SDA / SCL", "GPIO 21 / 22", "shared I²C bus"],
-  ["GY-521 (MPU-6050) VCC / GND", "3V3 / GND", "address 0x68"], ["MPU-6050 SDA / SCL", "GPIO 21 / 22", "wired in parallel"],
-  ["Battery + / −", "TP4056 B+ / B−", "500 mAh LiPo"], ["TP4056 OUT+ / OUT−", "Regulator VIN / GND", "TPS63020 3.3 V"],
-  ["Regulator VOUT", "3V3", "steady 3.3 V"], ["Battery divider (2 × 100 kΩ)", "GPIO 34", "battery %"], ["Status LED", "GPIO 2", "blinks each reading"]],
+  ["MAX30102 VIN / GND", "3V3 / GND", "never 5 V"], ["MAX30102 SDA / SCL", "GPIO 21 / 22", "I²C bus 0"],
+  ["GY-521 (MPU-6050) VCC / GND", "VIN / GND", "5 V from USB"], ["GY-521 SDA / SCL", "GPIO 33 / 32", "I²C bus 1, 100 kHz"],
+  ["Power", "USB-C port", "3 m cable to charger"], ["Status LED", "GPIO 2", "blinks each reading"]],
   { x: 0.7, y: 1.6, w: 6.7, colW: [3.0, 1.9, 1.8], fontFace: F, fontSize: 11.5, color: C.INK, border: { type: "solid", color: C.LINE, pt: 1 }, valign: "middle", rowH: 0.42 });
-const eh = img(s, "3d_exploded.jpg", 7.7, 1.6, 4.9); caption(s, "Stack inside the 25 mm-tall case", 7.7, 1.6 + eh + 0.05, 4.9);
-s.addText("Layer heights: battery 6 mm + ESP32 with pins ≈ 13 mm + GY-521 ≈ 3 mm ≈ 22 mm, inside the box’s 25 mm. Battery and TP4056 sit side by side on the bottom (35 + 17 = 52 mm of the 66 mm length).",
+img(s, "wiring_v1.png", 2.1, 4.75, 3.9);
+const eh = img(s, "3d_exploded.jpg", 7.7, 1.6, 4.9); caption(s, "v2: stack inside the 25 mm-tall case", 7.7, 1.6 + eh + 0.05, 4.9);
+s.addText("Planned v2: a 70 × 45 × 29 mm box with its own battery. Layer heights: battery 6 mm + ESP32 with pins ≈ 13 mm + GY-521 ≈ 3 mm ≈ 22 mm, inside the box’s 25 mm. v1 uses each sensor’s own pins, so nothing needs splicing.",
   { isTextBox: true, x: 7.7, y: 1.6 + eh + 0.45, w: 4.9, h: 1.2, margin: 0, fontFace: F, fontSize: 12, color: C.SOFT, valign: "top" });
-notes(s, "Appendix C — design plans", 0, "Appendix — not presented. Wiring table and the internal layout with layer heights.");
+notes(s, "Appendix C — design plans", 0, "Appendix — not presented. Prototype v1 wiring table, and the planned v2 case layout with layer heights.");
 
 s = slide(false); appendix(s); eyebrow(s, "APPENDIX D · DATA AND ADDITIONAL PICTURES", C.TEAL); title(s, "More data and pictures", C.INK, 28);
 const p1 = phone(s, "phone_heart.png", 0.85, 1.65, 2.3); caption(s, "App · heart tab", 0.85, 1.65 + p1 + 0.12, 2.3);

@@ -442,7 +442,7 @@
       out.push(check(val>=.7?"ok":val>=.4?"warn":"crit","Valid readings",Math.round(val*100)+"% (last 30 s)"));
       out.push(check(g>=.9?"ok":"crit","Motion sensor feels gravity",Math.round(g*100)+"% near 1 g"));
       var b=r.battery>=0?r.battery:(S&&+S.battery>=0?+S.battery:-1);
-      out.push(b<0? check("warn","Battery","not measured") : check(b>=30?"ok":b>=15?"warn":"crit","Battery",b+"%"));
+      out.push(b<0? check("ok","Power","USB (no battery measured)") : check(b>=30?"ok":b>=15?"warn":"crit","Battery",b+"%"));
     } else { ["Finger on sensor","Valid readings","Motion sensor feels gravity","Battery"].forEach(function(n){ out.push(check("",n,"—")); }); }
     $("checks").innerHTML=out.join("");
     $("hAge").textContent = rows.length? "· "+rows.length+" readings":"";

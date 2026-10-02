@@ -33,7 +33,7 @@ Sleep apnea is when the airway collapses during sleep and breathing stops for te
 
 ## 4. Design  (40 s)
 
-Here's the design. A small case — a 70 by 45 millimetre project box — rides on a velcro strap and holds the ESP32 processor, battery, charger and a motion sensor. A cable runs to a velcro finger clip with the MAX30102 oxygen sensor. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.
+Here's the design. My working prototype, version 1, is built to be simple and reliable: the ESP32 sits in a running armband, each sensor plugs into its own pins with no soldered splices, and a USB cable powers it all night. A velcro finger clip holds the MAX30102 oxygen sensor. The 3D model shows version 2 — a 70 by 45 millimetre sealed case with its own battery on a velcro strap. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.
 
 ## 5. How it works  (35 s)
 
@@ -41,7 +41,7 @@ The data path: the finger sensor's light readings go to the ESP32, which calcula
 
 ## 6. Protocol  (45 s)
 
-My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a battery runtime test. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.
+My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a full-night power test — eight hours with no gaps. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.
 
 ## 7. The app  (35 s)
 
@@ -65,7 +65,7 @@ What does it mean? First, accuracy within about one and a half percent is in the
 
 ## 12. Analysis: sources of error  (35 s)
 
-Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: the battery only lasts four to five hours with Bluetooth, so I added a runtime test and use a power bank for full nights.
+Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: Bluetooth draws about 100 milliamps, so a small 500 milliamp-hour battery would last only four to five hours. That's why version 1 runs on USB power all night, and version 2 needs a bigger battery or Bluetooth Low Energy.
 
 ## 13. Spin-offs  (40 s)
 

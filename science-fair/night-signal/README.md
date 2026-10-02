@@ -15,9 +15,9 @@ position all night, streams it over **Bluetooth**, and automatically detects
 ```
 night-signal/
 ├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
-├── BUILD_GUIDE.md                   # assembly, wiring, case, Bluetooth pairing, troubleshooting
+├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting
 ├── firmware/
-│   └── night_signal_esp32.ino        # v3: sensors + self-test + finger + battery, 1 reading/s
+│   └── night_signal_esp32.ino        # v3.1: sensors + self-test + finger, 1 reading/s
 ├── analysis/
 │   ├── protocol.py        # the device's line format (shared by every script)
 │   ├── check_device.py    # ✅ run before every recording: proves the device works
@@ -77,38 +77,39 @@ python fake_device.py --broken-mpu   # check_device should now say NOT READY
 
 ## The real device
 
-**Step-by-step assembly and Bluetooth pairing: see [`BUILD_GUIDE.md`](BUILD_GUIDE.md).**
+**Step-by-step assembly (no soldering except 4 pins) and Bluetooth pairing: see [`BUILD_GUIDE.md`](BUILD_GUIDE.md).**
 
-### Parts (exact sizes)
+### Parts (exact sizes) — the no-solder kit
 
 | Part (Amazon.ca) | Size |
 |------|------|
-| [AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm · 13 mm tall with pins |
-| [HiLetgo MAX30102 sensor](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | 14 × 14 mm |
-| [HiLetgo GY-521 MPU-6050 (3-pack)](https://www.amazon.ca/Hiletgo-MPU6050-Acc%C3%A9l%C3%A9rom%C3%A8tre-gyroscope-convertisseur/dp/B00LP25V1A) | ≈ 21 × 16 mm |
-| [LiPo 3.7 V 500 mAh 503035, JST PH2.0](https://www.amazon.ca/Battery-Rechargeable-Lithium-Polymer-Connector/dp/B07S84SBV3) | 35 × 30 × 6 mm |
-| [Treedix TP4056 USB-C charger (6-pack)](https://www.amazon.ca/Treedix-Lithium-Charging-Protection-Functions/dp/B09LTVTY5J) | ≈ 28 × 17 mm |
-| [Rakstore TPS63020 3.3 V buck-boost](https://www.amazon.ca/Rakstore-TPS63020-Automatic-Buck-Boost-Converter/dp/B09V4SHLTJ) | 1.8–5 V in → 3.3 V out |
-| [HoHaing ABS project box (8-pack)](https://www.amazon.ca/HoHaing-Electrical-Junction-Enclosure-Electronic/dp/B0CGV22KKG) | 70 × 45 × 29 mm · inside 66 × 41 × 25 mm |
-| [VELCRO Brand 1 in × 30 ft roll](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 25 mm wide · cut ≈ 300 mm + ≈ 80 mm |
-| [100 kΩ resistors (2) + jumper wires](https://www.amazon.ca/s?k=100k+ohm+resistor+1%2F4w) | 1/4 W |
+| [AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm · pins pre-soldered |
+| [HiLetgo MAX30102 sensor](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | 14 × 14 mm · 4 header pins to solder |
+| [SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)](https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4) | ≈ 21 × 16 mm |
+| [ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)](https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78) | 20 cm each |
+| [Running armband phone pouch](https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4) | fits phones up to 6.9 in |
+| [Anker Powerline+ USB-A to USB-C cable](https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS) | 3 m (10 ft) |
+| [Anker USB-C to USB-A adapter (2-pack)](https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61) | for a USB-C-only MacBook |
+| [VELCRO Brand 1 in × 30 ft roll](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 25 mm wide · cut ≈ 80 mm |
 | [Elite Medica fingertip pulse oximeter](https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB) | Health Canada authorized |
 
-All parts on Amazon.ca. Prices change — check each listing. Several items come in multi-packs, so you'll have spares. Sizes are from the listings; clone boards can vary by about ±2 mm, so measure yours. Inside the box the stack is about 22 mm (battery 6 + ESP32 with pins ≈ 13 + GY-521 ≈ 3), which fits the 25 mm inside height. The resistor link is an Amazon.ca search.
+You probably already have a USB phone charger (the wall plug) and black electrical tape.
+Everything plugs together with jumper wires. Only the MAX30102's 4 header pins need
+soldering, which takes about 5 minutes for a teacher or anyone with a soldering iron.
 
-### Wiring
+### Wiring (each sensor gets its own pins — nothing is shared or spliced)
 
-| From | To (ESP32) |
-|------|------------|
-| MAX30102 + MPU-6050 VIN/VCC, GND | 3V3, GND |
-| MAX30102 + MPU-6050 SDA, SCL | GPIO 21, GPIO 22 (shared) |
-| Battery → TP4056 → regulator VOUT | 3V3 |
-| Battery+ → 100 kΩ → **GPIO 34** → 100 kΩ → GND | battery % (set `HAS_BATTERY_DIV 1`) |
+| Sensor pin | ESP32 pin | Notes |
+|------|------------|-------|
+| MAX30102 VIN / GND | 3V3 / GND | right-hand side of the board |
+| MAX30102 SDA / SCL | GPIO 21 / GPIO 22 | I²C bus 0 |
+| GY-521 VCC / GND | VIN / GND | left-hand side; 5 V from USB, the GY-521 has its own 3.3 V regulator |
+| GY-521 SDA / SCL | GPIO 33 / GPIO 32 | I²C bus 1 (100 kHz, fine on a long chest wire) |
 
-### Power — an honest note
-Bluetooth draws roughly 100 mA, so a 500 mAh battery lasts about **4–5 hours**,
-not a whole night. Measure it with the battery runtime test (protocol step 3);
-for full nights, plug the case into a small USB power bank.
+### Power
+Bluetooth draws roughly 100 mA, so a small 500 mAh battery would last only about
+**4–5 hours**. Prototype v1 therefore runs from a USB phone charger through a 3 m cable,
+which lasts all night. The 3D model shows the planned v2: a sealed case with its own battery.
 
 ### Every session
 
