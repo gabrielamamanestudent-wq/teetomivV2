@@ -1,4 +1,4 @@
-# Night Signal: build guide (easy version, no tools)
+# Night Signal: buy, build, connect (easy version, no tools)
 
 This is the easy version. **Everything plugs together with wires**: there is no
 splicing, no gluing and no battery wiring, and the only tool you need is scissors.
@@ -15,7 +15,20 @@ them in your acknowledgements.
 
 ## 0. What you need
 
-- **Parts:** everything on the Amazon.ca shopping list (`README.md`)
+**Parts (Amazon.ca).** Order 1–6 first: that's everything you need to get readings.
+
+| # | Part | Size | Why |
+|---|---|---|---|
+| 1 | [AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm · pins pre-soldered | Processor + Bluetooth Classic |
+| 2 | [HiLetgo MAX30102 sensor](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | 14 × 14 mm · 4 pins to solder | SpO₂ + heart rate (finger clip) |
+| 3 | [SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)](https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4) | ≈ 21 × 16 mm | Sleep position + cough jolts |
+| 4 | [ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)](https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78) | 20 cm each | Plug-in wiring, no soldering |
+| 5 | [Running armband phone pouch](https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4) | fits phones up to 6.9 in | Holds the ESP32 on the forearm |
+| 6 | [Anker Powerline+ USB-A to USB-C cable](https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS) | 3 m (10 ft) | All-night power from a phone charger |
+| 7 | [Anker USB-C to USB-A adapter (2-pack)](https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61) | USB-C → USB-A | Plug the cable into a MacBook |
+| 8 | [VELCRO Brand 1 in × 30 ft roll](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 25 mm wide · cut ≈ 80 mm | Finger loop |
+| 9 | [Elite Medica fingertip pulse oximeter](https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB) | Health Canada authorized | Reference for the accuracy test |
+
 - **From home:** a USB phone charger (the wall plug), scissors, black electrical tape
 
 ---
