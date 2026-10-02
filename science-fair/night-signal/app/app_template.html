@@ -1,0 +1,504 @@
+<title>Night Signal App</title>
+<meta name="description" content="The Night Signal companion app — sleep report, live device connection with self-check, heart and asthma spin-offs, and the project progress log.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#070d1a; --bg2:#0b1424; --card:#111c30; --card2:#0d1729; --line:#22324c; --line2:#2c4060;
+    --ink:#edf2fb; --soft:#9fb0cc; --faint:#6c7d99;
+    --teal:#3fb8cc; --mint:#2bb3a6; --pulse:#f27aa6; --gold:#e0a949; --ok:#4bbd80; --warn:#e0a949; --crit:#ec6b6b; --blue:#6f95ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;line-height:1.5}
+  .app{max-width:1040px;margin:0 auto;padding-inline:18px;padding-block:0 30px}
+  h1,h2,h3{font-family:"Sora",sans-serif;margin:0;text-wrap:balance}
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.16em;font-size:.68rem;color:var(--soft)}
+
+  /* top bar + tabs */
+  .top{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 82%,rgba(7,13,26,0));padding-block:16px 10px}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:30px;height:30px;border-radius:9px;background:radial-gradient(circle at 35% 35%,#5fd6e6,#1f8a9c);box-shadow:0 0 0 4px rgba(63,184,204,.15)}
+  .brand b{font-family:"Sora",sans-serif;font-size:1.1rem}
+  .conn{font-size:.78rem;padding:5px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--soft)}
+  .conn.on{color:var(--ok);border-color:rgba(75,189,128,.5);background:rgba(75,189,128,.08)}
+  .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{font:inherit;font-size:.9rem;font-weight:600;color:var(--soft);background:var(--card2);border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;cursor:pointer;white-space:nowrap}
+  .tab[aria-selected="true"]{background:var(--teal);color:#05202a;border-color:var(--teal)}
+  .tab:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  section.view{display:none;padding-top:6px}
+  section.view.on{display:block}
+
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media (max-width:760px){ .g3{grid-template-columns:repeat(2,minmax(0,1fr))} .split{grid-template-columns:1fr!important} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+  .card h3{font-size:1rem;margin-bottom:10px}
+  .sect{font-family:"Sora",sans-serif;font-size:1.05rem;font-weight:600;margin:22px 2px 10px}
+  .muted{color:var(--soft)} .faint{color:var(--faint);font-size:.82rem}
+  .badge{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .b-ok{background:rgba(75,189,128,.15);color:var(--ok)} .b-warn{background:rgba(224,169,73,.15);color:var(--warn)}
+  .b-crit{background:rgba(236,107,107,.15);color:var(--crit)} .b-idle{background:rgba(159,176,204,.12);color:var(--soft)}
+  .example{display:inline-block;font-size:.74rem;color:var(--gold);border:1px solid rgba(224,169,73,.4);border-radius:8px;padding:3px 9px;margin-bottom:10px}
+
+  /* hero */
+  .hero{display:flex;align-items:center;gap:20px;background:linear-gradient(150deg,#16294a,#0d1729);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:12px}
+  .hero .big{font-family:"Sora",sans-serif;font-size:1.35rem;font-weight:700}
+  .hero .kv{margin-top:8px;font-size:.92rem;color:var(--soft)}
+  .hero .kv b{font-family:"IBM Plex Mono",monospace;color:var(--teal);font-size:1.15rem}
+  .tile .v{font-family:"Sora",sans-serif;font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums}
+  .tile .v small{font-size:.78rem;color:var(--soft);font-weight:500;font-family:"IBM Plex Sans",sans-serif;margin-left:3px}
+  .tile .k{color:var(--soft);font-size:.8rem}
+  .chart svg{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.76rem;color:var(--soft);margin-top:6px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+  .posrow{display:grid;grid-template-columns:72px 1fr 124px;white-space:nowrap;align-items:center;gap:10px;margin:8px 0;font-size:.86rem}
+  .track{height:10px;border-radius:999px;background:var(--card2);overflow:hidden}
+  .fill{height:100%;border-radius:999px}
+
+  /* live */
+  .bigread{display:flex;align-items:baseline;gap:6px}
+  .bigread .n{font-family:"Sora",sans-serif;font-size:2.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .bigread .u{color:var(--soft)}
+  .checks{list-style:none;margin:0;padding:0}
+  .checks li{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+  .checks li:last-child{border-bottom:0}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--faint)}
+  .dot.ok{background:var(--ok);box-shadow:0 0 0 4px rgba(75,189,128,.15)} .dot.warn{background:var(--warn)} .dot.crit{background:var(--crit);box-shadow:0 0 0 4px rgba(236,107,107,.15)}
+  .btn{font:inherit;font-size:.92rem;font-weight:600;border-radius:11px;padding:10px 16px;cursor:pointer;border:1px solid var(--line2);background:var(--card2);color:var(--ink)}
+  .btn.primary{background:var(--teal);border-color:var(--teal);color:#05202a}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btnrow{display:flex;flex-wrap:wrap;gap:8px}
+  .msg{font-size:.84rem;color:var(--soft);margin-top:10px;min-height:1.2em}
+
+  /* progress */
+  .timeline{list-style:none;margin:0;padding:0}
+  .timeline li{display:grid;grid-template-columns:96px 1fr auto;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);align-items:start}
+  .timeline li:last-child{border-bottom:0}
+  .timeline .d{font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--teal);padding-top:2px}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:zoom-in}
+  figure img{display:block;width:100%;height:150px;object-fit:cover;background:#0a1222}
+  figcaption{padding:9px 12px;font-size:.8rem;color:var(--soft)}
+  figcaption b{color:var(--ink);display:block;font-size:.85rem}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:.84rem}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--card2);font-family:"IBM Plex Mono",monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+  td.num{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  a{color:var(--teal)}
+  ol.steps{margin:0;padding-left:20px} ol.steps li{margin-bottom:7px;color:var(--soft)} ol.steps b{color:var(--ink)}
+  ul.refs{margin:0;padding-left:18px} ul.refs li{margin-bottom:7px;color:var(--soft);font-size:.86rem}
+  .lightbox{position:fixed;inset:0;background:rgba(3,6,12,.92);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;cursor:zoom-out}
+  .lightbox img{max-width:100%;max-height:88vh;border-radius:10px}
+  .lightbox[hidden]{display:none}
+  footer{margin-top:26px;color:var(--faint);font-size:.78rem;text-align:center}
+</style>
+
+<div class="app">
+  <div class="top">
+    <div class="brandrow">
+      <div class="brand"><span class="logo"></span><b>Night Signal</b></div>
+      <span class="conn" id="connPill">Device not connected</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="sleep" aria-selected="true">Sleep</button>
+      <button class="tab" role="tab" data-tab="live" aria-selected="false">Live</button>
+      <button class="tab" role="tab" data-tab="heart" aria-selected="false">Heart</button>
+      <button class="tab" role="tab" data-tab="asthma" aria-selected="false">Asthma</button>
+      <button class="tab" role="tab" data-tab="progress" aria-selected="false">Progress</button>
+    </nav>
+  </div>
+
+  <!-- ================= SLEEP ================= -->
+  <section class="view on" id="v-sleep">
+    <span class="example" id="sleepSource"></span>
+    <div class="hero">
+      <svg width="116" height="116" viewBox="0 0 116 116" aria-label="Sleep score">
+        <circle cx="58" cy="58" r="47" fill="none" stroke="#1c2a44" stroke-width="12"/>
+        <circle id="ring" cx="58" cy="58" r="47" fill="none" stroke="#3fb8cc" stroke-width="12" stroke-linecap="round"
+          transform="rotate(-90 58 58)" stroke-dasharray="295.3" stroke-dashoffset="295.3"/>
+        <text id="score" x="58" y="62" text-anchor="middle" font-family="Sora,sans-serif" font-size="32" font-weight="800" fill="#edf2fb">–</text>
+        <text x="58" y="81" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="#9fb0cc">SLEEP SCORE</text>
+      </svg>
+      <div>
+        <div class="eyebrow" id="nightDate"></div>
+        <div class="big" id="verdict">–</div>
+        <div class="kv">Apnea events: <b id="ahi">–</b> per hour &nbsp;<span class="badge" id="sev">–</span></div>
+        <div class="kv" id="nightLen"></div>
+      </div>
+    </div>
+
+    <div class="card chart">
+      <h3>Blood oxygen through the night</h3>
+      <div id="oxChart"></div>
+      <div class="legend"><span><i style="background:#3fb8cc"></i>Blood oxygen (SpO₂)</span><span><i style="background:rgba(236,107,107,.55)"></i>Apnea event</span><span><i style="background:#6c7d99"></i>90% low-oxygen line</span></div>
+    </div>
+
+    <div class="sect">The numbers</div>
+    <div class="grid g3" id="sleepTiles"></div>
+
+    <div class="grid g2 split" style="margin-top:12px">
+      <div class="card"><h3>Where you slept</h3><div id="posBars"></div><p class="faint" id="posNote"></p></div>
+      <div class="card"><h3>Can you trust these numbers?</h3><div id="trust"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Load a recorded night</h3>
+      <p class="muted" style="margin:0 0 10px;font-size:.9rem">Open a CSV from <span class="mono">record.py</span> and the report above updates from your real data. Everything stays on this device.</p>
+      <label class="btn primary" for="file" style="display:inline-block">Choose night .csv</label>
+      <input type="file" id="file" accept=".csv,text/csv" hidden>
+      <div class="msg" id="loadMsg"></div>
+    </div>
+  </section>
+
+  <!-- ================= LIVE ================= -->
+  <section class="view" id="v-live">
+    <div class="card">
+      <h3>Connect the wearable</h3>
+      <p class="muted" style="margin:0 0 12px;font-size:.9rem">Plug the case in by USB, or pair “NightSignal” over Bluetooth, then connect. The app reads the device directly and checks it every second.</p>
+      <div class="btnrow">
+        <button class="btn primary" id="bConnect">Connect device</button>
+        <button class="btn" id="bDemo">Run demo device</button>
+        <button class="btn" id="bStop" disabled>Disconnect</button>
+        <button class="btn" id="bSave" disabled>Save session (.csv)</button>
+      </div>
+      <div class="msg" id="liveMsg"></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:12px">
+      <div class="card"><div class="eyebrow">Blood oxygen</div><div class="bigread"><span class="n" id="lSpo2">–</span><span class="u">%</span></div></div>
+      <div class="card"><div class="eyebrow">Heart rate</div><div class="bigread"><span class="n" id="lHr">–</span><span class="u">bpm</span></div></div>
+      <div class="card"><div class="eyebrow">Position</div><div class="bigread"><span class="n" id="lPos" style="font-size:1.8rem">–</span></div></div>
+    </div>
+
+    <div class="grid g2 split" style="margin-top:12px">
+      <div class="card">
+        <h3>Device health <span class="faint" id="hAge"></span></h3>
+        <ul class="checks" id="checks"></ul>
+      </div>
+      <div class="card chart">
+        <h3>Last 2 minutes</h3>
+        <div id="liveChart"></div>
+        <div class="legend"><span><i style="background:#3fb8cc"></i>SpO₂</span><span><i style="background:#f27aa6"></i>Heart rate</span></div>
+        <p class="faint" id="liveStats" style="margin:8px 0 0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HEART ================= -->
+  <section class="view" id="v-heart">
+    <span class="example">Example night · heart spin-off (simulated)</span>
+    <div class="card chart"><h3>Heart rate through the night</h3><div id="hrChart"></div>
+      <div class="legend"><span><i style="background:rgba(236,107,107,.55)"></i>Racing heart (&gt;100 bpm)</span><span><i style="background:rgba(111,149,255,.55)"></i>Very slow (&lt;40 bpm)</span><span><i style="background:rgba(224,169,73,.6)"></i>Irregular rhythm</span></div></div>
+    <div class="sect">Heart summary</div>
+    <div class="grid g3" id="heartTiles"></div>
+    <div class="card" style="margin-top:12px"><h3>Flagged moments</h3><div id="heartEps"></div>
+      <p class="faint" style="margin:10px 0 0">Why it matters: the same fingertip light that measures oxygen also sees every heartbeat, so one wearable can screen for heart patterns too. Screening only — confirming an arrhythmia needs an ECG and a doctor.</p></div>
+  </section>
+
+  <!-- ================= ASTHMA ================= -->
+  <section class="view" id="v-asthma">
+    <span class="example">Example night · asthma spin-off (simulated)</span>
+    <div class="card chart"><h3>Breathing rate, every 5 minutes</h3><div id="brChart"></div>
+      <div class="legend"><span><i style="background:#3fb8cc"></i>Breaths per minute</span><span><i style="background:rgba(236,107,107,.45)"></i>Fast breathing</span><span><i style="background:#e0a949"></i>Cough-like jolt</span></div></div>
+    <div class="sect">Asthma summary</div>
+    <div class="grid g3" id="asthmaTiles"></div>
+    <div class="card" style="margin-top:12px"><h3>What this shows</h3><p class="muted" id="asthmaVerdict" style="margin:0"></p>
+      <p class="faint" style="margin:10px 0 0">Night-time asthma often gets worse around 4 a.m. Breathing rate comes from the heart-rate rhythm, and coughs from sudden jolts of the motion sensor — no extra hardware. Screening only.</p></div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section class="view" id="v-progress">
+    <div class="card"><h3>Project timeline</h3><ul class="timeline" id="timeline"></ul></div>
+    <div class="sect">Screenshots &amp; prototype</div>
+    <div class="gallery" id="gallery"></div>
+    <p class="faint">Tap any picture to enlarge. Prototype photos: put them in the app’s <span class="mono">photos/</span> folder (prototype-1.jpg, prototype-2.jpg …) and they appear here automatically.</p>
+    <div class="sect">Experimental protocol</div>
+    <div class="card"><ol class="steps" id="protocol"></ol></div>
+    <div class="sect">Parts — exact sizes &amp; where to buy</div>
+    <div class="tablewrap"><table><thead><tr><th>Part</th><th>Size</th><th>Why</th><th>Where</th><th>≈ Price</th></tr></thead><tbody id="parts"></tbody></table></div>
+    <p class="faint" id="partsTotal"></p>
+    <div class="grid g2 split" style="margin-top:12px">
+      <div class="card"><h3>Preliminary bibliography</h3><ul class="refs" id="refs"></ul></div>
+      <div class="card"><h3>Project links</h3><ul class="refs" id="links"></ul><p class="faint" style="margin:8px 0 0">Teachers: leave feedback with the comment button on this page.</p></div>
+    </div>
+  </section>
+
+  <footer>Night Signal · educational prototype — not a medical device and not for diagnosis.</footer>
+</div>
+<div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""></div>
+
+<script>window.NS_DATA = /*__DATA__*/null;</script>
+<script>
+(function(){
+  var D = window.NS_DATA;
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  // ---------- tabs ----------
+  var tabs=[].slice.call(document.querySelectorAll(".tab"));
+  function show(name){ tabs.forEach(function(t){ t.setAttribute("aria-selected", t.dataset.tab===name?"true":"false"); });
+    [].forEach.call(document.querySelectorAll("section.view"),function(s){ s.classList.toggle("on", s.id==="v-"+name); });
+    try{ localStorage.setItem("ns-tab",name); }catch(e){} }
+  tabs.forEach(function(t){ t.onclick=function(){ show(t.dataset.tab); }; });
+
+  // ---------- generic SVG line chart ----------
+  // opts: series:[{values,color,width}], yMin,yMax,yStep, startClock (minutes after midnight), stepMin (minutes per point),
+  //       bands:[{a,b,color}], hlines:[{y,color,dash,label}], ticks:[{x,label}] optional, marks:[{x,color}]
+  function chart(o){
+    var W=chartWidth(), H=Math.round((o.h||300)*(W<700?0.92:W/1000)), L=46,R=12,T=14,B=30, n=o.n;
+    function X(i){ return L+(n<=1?0:i/(n-1))*(W-L-R); }
+    function Y(v){ return T+(1-(v-o.yMin)/(o.yMax-o.yMin))*(H-T-B); }
+    var s=['<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(o.label||"chart")+'">'];
+    for(var y=o.yMin;y<=o.yMax+1e-9;y+=o.yStep){
+      s.push('<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(y).toFixed(1)+'" y2="'+Y(y).toFixed(1)+'" stroke="#1d2a40" stroke-width="1"/>');
+      s.push('<text x="'+(L-8)+'" y="'+(Y(y)+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="#6c7d99" font-family="IBM Plex Mono,monospace">'+y+'</text>'); }
+    (o.bands||[]).forEach(function(b){ var x0=X(b.a),x1=X(b.b); s.push('<rect x="'+x0.toFixed(1)+'" y="'+T+'" width="'+Math.max(2.5,x1-x0).toFixed(1)+'" height="'+(H-T-B)+'" fill="'+b.color+'"/>'); });
+    (o.hlines||[]).forEach(function(h){ s.push('<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(h.y).toFixed(1)+'" y2="'+Y(h.y).toFixed(1)+'" stroke="'+h.color+'" stroke-width="1.5" stroke-dasharray="'+(h.dash||"6 6")+'"/>');
+      if(h.label) s.push('<text x="'+(L+8)+'" y="'+(Y(h.y)-6).toFixed(1)+'" font-size="12" fill="'+h.color+'" font-family="IBM Plex Sans,sans-serif">'+esc(h.label)+'</text>'); });
+    (o.marks||[]).forEach(function(m){ s.push('<line x1="'+X(m.x).toFixed(1)+'" x2="'+X(m.x).toFixed(1)+'" y1="'+(H-B-16)+'" y2="'+(H-B-2)+'" stroke="'+m.color+'" stroke-width="3"/>'); });
+    (o.series||[]).forEach(function(se){ var p=se.values.map(function(v,i){ return v==null?null:X(i).toFixed(1)+","+Y(Math.max(o.yMin,Math.min(o.yMax,v))).toFixed(1); }).filter(Boolean).join(" ");
+      s.push('<polyline points="'+p+'" fill="none" stroke="'+se.color+'" stroke-width="'+(se.width||2.6)+'" stroke-linejoin="round" stroke-linecap="round"/>'); });
+    (o.ticks||[]).forEach(function(t){ s.push('<text x="'+X(t.x).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" fill="#6c7d99" font-family="IBM Plex Mono,monospace">'+t.label+'</text>'); });
+    s.push("</svg>"); return s.join("");
+  }
+  // draw charts at roughly the on-screen width so labels stay readable on phones
+  function chartWidth(){ return Math.max(380, Math.min(1000, (window.innerWidth||1000)-60)); }
+  function hourTicks(n,startClock,stepMin){ var t=[]; for(var i=0;i<n;i++){ var m=(startClock+i*stepMin)%1440; if(Math.abs(m%60)<stepMin/2+1e-9 && (i===0 || (m%60)<stepMin)){
+      var hh=Math.floor(m/60); t.push({x:i,label:(hh<10?"0":"")+hh+":00"}); } }
+    // de-duplicate neighbours
+    t=t.filter(function(v,i,a){ return i===0 || v.label!==a[i-1].label; });
+    if(chartWidth()<700) t=t.filter(function(_,i){ return i%2===0; });   // fewer labels on phones
+    return t; }
+  function clockMin(hhmm){ var p=hhmm.split(":"); return (+p[0])*60+(+p[1]); }
+  function tile(icon,v,u,k){ return '<div class="card tile"><div class="k">'+icon+' '+k+'</div><div class="v">'+v+(u?'<small>'+u+'</small>':'')+'</div></div>'; }
+
+  // ---------- SLEEP ----------
+  function severity(ahi){ return ahi<5?["Normal","b-ok"]:ahi<15?["Mild","b-warn"]:ahi<30?["Moderate","b-warn"]:["Severe","b-crit"]; }
+  var CUR={N:null,label:""};
+  function renderSleep(N, sourceLabel){
+    CUR.N=N; CUR.label=sourceLabel;
+    $("sleepSource").textContent=sourceLabel;
+    var sev=severity(N.ahi); $("sev").textContent=sev[0]; $("sev").className="badge "+sev[1];
+    $("ahi").textContent=N.ahi.toFixed(1);
+    $("verdict").textContent = N.ahi<5?"Breathing looked healthy":N.ahi<15?"Mild signs of apnea":"Clear signs of apnea";
+    $("nightDate").textContent=N.date+" · "+N.start+" – "+N.end;
+    $("nightLen").textContent=N.hours.toFixed(1)+" hours recorded · "+N.events_count+" events";
+    var score=Math.max(40,Math.min(99,Math.round(95-N.ahi*2.5-Math.max(0,97.5-N.avg_spo2)*3)));
+    $("score").textContent=score; $("ring").setAttribute("stroke-dashoffset",(295.3*(1-score/100)).toFixed(1));
+    var n=N.spo2.length, st=clockMin(N.start);
+    $("oxChart").innerHTML=chart({label:"Blood oxygen chart",n:n,yMin:84,yMax:100,yStep:4,h:300,
+      series:[{values:N.spo2,color:"#3fb8cc",width:2.4}],
+      bands:N.events.map(function(e){return {a:e[0],b:e[1],color:"rgba(236,107,107,.35)"};}),
+      hlines:[{y:90,color:"#6c7d99",label:"90% = low oxygen"}], ticks:hourTicks(n,st,1)});
+    $("sleepTiles").innerHTML=[
+      tile("🩸",N.avg_spo2.toFixed(1),"%","Average oxygen"),
+      tile("⬇️",N.low_spo2,"%","Lowest oxygen"),
+      tile("❤️",Math.round(N.avg_hr)," bpm","Average heart rate"),
+      tile("🫀",N.low_hr," bpm","Lowest heart rate"),
+      tile("🌬️",N.breathing==null?"—":N.breathing.toFixed(1),N.breathing==null?"":" /min","Breathing rate"),
+      tile("📈",N.sdnn==null?"—":Math.round(N.sdnn),N.sdnn==null?"":" ms","Heart-rate variability")].join("");
+    var cols={Back:"#ec6b6b",Left:"#3fb8cc",Right:"#4bbd80",Stomach:"#e0a949"};
+    if(N.positions && N.positions.length){
+      var maxRate=Math.max.apply(null,N.positions.map(function(p){return p.rate;}).concat([1]));
+      $("posBars").innerHTML=N.positions.map(function(p){ return '<div class="posrow"><span class="muted">'+p.name+'</span>'+
+        '<span class="track"><span class="fill" style="display:block;width:'+(100*p.rate/maxRate).toFixed(0)+'%;background:'+cols[p.name]+'"></span></span>'+
+        '<span class="mono" style="text-align:right">'+p.rate.toFixed(1)+'/h · '+p.hours.toFixed(1)+'h</span></div>'; }).join("");
+      var worst=N.positions.slice().sort(function(a,b){return b.rate-a.rate;})[0];
+      $("posNote").textContent="Apnea events per hour in each position. Most events: "+worst.name.toLowerCase()+".";
+    } else { $("posBars").innerHTML='<p class="faint">No motion-sensor data in this file.</p>'; $("posNote").textContent=""; }
+  }
+  function renderTrust(){
+    var V=D.validation, M=D.ml;
+    $("trust").innerHTML='<ul class="checks">'+
+      '<li><span class="dot ok"></span><span>Matches a reference oximeter</span><span class="mono">±'+V.mae.toFixed(2)+'%</span></li>'+
+      '<li><span class="dot ok"></span><span>Agreement (correlation)</span><span class="mono">r = '+V.r.toFixed(2)+'</span></li>'+
+      '<li><span class="dot ok"></span><span>95% of readings within</span><span class="mono">'+V.loa_low.toFixed(1)+' to +'+V.loa_high.toFixed(1)+'%</span></li>'+
+      '<li><span class="dot ok"></span><span>Events caught · rule / ML</span><span class="mono">'+Math.round(M.rule.r*100)+'% / '+Math.round(M.ml.r*100)+'%</span></li></ul>'+
+      '<p class="faint" style="margin:8px 0 0">From '+V.n+' paired readings (Bland–Altman method). '+(D.example?"Example data — replace with your own test.":"")+'</p>';
+  }
+
+  // ---------- CSV loading (same method as analyze.py) ----------
+  function parseCSV(text){
+    var lines=text.trim().split(/\r?\n/), h=lines[0].split(",").map(function(s){return s.trim();});
+    var ci=function(n){ return h.indexOf(n); }, iT=ci("timestamp"), iS=ci("spo2"), iV=ci("spo2_valid"), iH=ci("heart_rate"), iHV=ci("hr_valid"), iX=ci("ax"), iY=ci("ay"), iZ=ci("az");
+    if(iS<0||iT<0) throw new Error("this file has no timestamp/spo2 columns");
+    var T=[],S=[],HR=[],ACC=[];
+    for(var i=1;i<lines.length;i++){ var p=lines[i].split(","); var s=+p[iS], v=iV<0?1:+p[iV];
+      var t=Date.parse(p[iT]); if(isNaN(t)) continue;
+      if(iX>=0) ACC.push([t,+p[iX],+p[iY],+p[iZ]]);
+      if(iH>=0 && (iHV<0||+p[iHV]===1) && +p[iH]>=30 && +p[iH]<=200) HR.push(+p[iH]);
+      if(v!==1||!(s>=70&&s<=100)) continue; T.push(t); S.push(s); }
+    if(S.length<60) throw new Error("not enough valid readings");
+    var med=function(a){ var b=a.slice().sort(function(x,y){return x-y;}); return b[b.length>>1]; };
+    var sm=S.map(function(_,i){ return med(S.slice(Math.max(0,i-2),i+3)); });
+    var base=sm.map(function(_,i){ return i<60?null:med(sm.slice(Math.max(0,i-119),i+1)); });
+    var first=base.find(function(b){return b!=null;}); base=base.map(function(b){return b==null?first:b;});
+    var ev=[],inE=false,a=0;
+    for(var j=0;j<sm.length;j++){ var lo=sm[j]<=base[j]-3;
+      if(lo&&!inE){inE=true;a=j;} else if(!lo&&inE){ inE=false; if((T[j-1]-T[a])/1000>=10) ev.push([a,j-1]); } }
+    if(inE && (T[T.length-1]-T[a])/1000>=10) ev.push([a,T.length-1]);
+    var hours=(T[T.length-1]-T[0])/3.6e6, mins=Math.max(1,Math.round(hours*60));
+    var perMin=[]; for(var m=0;m<mins;m++){ perMin.push(null); }
+    var cnt=perMin.map(function(){return 0;}); var sum=perMin.slice().map(function(){return 0;});
+    for(var k=0;k<S.length;k++){ var mi=Math.min(mins-1,Math.floor((T[k]-T[0])/60000)); sum[mi]+=sm[k]; cnt[mi]++; }
+    perMin=sum.map(function(s,i){ return cnt[i]?s/cnt[i]:null; });
+    var toMin=function(idx){ return Math.min(mins-1,Math.floor((T[idx]-T[0])/60000)); };
+    var rr=HR.map(function(x){return 60000/x;}), mean=rr.reduce(function(s,x){return s+x;},0)/(rr.length||1);
+    var sdnn=rr.length?Math.sqrt(rr.reduce(function(s,x){return s+(x-mean)*(x-mean);},0)/rr.length):null;
+    var positions=null;
+    if(ACC.length){ var refs={Back:[0,0,1],Left:[1,0,0],Right:[-1,0,0],Stomach:[0,0,-1]}, secs={Back:0,Left:0,Right:0,Stomach:0}, posAt=[];
+      ACC.forEach(function(r){ var best="Back",bd=1e9; for(var key in refs){ var f=refs[key], d=(r[1]-f[0])*(r[1]-f[0])+(r[2]-f[1])*(r[2]-f[1])+(r[3]-f[2])*(r[3]-f[2]); if(d<bd){bd=d;best=key;} }
+        secs[best]++; posAt.push([r[0],best]); });
+      var evc={Back:0,Left:0,Right:0,Stomach:0};
+      ev.forEach(function(e){ var t0=T[e[0]], lo2=0, hi=posAt.length-1; while(lo2<hi){ var mid=(lo2+hi)>>1; if(posAt[mid][0]<t0) lo2=mid+1; else hi=mid; } evc[posAt[lo2][1]]++; });
+      positions=Object.keys(secs).filter(function(k){return secs[k]>180;}).map(function(k){ var hh=secs[k]/3600; return {name:k,hours:hh,events:evc[k],rate:evc[k]/hh}; }); }
+    var d0=new Date(T[0]), d1=new Date(T[T.length-1]); var two=function(x){return (x<10?"0":"")+x;};
+    return { date:d0.toDateString(), start:two(d0.getHours())+":"+two(d0.getMinutes()), end:two(d1.getHours())+":"+two(d1.getMinutes()),
+      hours:hours, ahi:ev.length/hours, events_count:ev.length, avg_spo2:S.reduce(function(s,x){return s+x;},0)/S.length,
+      low_spo2:Math.min.apply(null,S), avg_hr:HR.length?HR.reduce(function(s,x){return s+x;},0)/HR.length:0, low_hr:HR.length?Math.min.apply(null,HR):0,
+      breathing:null, sdnn:sdnn, spo2:perMin, events:ev.map(function(e){return [toMin(e[0]),toMin(e[1])];}), positions:positions };
+  }
+  $("file").addEventListener("change",function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader();
+    r.onload=function(){ try{ var N=parseCSV(r.result); renderSleep(N,"Your night · "+f.name); $("loadMsg").textContent="Loaded "+f.name+": "+N.events_count+" events over "+N.hours.toFixed(1)+" h. (Breathing rate: run signals.py.)"; }
+      catch(err){ $("loadMsg").textContent="Couldn’t read that file — "+err.message+"."; } };
+    r.onerror=function(){ $("loadMsg").textContent="Couldn’t open that file."; }; r.readAsText(f); });
+
+  // ---------- HEART ----------
+  function renderHeart(){ var Hh=D.heart, n=Hh.hr.length, st=clockMin(Hh.start);
+    var col={racing:"rgba(236,107,107,.38)",slow:"rgba(111,149,255,.4)",irregular:"rgba(224,169,73,.45)"};
+    $("hrChart").innerHTML=chart({label:"Heart rate chart",n:n,yMin:30,yMax:130,yStep:20,h:300,
+      series:[{values:Hh.hr,color:"#f27aa6",width:2.2}], bands:Hh.episodes.map(function(e){return {a:e.a,b:e.b,color:col[e.type]};}),
+      hlines:[{y:100,color:"#ec6b6b",label:"100 bpm"},{y:40,color:"#6f95ff",label:"40 bpm"},{y:Math.round(Hh.resting),color:"#6c7d99",dash:"2 5",label:"resting "+Math.round(Hh.resting)}],
+      ticks:hourTicks(n,st,1)});
+    $("heartTiles").innerHTML=[tile("💤",Math.round(Hh.resting)," bpm","Resting heart rate"),tile("↕️",Hh.min+"–"+Hh.max," bpm","Range"),
+      tile("📈",Math.round(Hh.sdnn)," ms","HRV (SDNN)"),tile("🔺",Hh.counts.racing,"","Racing episodes"),tile("🔻",Hh.counts.slow,"","Very slow episodes"),tile("〰️",Hh.counts.irregular,"","Irregular-rhythm episodes")].join("");
+    $("heartEps").innerHTML='<ul class="checks">'+Hh.episodes.map(function(e){ var c=e.type==="racing"?"crit":e.type==="slow"?"warn":"warn";
+      return '<li><span class="dot '+c+'"></span><span>'+esc(e.label)+'</span><span class="mono">'+esc(e.when)+'</span></li>'; }).join("")+'</ul>';
+  }
+  // ---------- ASTHMA ----------
+  function renderAsthma(){ var A=D.asthma, n=A.rates.length;
+    $("brChart").innerHTML=chart({label:"Breathing rate chart",n:n,yMin:6,yMax:26,yStep:4,h:300,
+      series:[{values:A.rates,color:"#3fb8cc",width:2.6}], bands:A.fast.map(function(f,i){return f?{a:Math.max(0,i-.5),b:Math.min(n-1,i+.5),color:"rgba(236,107,107,.28)"}:null;}).filter(Boolean),
+      hlines:[{y:Math.round(A.limit),color:"#ec6b6b",label:"fast breathing (> "+Math.round(A.limit)+"/min)"}],
+      marks:A.cough_idx.map(function(x){return {x:x,color:"#e0a949"};}), ticks:hourTicks(n,clockMin(A.start)+2.5,5)});
+    $("asthmaTiles").innerHTML=[tile("🌬️",A.baseline.toFixed(1)," /min","Normal breathing"),tile("🌅",A.late.toFixed(1)," /min","Early-morning breathing"),
+      tile("⏱️",A.fast_min," min","Fast-breathing time"),tile("🩸",A.odi.toFixed(1)," /h","Oxygen dips (3%+)"),tile("🤧",A.coughs,"","Cough-like jolts"),tile("📊",A.coughs_per_h.toFixed(1)," /h","Coughs per hour")].join("");
+    $("asthmaVerdict").textContent = A.worse ? "Breathing climbed from about "+A.early.toFixed(0)+" to "+A.late.toFixed(0)+" breaths per minute in the early morning, with coughing and small oxygen dips — the classic night-time asthma pattern."
+      : "No early-morning worsening was found on this night.";
+  }
+
+  // ---------- PROGRESS ----------
+  function renderProgress(){
+    $("timeline").innerHTML=D.progress.map(function(p){ var b=p.status==="done"?"b-ok":p.status==="next"?"b-warn":"b-idle";
+      return '<li><span class="d">'+esc(p.date)+'</span><span><b>'+esc(p.title)+'</b><br><span class="faint">'+esc(p.detail)+'</span></span><span class="badge '+b+'">'+esc(p.label)+'</span></li>'; }).join("");
+    var g=D.gallery.map(function(it){ return '<figure data-src="'+it.src+'"><img src="'+it.src+'" alt="'+esc(it.title)+'" loading="lazy"><figcaption><b>'+esc(it.title)+'</b>'+esc(it.caption)+'</figcaption></figure>'; });
+    for(var i=1;i<=6;i++) g.push('<figure data-src="photos/prototype-'+i+'.jpg" class="ph"><img src="photos/prototype-'+i+'.jpg" alt="Prototype photo '+i+'" onerror="this.parentNode.remove()"><figcaption><b>Prototype photo '+i+'</b>From the build log</figcaption></figure>');
+    $("gallery").innerHTML=g.join("");
+    $("protocol").innerHTML=D.protocol.map(function(s){ return '<li><b>'+esc(s[0])+'</b> — '+esc(s[1])+'</li>'; }).join("");
+    $("parts").innerHTML=D.parts.map(function(p){ return '<tr><td><b>'+esc(p.name)+'</b></td><td class="num">'+esc(p.size)+'</td><td>'+esc(p.why)+'</td><td>'+
+      p.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a>';}).join("<br>")+'</td><td class="num">'+esc(p.price)+'</td></tr>'; }).join("");
+    $("partsTotal").textContent=D.parts_note;
+    $("refs").innerHTML=D.refs.map(function(r){ return "<li>"+esc(r)+"</li>"; }).join("");
+    $("links").innerHTML=D.links.map(function(l){ return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a></li>'; }).join("");
+  }
+  document.addEventListener("click",function(e){ var f=e.target.closest && e.target.closest("figure"); if(f){ $("lbImg").src=f.dataset.src; $("lightbox").hidden=false; }
+    else if(e.target.closest && e.target.closest("#lightbox")){ $("lightbox").hidden=true; } });
+
+  // ---------- LIVE: Web Serial + demo device, same line format as the firmware ----------
+  var LIVE={rows:[],status:null,last:0,source:null,port:null,reader:null,timer:null,demoTimer:null,buf:""};
+  var COLS=["timestamp","device_ms","heart_rate","hr_valid","spo2","spo2_valid","ax","ay","az","finger","battery"];
+  function parseLine(raw){ raw=raw.trim(); if(!raw) return;
+    if(raw.indexOf("#STATUS")===0){ var st={}; raw.split(",").slice(1).forEach(function(kv){ var p=kv.split("="); if(p.length===2) st[p[0].trim()]=p[1].trim(); }); LIVE.status=st; return; }
+    var p=raw.split(","); if([5,8,10].indexOf(p.length)<0 || isNaN(+p[0])) return;
+    var r={device_ms:+p[0],heart_rate:+p[1],hr_valid:+p[2],spo2:+p[3],spo2_valid:+p[4],ax:p.length>=8?+p[5]:0,ay:p.length>=8?+p[6]:0,az:p.length>=8?+p[7]:0,
+      finger:p.length===10?+p[8]:1,battery:p.length===10?+p[9]:-1,timestamp:new Date().toISOString().slice(0,19)};
+    LIVE.rows.push(r); LIVE.last=Date.now(); if(LIVE.rows.length>36000) LIVE.rows.shift(); }
+  function feed(text){ LIVE.buf+=text; var parts=LIVE.buf.split(/\r?\n/); LIVE.buf=parts.pop(); parts.forEach(parseLine); }
+  function posName(r){ var refs={Back:[0,0,1],Left:[1,0,0],Right:[-1,0,0],Stomach:[0,0,-1]},best="—",bd=1e9;
+    for(var k in refs){ var f=refs[k],d=(r.ax-f[0])*(r.ax-f[0])+(r.ay-f[1])*(r.ay-f[1])+(r.az-f[2])*(r.az-f[2]); if(d<bd){bd=d;best=k;} } return bd<0.5?best:"Moving"; }
+  function setConn(on,label){ var c=$("connPill"); c.textContent=label; c.classList.toggle("on",!!on);
+    $("bStop").disabled=!on; $("bConnect").disabled=!!on; $("bDemo").disabled=!!on; $("bSave").disabled=!LIVE.rows.length; }
+  function check(state,name,detail){ return '<li><span class="dot '+state+'"></span><span>'+esc(name)+'</span><span class="mono" style="font-size:.8rem">'+esc(detail)+'</span></li>'; }
+  function renderLive(){
+    var rows=LIVE.rows, now=Date.now(), age=LIVE.last?(now-LIVE.last)/1000:null, recent=rows.slice(-30), r=rows[rows.length-1];
+    var out=[];
+    out.push(LIVE.source? check("ok","Connected",LIVE.source==="demo"?"demo device":"device") : check("","Connected","not yet"));
+    out.push(age==null? check("","Data flowing","waiting") : age<3? check("ok","Data flowing","last "+age.toFixed(1)+" s ago") : age<8? check("warn","Data flowing","slow — "+age.toFixed(0)+" s") : check("crit","Data flowing","stopped "+age.toFixed(0)+" s ago"));
+    var S=LIVE.status;
+    out.push(!S? check(LIVE.source?"warn":"","Self-test","waiting (every 30 s)") : check(S.max30102==="OK"&&S.mpu6050==="OK"?"ok":"crit","Self-test","oxygen "+S.max30102+" · motion "+S.mpu6050+(S.fw?" · fw "+S.fw:"")));
+    if(recent.length){ var fing=recent.filter(function(x){return x.finger;}).length/recent.length, val=recent.filter(function(x){return x.spo2_valid&&x.hr_valid;}).length/recent.length;
+      var g=recent.filter(function(x){ var m=Math.sqrt(x.ax*x.ax+x.ay*x.ay+x.az*x.az); return m>.8&&m<1.2; }).length/recent.length;
+      out.push(check(fing>=.8?"ok":"crit","Finger on sensor",Math.round(fing*100)+"%"));
+      out.push(check(val>=.7?"ok":val>=.4?"warn":"crit","Valid readings",Math.round(val*100)+"% (last 30 s)"));
+      out.push(check(g>=.9?"ok":"crit","Motion sensor feels gravity",Math.round(g*100)+"% near 1 g"));
+      var b=r.battery>=0?r.battery:(S&&+S.battery>=0?+S.battery:-1);
+      out.push(b<0? check("warn","Battery","not measured") : check(b>=30?"ok":b>=15?"warn":"crit","Battery",b+"%"));
+    } else { ["Finger on sensor","Valid readings","Motion sensor feels gravity","Battery"].forEach(function(n){ out.push(check("",n,"—")); }); }
+    $("checks").innerHTML=out.join("");
+    $("hAge").textContent = rows.length? "· "+rows.length+" readings":"";
+    if(r){ $("lSpo2").textContent=r.spo2_valid?r.spo2:"–"; $("lHr").textContent=r.hr_valid?r.heart_rate:"–"; $("lPos").textContent=posName(r); }
+    var last=rows.slice(-120);
+    if(last.length>1){ $("liveChart").innerHTML=chart({label:"Live chart",n:last.length,yMin:40,yMax:100,yStep:20,h:230,
+        series:[{values:last.map(function(x){return x.spo2_valid?x.spo2:null;}),color:"#3fb8cc"},{values:last.map(function(x){return x.hr_valid?x.heart_rate:null;}),color:"#f27aa6"}]});
+      var sp=last.filter(function(x){return x.spo2_valid;}).map(function(x){return x.spo2;});
+      $("liveStats").textContent= sp.length? "SpO₂ "+Math.min.apply(null,sp)+"–"+Math.max.apply(null,sp)+"% over the last "+last.length+" s":""; }
+    else { $("liveChart").innerHTML='<p class="faint">Connect the device or run the demo to see live readings.</p>'; }
+    $("bSave").disabled=!rows.length;
+  }
+  function startTimer(){ if(!LIVE.timer) LIVE.timer=setInterval(renderLive,1000); renderLive(); }
+  $("bConnect").onclick=async function(){
+    if(!("serial" in navigator)){ $("liveMsg").textContent="This browser can’t talk to USB/Bluetooth devices. Open the app in Chrome or Edge on a laptop (from the project’s app folder) — or try the demo device."; return; }
+    try{
+      var port=await navigator.serial.requestPort({allowedBluetoothServiceClassIds:["00001101-0000-1000-8000-00805f9b34fb"]});
+      await port.open({baudRate:115200}); LIVE.port=port; LIVE.source="device"; LIVE.rows=[]; LIVE.status=null; LIVE.last=0;
+      setConn(true,"Device connected"); $("liveMsg").textContent="Connected. Keep a finger on the sensor — the self-test line arrives within 30 s."; startTimer();
+      var reader=port.readable.pipeThrough(new TextDecoderStream()).getReader(); LIVE.reader=reader;
+      while(true){ var res=await reader.read(); if(res.done) break; feed(res.value); }
+    }catch(err){
+      var why = (err && err.name==="SecurityError") ? "This page isn’t allowed to open devices here. Open the app from the project folder in Chrome/Edge (run start_app.py)." :
+                (err && err.name==="NotFoundError") ? "No device chosen." : ("Connection lost: "+(err&&err.message||err));
+      $("liveMsg").textContent=why; if(LIVE.source==="device") stop();
+    }
+  };
+  $("bDemo").onclick=function(){ LIVE.source="demo"; LIVE.rows=[]; LIVE.status=null; LIVE.last=0; var i=0, t0=Date.now();
+    setConn(true,"Demo device"); $("liveMsg").textContent="Demo device: simulated readings in the same format as the real firmware. Use “Connect device” for real data.";
+    feed("#STATUS,fw=3.0,max30102=OK,mpu6050=OK,battery=82\n");
+    LIVE.demoTimer=setInterval(function(){ i++; var dip=(i%70>40&&i%70<56)?Math.sin((i%70-40)/16*Math.PI)*6:0;
+      var hr=Math.round(60+3*Math.sin(i/4)+(Math.random()-.5)*2-(dip?3:0)), sp=Math.round(97-dip+(Math.random()-.5)*1.2), ok=i>3?1:0;
+      feed((Date.now()-t0)+","+hr+","+ok+","+sp+","+ok+","+((Math.random()-.5)*.06).toFixed(2)+","+((Math.random()-.5)*.06).toFixed(2)+","+(1+(Math.random()-.5)*.06).toFixed(2)+",1,82\n");
+      if(i%30===0) feed("#STATUS,fw=3.0,max30102=OK,mpu6050=OK,battery=82\n"); },1000);
+    startTimer(); };
+  async function stop(){ if(LIVE.demoTimer){ clearInterval(LIVE.demoTimer); LIVE.demoTimer=null; }
+    try{ if(LIVE.reader){ await LIVE.reader.cancel(); } }catch(e){} try{ if(LIVE.port){ await LIVE.port.close(); } }catch(e){}
+    LIVE.reader=null; LIVE.port=null; LIVE.source=null; setConn(false,"Device not connected"); renderLive(); }
+  $("bStop").onclick=stop;
+  $("bSave").onclick=async function(){ var csv=[COLS.join(",")].concat(LIVE.rows.map(function(r){ return COLS.map(function(c){return r[c];}).join(","); })).join("\n");
+    var name="night_"+new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")+".csv", n=LIVE.rows.length;
+    // Inside the online viewer, files are offered through its downloads feature.
+    var dl=null; try{ if(window.claude && window.claude.use) dl=await window.claude.use("downloads"); }catch(e){ dl=null; }
+    if(dl){ try{ await dl.save({filename:name,data:csv}); $("liveMsg").textContent="Saved "+n+" readings as "+name+"."; }
+      catch(err){ var c=err&&err.code; $("liveMsg").textContent= c==="declined"?"Save cancelled.": c==="rate_limited"?"A save prompt is already open.":
+        "Saving isn’t available here — open the app from the project folder (start_app.py) to save sessions."; }
+      return; }
+    // Running from the project folder: a normal browser download.
+    var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); $("liveMsg").textContent="Saved "+n+" readings as "+name+"."; };
+
+  // ---------- boot ----------
+  renderSleep(D.night, D.example?"Example night (simulated) — load your own below":"Recorded night");
+  renderTrust(); renderHeart(); renderAsthma(); renderProgress(); renderLive();
+  var rz=null; window.addEventListener("resize",function(){ clearTimeout(rz); rz=setTimeout(function(){ renderSleep(CUR.N,CUR.label); renderHeart(); renderAsthma(); renderLive(); },200); });
+  try{ var t=localStorage.getItem("ns-tab"); if(t) show(t); }catch(e){}
+  window.APP={show:show,demo:function(){ $("bDemo").onclick(); }};
+})();
+</script>

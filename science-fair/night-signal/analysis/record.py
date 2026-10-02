@@ -40,28 +40,7 @@ except ImportError:
     sys.exit("Missing dependency. Run:  pip install pyserial")
 
 
-def parse_line(raw: str):
-    """Turn one CSV line from the ESP32 into numbers, or return None if it
-    isn't a valid data row (e.g. the header, or noise).
-
-    Accepts both the basic format (5 fields) and the advanced format with the
-    accelerometer (8 fields). Missing accel values default to 0."""
-    parts = raw.strip().split(",")
-    if len(parts) not in (5, 8):
-        return None
-    try:
-        device_ms = int(parts[0])
-        heart_rate = int(parts[1])
-        hr_valid = int(parts[2])
-        spo2 = int(parts[3])
-        spo2_valid = int(parts[4])
-        if len(parts) == 8:
-            ax, ay, az = float(parts[5]), float(parts[6]), float(parts[7])
-        else:
-            ax = ay = az = 0.0
-    except ValueError:
-        return None  # this was probably the header line
-    return device_ms, heart_rate, hr_valid, spo2, spo2_valid, ax, ay, az
+from protocol import COLUMNS, parse_data, parse_status
 
 
 def main():
@@ -90,25 +69,33 @@ def main():
     with open(args.out, "w", newline="") as f:
         writer = csv.writer(f)
         # Our log format: real timestamp + everything the device sent.
-        writer.writerow(["timestamp", "device_ms", "heart_rate",
-                         "hr_valid", "spo2", "spo2_valid", "ax", "ay", "az"])
+        writer.writerow(COLUMNS)
         try:
             while True:
                 raw = ser.readline().decode("utf-8", errors="ignore")
-                parsed = parse_line(raw)
-                if parsed is None:
+                status = parse_status(raw)
+                if status is not None:
+                    # Self-test report from the device (start-up and every 30 s).
+                    print(f"\n[device status] {status}")
                     continue
-                device_ms, hr, hr_valid, spo2, spo2_valid, ax, ay, az = parsed
-                now = dt.datetime.now().isoformat(timespec="seconds")
-                writer.writerow([now, device_ms, hr, hr_valid, spo2,
-                                 spo2_valid, ax, ay, az])
+                row = parse_data(raw)
+                if row is None:
+                    continue
+                row["timestamp"] = dt.datetime.now().isoformat(timespec="seconds")
+                writer.writerow([row[c] for c in COLUMNS])
                 f.flush()  # save each line immediately, in case of crash
                 rows_written += 1
 
                 # Show a live readout so you know it's working.
-                flag = "" if (spo2_valid and hr_valid) else "  (settling...)"
-                print(f"\r{now}   SpO2 {spo2:3d}%   HR {hr:3d} bpm   "
-                      f"rows {rows_written}{flag}   ", end="", flush=True)
+                if not row["finger"]:
+                    flag = "  (no finger on sensor!)"
+                elif not (row["spo2_valid"] and row["hr_valid"]):
+                    flag = "  (settling...)"
+                else:
+                    flag = ""
+                print(f"\r{row['timestamp']}   SpO2 {row['spo2']:3d}%   "
+                      f"HR {row['heart_rate']:3d} bpm   rows {rows_written}{flag}   ",
+                      end="", flush=True)
         except KeyboardInterrupt:
             print("\n\nStopped.")
         finally:

@@ -100,11 +100,8 @@ def rule_based_windows(df, events):
     return np.array(out)
 
 
-def main():
-    if len(sys.argv) < 3:
-        sys.exit("Usage: python train_model.py <night.csv> <labels.csv>")
-    csv_path, labels_path = sys.argv[1], sys.argv[2]
-
+def compare_detectors(csv_path, labels_path):
+    """Train the model and score it against the rule, on windows it never saw."""
     df = analyze.load(csv_path)
     labels = pd.read_csv(labels_path)
 
@@ -134,20 +131,28 @@ def main():
 
     ml = scores(ml_pred)
     rule = scores(rule_pred)
+    names = ["lowest SpO₂", "dip depth", "SpO₂ swing", "HR swing", "HR jitter"]
+    imp = sorted(zip(names, model.feature_importances_), key=lambda p: -p[1])
+    return {"rule": rule, "ml": ml, "n": len(truth), "events": int(truth.sum()), "importances": imp}
+
+
+def main():
+    if len(sys.argv) < 3:
+        sys.exit("Usage: python train_model.py <night.csv> <labels.csv>")
+    res = compare_detectors(sys.argv[1], sys.argv[2])
+    rule, ml, imp = res["rule"], res["ml"], res["importances"]
+    truth_n, truth_ev = res["n"], res["events"]
 
     print("\n" + "=" * 56)
     print("  APNEA DETECTION:  MACHINE LEARNING vs RULE-BASED")
     print("=" * 56)
-    print(f"  Windows tested: {len(truth)}   (events: {int(truth.sum())})")
+    print(f"  Windows tested: {truth_n}   (events: {truth_ev})")
     print("  " + "-" * 46)
     print(f"  {'Method':<16}{'Precision':>11}{'Recall':>10}{'F1':>9}")
     print("  " + "-" * 46)
     print(f"  {'Rule-based':<16}{rule[0]:>11.2f}{rule[1]:>10.2f}{rule[2]:>9.2f}")
     print(f"  {'Machine learning':<16}{ml[0]:>11.2f}{ml[1]:>10.2f}{ml[2]:>9.2f}")
     print("=" * 56)
-    names = ["lowest SpO₂", "dip depth", "SpO₂ swing", "HR swing", "HR jitter"]
-    imp = sorted(zip(names, model.feature_importances_),
-                 key=lambda p: -p[1])
     print("  What the model relies on most:")
     for n, v in imp[:3]:
         print(f"    - {n} ({v:.0%})")

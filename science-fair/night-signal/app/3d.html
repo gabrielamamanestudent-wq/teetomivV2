@@ -1,0 +1,373 @@
+<title>Night Signal 3D</title>
+<meta name="description" content="A closer look at the Night Signal wearable — sensor case, velcro strap and finger sensor in 3D, with an exploded view and every part at its real size.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{ --bg:#0a1424; --bg2:#0d1a2e; --panel:#102036; --line:#22344f; --line2:#2d4363;
+    --ink:#eef3fb; --soft:#a3b3cc; --faint:#6f819c; --teal:#2bb3a6; --teal2:#3fb8cc; --red:#ff5a6e; }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:radial-gradient(120% 80% at 30% 0%, #12233d 0%, var(--bg) 60%);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;min-height:100vh}
+  .wrap{max-width:1320px;margin:0 auto;padding-inline:24px;padding-block:22px 18px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.2em;font-size:.72rem;color:var(--teal2)}
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px}
+  h1{font-family:"Sora",sans-serif;font-weight:800;letter-spacing:-.035em;font-size:clamp(2rem,5vw,3.4rem);line-height:1.02;margin:6px 0 8px;text-wrap:balance}
+  .sub{color:var(--soft);margin:0;font-size:1.02rem}
+  .badge{border:1px solid var(--line2);border-radius:999px;padding:9px 16px;font-size:.86rem;color:var(--ink);white-space:nowrap}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start}
+  .view{position:relative;border:1px solid var(--line);border-radius:22px;overflow:hidden;height:min(68vh,640px);min-height:420px;
+    background:radial-gradient(70% 60% at 50% 55%, #173253 0%, #0e1e35 55%, #0a1526 100%)}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas:active{cursor:grabbing}
+  .vlabel{position:absolute;left:22px;top:18px;font-size:.92rem;font-weight:500}
+  .vhint{position:absolute;left:22px;bottom:16px;font-size:.84rem;color:var(--soft)}
+  .labels{position:absolute;inset:0;pointer-events:none}
+  .lab{position:absolute;left:0;top:0;transition:opacity .3s;white-space:nowrap}
+  .lab .pin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--teal2);box-shadow:0 0 0 3px rgba(63,184,204,.25);transform:translate(-50%,-50%)}
+  .lab .tag{position:absolute;transform:translate(12px,-50%);background:rgba(9,17,31,.9);border:1px solid var(--line2);
+    border-radius:8px;padding:4px 9px;font-size:.74rem;line-height:1.3}
+  .lab .tag b{display:block;font-family:"Sora",sans-serif;font-size:.78rem}
+  .lab .tag span{font-family:"IBM Plex Mono",monospace;color:var(--teal2);font-size:.7rem}
+  .lab.left .tag{transform:translate(calc(-100% - 12px),-50%)}
+  aside h2{font-family:"Sora",sans-serif;font-size:1.45rem;margin:2px 0 16px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.92rem;color:var(--soft);margin-bottom:6px}
+  select{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:8px 10px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+  button{font:inherit;font-size:1rem;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;cursor:pointer}
+  button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#04201d;font-weight:600}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal2);outline-offset:2px}
+  input[type=range]{width:100%;accent-color:#e9eef6}
+  .info{border-top:1px solid var(--line);margin-top:6px;padding-top:18px}
+  .info h3{font-family:"Sora",sans-serif;font-size:1.2rem;margin:0 0 8px}
+  .info p{color:var(--soft);line-height:1.55;margin:0 0 14px;font-size:.95rem}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin:0 0 14px;font-size:.9rem}
+  dt{color:var(--soft)} dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+  .note{font-size:.85rem;color:var(--faint);line-height:1.5}
+  footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:18px;color:var(--soft);font-size:.85rem}
+  .fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--soft);padding:24px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} .view{height:62vh} }
+  @media (prefers-reduced-motion:reduce){ .lab{transition:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Night Signal · High school prototype</div>
+      <h1>A closer look at the wearable</h1>
+      <p class="sub">Explore the case, soft velcro strap and fingertip sensor — every part at its real size.</p>
+    </div>
+    <span class="badge">Concept model · real part sizes</span>
+  </header>
+
+  <div class="grid">
+    <div class="view" id="stage">
+      <canvas id="c"></canvas>
+      <div class="labels" id="labels"></div>
+      <div class="vlabel" id="vlabel">Assembled view</div>
+      <div class="vhint">Drag to rotate · Scroll or use Zoom · Choose a component to inspect</div>
+      <div class="fallback" id="fallback">The 3D view couldn’t load here — open this page in a normal browser tab.</div>
+    </div>
+
+    <aside>
+      <h2>Explore the design</h2>
+      <div class="field">
+        <label for="comp">Component</label>
+        <select id="comp">
+          <option value="whole">Whole wearable</option>
+          <option value="case">Sensor case</option>
+          <option value="esp">ESP32 processor</option>
+          <option value="power">Battery &amp; charging</option>
+          <option value="mpu">Motion sensor</option>
+          <option value="strap">Velcro strap</option>
+          <option value="finger">Finger sensor</option>
+        </select>
+      </div>
+      <div class="btns">
+        <button id="bExplode" aria-pressed="false">Exploded view</button>
+        <button id="bSpin" aria-pressed="false">Auto rotate</button>
+        <button id="bReset">Reset view</button>
+      </div>
+      <div class="field"><label for="zoom">Zoom</label><input type="range" id="zoom" min="0" max="100" value="35"></div>
+      <div class="field"><label for="rot">Rotation</label><input type="range" id="rot" min="-180" max="180" value="20"></div>
+      <div class="field"><label for="tilt">Tilt</label><input type="range" id="tilt" min="5" max="75" value="38"></div>
+      <div class="info">
+        <h3 id="iTitle">Whole wearable</h3>
+        <p id="iDesc"></p>
+        <dl id="iSpecs"></dl>
+        <p class="note" id="iNote"></p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <span>Educational design demo. It does not diagnose or rule out sleep apnea.</span>
+    <span>Board sizes vary about ±2 mm between sellers — measure yours.</span>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var INFO={
+    whole:{t:"Whole wearable",d:"A small case on a soft velcro strap connects to a separate finger sensor. The case streams readings to the app over Bluetooth; all the graphs live in the app, so the wearable stays simple.",
+      s:[["Case","60 × 35 × 20 mm"],["Strap","25 mm wide velcro"],["Cable","≈ 25 cm"],["Weight","≈ 50 g (estimate)"],["Readings","1 per second"]],
+      n:"Wear the case on the upper arm for the most accurate sleep-position readings, with the cuff on the index finger."},
+    case:{t:"Sensor case",d:"A Hammond 1551HBK black ABS box with a USB-C cut-out and a status light that blinks while it records.",
+      s:[["Outside","60 × 35 × 20 mm"],["Inside height","16 mm"],["Fits boards up to","54 × 29 mm"],["Rating","IP54 splash-resistant"]],
+      n:"Solder wires straight to the boards (no header pins) so everything stacks inside the 16 mm height."},
+    esp:{t:"ESP32 processor",d:"The brain. It reads both sensors, runs a self-test at start-up, and streams one line of data every second to the app.",
+      s:[["Board","≈ 51 × 28 mm"],["Chip","ESP32-WROOM-32"],["Wireless","Bluetooth Classic"],["Logic","3.3 V"]],
+      n:"Must be a classic ESP32 (WROOM-32). C3, S2 and S3 chips can’t do Bluetooth Classic."},
+    power:{t:"Battery & charging",d:"A LiPo cell powers the case; a USB-C board recharges it and a 3.3 V regulator keeps the ESP32 stable as the battery drains.",
+      s:[["Battery","3.7 V 500 mAh · 36 × 29 × 4.75 mm"],["Charger","TP4056 USB-C · ≈ 28 × 17 mm"],["Regulator","3.3 V · ≈ 11 × 17 mm"],["Runtime","≈ 4–5 h (estimate)"]],
+      n:"Bluetooth draws roughly 100 mA, so 500 mAh may not last a full night. Measure it with the battery runtime test; for full nights, plug the case into a small USB power bank."},
+    mpu:{t:"Motion sensor",d:"The MPU-6050 feels which way gravity pulls, so the app knows if you’re on your back, side or stomach.",
+      s:[["Board","26.0 × 17.8 × 4.6 mm"],["Measures","Tilt + motion (6 axes)"],["Address","I²C 0x68"]],
+      n:"Shares the same two data wires (SDA/SCL) as the oxygen sensor."},
+    strap:{t:"Velcro strap",d:"Soft hook-and-loop fabric threads through the case’s lugs and adjusts to any arm.",
+      s:[["Width","25 mm"],["Length","≈ 250 mm"],["Material","Hook-and-loop fabric"]],
+      n:"A 25 mm (1 inch) one-wrap strap from a hardware or dollar store works."},
+    finger:{t:"Finger sensor",d:"The MAX30102 shines red and infrared light through the fingertip. Oxygen-rich blood absorbs them differently, which gives SpO₂ and pulse.",
+      s:[["Sensor board","≈ 18 × 14 mm"],["Light","Red 660 nm + IR 880 nm"],["Sampling","25 averaged samples/s → 1 reading/s"],["Cuff","15–20 mm velcro loop"]],
+      n:"Keep the finger still and the cuff snug but not tight — pressing too hard blocks blood flow."}
+  };
+
+  if (typeof THREE === "undefined"){ document.getElementById("fallback").style.display="flex"; return; }
+  var canvas=document.getElementById("c"), stage=document.getElementById("stage");
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.0;
+  renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  var scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(32,1,0.1,300);
+
+  (function(){ var pm=new THREE.PMREMGenerator(renderer), c=document.createElement("canvas"); c.width=512; c.height=256;
+    var g=c.getContext("2d"), gr=g.createLinearGradient(0,0,0,256);
+    gr.addColorStop(0,"#2b3c5c"); gr.addColorStop(0.45,"#16243c"); gr.addColorStop(1,"#05080f"); g.fillStyle=gr; g.fillRect(0,0,512,256);
+    g.fillStyle="rgba(240,246,255,.35)"; g.fillRect(70,30,90,10); g.fillRect(330,24,70,8);
+    var t=new THREE.CanvasTexture(c); t.mapping=THREE.EquirectangularReflectionMapping;
+    scene.environment=pm.fromEquirectangular(t).texture; t.dispose(); pm.dispose(); })();
+
+  scene.add(new THREE.HemisphereLight(0xc4d6ff,0x0b1220,0.55));
+  var key=new THREE.DirectionalLight(0xffffff,2.3); key.position.set(4,12,8); key.castShadow=true; key.shadow.mapSize.set(2048,2048);
+  var sc=key.shadow.camera; sc.left=-12; sc.right=14; sc.top=12; sc.bottom=-12; sc.near=1; sc.far=50; key.shadow.bias=-0.0006; key.shadow.radius=5; scene.add(key);
+  var fill=new THREE.DirectionalLight(0xc8d8ff,0.7); fill.position.set(-9,5,6); scene.add(fill);
+  var rim=new THREE.DirectionalLight(0x9fc4e8,0.6); rim.position.set(-6,6,-9); scene.add(rim);
+
+  // ---- textures ----
+  function tex(w,h,draw,rep){ var c=document.createElement("canvas"); c.width=w; c.height=h; draw(c.getContext("2d"),w,h);
+    var t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=8;
+    if(rep){ t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep[0],rep[1]); } return t; }
+  function weave(base,flecks,n){ return function(g,w,h){ g.fillStyle=base; g.fillRect(0,0,w,h);
+    for(var i=0;i<n;i++){ var x=Math.random()*w,y=Math.random()*h,l=1+Math.random()*2.5; g.strokeStyle=flecks[i%flecks.length];
+      g.globalAlpha=.25+Math.random()*.35; g.lineWidth=.9; g.beginPath(); g.moveTo(x,y); g.lineTo(x+l,y+l*.6); g.stroke(); }
+    g.globalAlpha=1; g.fillStyle="rgba(255,255,255,.08)"; g.fillRect(0,4,w,3); g.fillRect(0,h-7,w,3); }; }
+  var loopT=tex(256,128,weave("#167a71",["#1f9a8f","#0f5852","#27ab9f"],5200),[12,1]);
+  var hookT=tex(256,128,weave("#11655e",["#1a8a80","#0b4a45","#219a8f"],5200),[5,1]);
+  function board(bg,label,sub){ return tex(512,256,function(g,w,h){ g.fillStyle=bg; g.fillRect(0,0,w,h);
+    g.strokeStyle="rgba(255,255,255,.2)"; g.lineWidth=2; for(var i=0;i<14;i++){ g.beginPath(); g.moveTo(22+i*34,h-14); g.lineTo(22+i*34,h-40); g.stroke(); }
+    g.fillStyle="#eef2f8"; g.font="600 36px 'IBM Plex Mono', monospace"; g.fillText(label,24,60);
+    if(sub){ g.fillStyle="rgba(238,242,248,.72)"; g.font="500 26px 'IBM Plex Mono', monospace"; g.fillText(sub,24,100); } }); }
+
+  var M={
+    abs:new THREE.MeshPhysicalMaterial({color:0x151a23,roughness:.62,clearcoat:.08,clearcoatRoughness:.6}),
+    lid:new THREE.MeshPhysicalMaterial({color:0x171d27,roughness:.66,clearcoat:.06,clearcoatRoughness:.7}),
+    lug:new THREE.MeshPhysicalMaterial({color:0x0d1118,roughness:.4,metalness:.3,clearcoat:.4}),
+    loop:new THREE.MeshStandardMaterial({map:loopT,roughness:.96}),
+    hook:new THREE.MeshStandardMaterial({map:hookT,roughness:.92}),
+    screw:new THREE.MeshStandardMaterial({color:0x8c96a6,metalness:1,roughness:.35}),
+    led:new THREE.MeshStandardMaterial({color:0x3ee08f,emissive:0x2bd17e,emissiveIntensity:2.4}),
+    red:new THREE.MeshStandardMaterial({color:0xff5a6e,emissive:0xff3550,emissiveIntensity:2.2}),
+    port:new THREE.MeshStandardMaterial({color:0xa9b1be,metalness:1,roughness:.3}),
+    hole:new THREE.MeshStandardMaterial({color:0x04060a,roughness:1}),
+    cable:new THREE.MeshPhysicalMaterial({color:0x111419,roughness:.45,clearcoat:.5}),
+    relief:new THREE.MeshStandardMaterial({color:0x4a5566,roughness:.6}),
+    shield:new THREE.MeshStandardMaterial({color:0xcfd4dc,metalness:1,roughness:.28}),
+    chip:new THREE.MeshStandardMaterial({color:0x0f1014,roughness:.6}),
+    pouch:new THREE.MeshPhysicalMaterial({color:0xbcc3ce,metalness:.85,roughness:.35,clearcoat:.3}),
+    clip:new THREE.MeshPhysicalMaterial({color:0x0f1319,roughness:.5,clearcoat:.4})
+  };
+
+  // ---- geometry helpers (1 unit = 10 mm) ----
+  function rr(w,h,r){ var s=new THREE.Shape(),x=-w/2,y=-h/2; s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r);
+    s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h); s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r);
+    s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s; }
+  function rbox(L,W,H,r,bev,mat){ var g=new THREE.ExtrudeGeometry(rr(L,W,r),{depth:Math.max(.01,H-2*bev),bevelEnabled:bev>0,
+      bevelThickness:bev,bevelSize:bev,bevelSegments:4,curveSegments:18}); g.rotateX(-Math.PI/2); g.translate(0,bev,0);
+    var m=new THREE.Mesh(g,mat); m.castShadow=m.receiveShadow=true; return m; }
+  function box(L,H,W,mat){ var m=new THREE.Mesh(new THREE.BoxGeometry(L,H,W),mat); m.castShadow=m.receiveShadow=true; return m; }
+  // strap following an arc of radius R in the x-y plane (axis z), width along z
+  function arcStrap(R,width,thick,a0,a1,mat,cx,cy){ var pts=[],n=110,closed=Math.abs(a1-a0)>=Math.PI*2-1e-6;
+    for(var i=0;i<(closed?n:n+1);i++){ var a=a0+(a1-a0)*i/n; pts.push(new THREE.Vector3((cx||0)+R*Math.cos(a),(cy||0)+R*Math.sin(a),0)); }
+    var g=new THREE.ExtrudeGeometry(rr(width,thick,Math.min(thick,width)*.45),{steps:closed?240:150,bevelEnabled:false,
+      extrudePath:new THREE.CatmullRomCurve3(pts,closed)});
+    var m=new THREE.Mesh(g,mat); m.castShadow=m.receiveShadow=true; return m; }
+
+  var root=new THREE.Group(); scene.add(root);
+  var GROUPS={};
+  function grp(name){ var g=new THREE.Group(); GROUPS[name]=g; return g; }
+
+  // ---- strap: arc from lug to lug under the case ----
+  var LUGX=2.95, LUGY=0.7, RS=Math.sqrt(LUGX*LUGX+LUGY*LUGY), TH=0.24, phi=Math.atan2(LUGY,LUGX);
+  var GROUND=-RS-TH/2-0.02;
+  var strapG=grp("strap"); root.add(strapG);
+  strapG.add(arcStrap(RS,2.5,TH,phi,-Math.PI-phi,M.loop));   // lug → under the arm → lug
+  strapG.add(arcStrap(RS+TH*.92,2.5,TH*.85,-Math.PI*0.08,-Math.PI*0.48,M.hook));
+  var gnd=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.ShadowMaterial({opacity:.45}));
+  gnd.rotation.x=-Math.PI/2; gnd.position.y=GROUND; gnd.receiveShadow=true; scene.add(gnd);
+
+  // ---- case (Hammond 1551, 60 × 35 × 20 mm) ----
+  var CASEY=0.95;
+  var caseG=grp("case"); caseG.position.y=CASEY; root.add(caseG);
+  var base=rbox(6.0,3.5,1.45,.5,.08,M.abs); caseG.add(base);
+  var lid=new THREE.Group(); lid.add(rbox(6.0,3.5,.55,.5,.1,M.lid)); caseG.add(lid);
+  [[-2.55,-1.3],[2.55,-1.3],[-2.55,1.3],[2.55,1.3]].forEach(function(p){ var s=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.04,16),M.screw); s.position.set(p[0],.565,p[1]); lid.add(s); });
+  var led=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.05,20),M.led); led.position.set(-1.9,.57,-.95); lid.add(led);
+  var ledL=new THREE.PointLight(0x2bd17e,.55,2.2); ledL.position.set(-1.9,.9,-.95); lid.add(ledL);
+  // USB-C cut-out on the front face
+  var usbFrame=box(1.25,.42,.06,M.port); usbFrame.position.set(.2,.72,1.85); base.add(usbFrame);
+  var usbHole=box(1.0,.24,.07,M.hole); usbHole.position.set(.2,.72,1.87); base.add(usbHole);
+  // lugs + strap bars at both ends
+  [-1,1].forEach(function(sd){ [-1.3,1.3].forEach(function(z){ var p=box(.18,1.0,.16,M.lug); p.position.set(sd*LUGX,LUGY+.4-CASEY,z); caseG.add(p); });
+    var bar=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,2.8,14),M.lug); bar.rotation.x=Math.PI/2; bar.position.set(sd*LUGX,LUGY-CASEY,0); caseG.add(bar); });
+
+  // ---- internal parts ----
+  function part(name,build){ var g=grp(name); build(g); caseG.add(g); return g; }
+  part("power",function(g){
+    var bat=new THREE.Group(); bat.add(rbox(3.6,2.9,.475,.25,.06,M.pouch));
+    var lbl=new THREE.Mesh(new THREE.PlaneGeometry(2.4,1.2),new THREE.MeshStandardMaterial({map:board("#2b5fa6","LiPo 3.7V","500mAh"),roughness:.6}));
+    lbl.rotation.x=-Math.PI/2; lbl.position.y=.48; bat.add(lbl); bat.position.set(.95,0,0); g.add(bat); g.userData.bat=bat;
+    var ch=new THREE.Group(); var cp=box(1.7,.12,2.8,new THREE.MeshStandardMaterial({map:board("#1d4f9c","TP4056","USB-C"),roughness:.55})); cp.position.y=.06; ch.add(cp);
+    var cc=box(.75,.32,.9,M.port); cc.position.set(-.55,.28,0); ch.add(cc); ch.position.set(-1.95,0,0); g.add(ch); g.userData.ch=ch;
+    var rg=new THREE.Group(); var rp=box(1.1,.1,1.65,new THREE.MeshStandardMaterial({map:board("#2a7a3a","3.3V REG",""),roughness:.55})); rp.position.y=.05; rg.add(rp);
+    var ic=box(.35,.1,.35,M.chip); ic.position.y=.15; rg.add(ic); rg.position.set(-1.95,.0,1.15); rg.scale.set(.9,.9,.6); g.add(rg); g.userData.rg=rg; });
+  part("esp",function(g){ var p=box(5.1,.16,2.8,new THREE.MeshStandardMaterial({map:board("#141820","ESP32 DEVKIT","WROOM-32"),roughness:.5})); p.position.y=.08; g.add(p);
+    var sh=box(1.75,.3,1.6,M.shield); sh.position.set(1.15,.31,0); g.add(sh);
+    var ant=box(.6,.03,1.6,new THREE.MeshStandardMaterial({color:0x22324f,roughness:.6})); ant.position.set(2.2,.18,0); g.add(ant);
+    var um=box(.55,.28,.75,M.port); um.position.set(-2.3,.3,0); g.add(um); });
+  part("mpu",function(g){ var p=box(2.6,.16,1.78,new THREE.MeshStandardMaterial({map:board("#1a2f6b","MPU-6050","6-DoF"),roughness:.5})); p.position.y=.08; g.add(p);
+    var ic=box(.4,.1,.4,M.chip); ic.position.y=.21; g.add(ic); });
+
+  // ---- finger sensor clip ----
+  var CLIP=new THREE.Vector3(8.4,GROUND+1.2,.9);
+  var fingerG=grp("finger"); fingerG.position.copy(CLIP); root.add(fingerG);
+  var RC=.98;
+  fingerG.add(arcStrap(RC,1.7,.2,0,Math.PI*2,M.loop));
+  var top=rbox(2.2,2.0,.62,.3,.08,M.clip); top.position.y=RC+.08; fingerG.add(top);
+  var topWin=box(1.2,.04,.5,M.hole); topWin.position.set(0,RC+.71,0); fingerG.add(topWin);
+  var pad=rbox(1.9,1.8,.32,.25,.06,M.clip); pad.position.y=-RC-.3; fingerG.add(pad);
+  var sensorBoard=box(1.4,.08,1.8,new THREE.MeshStandardMaterial({map:board("#3d1f5c","MAX30102",""),roughness:.5}));
+  sensorBoard.position.y=RC-.12; fingerG.add(sensorBoard);
+  var redDot=new THREE.Mesh(new THREE.SphereGeometry(.08,16,16),M.red); redDot.position.set(-.15,RC-.2,0); fingerG.add(redDot);
+  var redL=new THREE.PointLight(0xff3550,1.3,2.8); redL.position.set(0,0,0); fingerG.add(redL);
+
+  // ---- cable arching from the case to the clip ----
+  var cableG=grp("cable"); root.add(cableG);
+  var cEnd=new THREE.Vector3(CLIP.x,CLIP.y+RC+.08+.62+.05,CLIP.z);
+  var curve=new THREE.CatmullRomCurve3([new THREE.Vector3(3.05,CASEY+1.1,0),new THREE.Vector3(4.6,CASEY+3.7,.2),
+    new THREE.Vector3(7.1,CASEY+3.4,.6),new THREE.Vector3(8.45,cEnd.y+2.0,.9),new THREE.Vector3(cEnd.x,cEnd.y+.35,cEnd.z)]);
+  cableG.add(Object.assign(new THREE.Mesh(new THREE.TubeGeometry(curve,90,.07,12,false),M.cable),{castShadow:true}));
+  var relief=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.55,16),M.relief); relief.position.set(cEnd.x,cEnd.y+.25,cEnd.z); cableG.add(relief);
+  var relief2=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.45,16),M.relief); relief2.rotation.z=Math.PI/2.4; relief2.position.set(3.15,CASEY+1.15,0); cableG.add(relief2);
+
+  // give every mesh its own material (so one part can be highlighted while others fade),
+  // tag it with its nearest owning group, and convert hex colours from sRGB to linear once.
+  var GROUP_OF=new Map(); Object.keys(GROUPS).forEach(function(n){ GROUP_OF.set(GROUPS[n],n); });
+  root.traverse(function(o){ if(!o.isMesh) return; var p=o; while(p && !GROUP_OF.has(p)) p=p.parent;
+    o.userData.group=p?GROUP_OF.get(p):null; var mt=o.material.clone();
+    if(mt.color && !mt.map) mt.color.convertSRGBToLinear();
+    if(mt.emissive) mt.emissive.convertSRGBToLinear();
+    mt.envMapIntensity=(mt.metalness>.5)?1.0:.45; o.material=mt; });
+  // the case base/lid/lugs belong to "case" but internal parts are their own groups
+  function meshesOf(name){ var out=[]; GROUPS[name].traverse(function(o){ if(o.isMesh && o.userData.group===name) out.push(o); }); return out; }
+
+  // ---- exploded layout (case space) ----
+  var LAYOUT={ lid:{a:[0,1.45,0],e:[0,9.6,0],o:lid}, mpu:{a:[-1.2,1.05,0],e:[-1.2,7.9,0],o:GROUPS.mpu},
+    esp:{a:[0,.75,0],e:[0,5.6,0],o:GROUPS.esp}, power:{a:[0,.12,0],e:[0,3.1,0],o:GROUPS.power} };
+
+  // ---- labels ----
+  var labelsEl=document.getElementById("labels"), LABELS=[];
+  function addLabel(obj,off,title,mm,when,left){ var d=document.createElement("div"); d.className="lab"+(left?" left":"");
+    d.innerHTML='<div class="pin"></div><div class="tag"><b>'+title+'</b><span>'+mm+'</span></div>'; labelsEl.appendChild(d);
+    LABELS.push({el:d,obj:obj,off:new THREE.Vector3(off[0],off[1],off[2]),when:when}); }
+  addLabel(lid,[2.9,.55,1.7],"Lid + status light","60 × 35 mm","exp");
+  addLabel(GROUPS.mpu,[1.3,.2,.9],"MPU-6050","26.0 × 17.8 × 4.6 mm","exp");
+  addLabel(GROUPS.esp,[2.55,.3,1.4],"ESP32 DevKit","≈ 51 × 28 mm","exp");
+  addLabel(GROUPS.power,[2.75,.45,1.45],"LiPo 3.7 V 500 mAh","36 × 29 × 4.75 mm","exp");
+  addLabel(GROUPS.power,[-2.8,.3,1.3],"TP4056 + 3.3 V regulator","≈ 28 × 17 · 11 × 17 mm","exp",true);
+  addLabel(base,[-3.0,.4,1.75],"Case base","inside 16 mm tall","exp",true);
+  addLabel(caseG,[3.0,2.0,1.75],"Hammond 1551HBK","60 × 35 × 20 mm","asm");
+  addLabel(strapG,[0,-RS,1.25],"Velcro strap","25 mm wide","asm",true);
+  addLabel(fingerG,[1.1,RC+.4,.9],"MAX30102 finger clip","≈ 18 × 14 mm sensor","asm");
+
+  // ---- view state ----
+  var S={ex:0,exT:0,spin:false,sel:"whole",yaw:20*Math.PI/180,pitch:38*Math.PI/180,zoom:.35,
+    tgt:new THREE.Vector3(3.2,.2,0), dist:0};
+  var DEF_TGT=new THREE.Vector3(3.2,.2,0);
+  var elZoom=document.getElementById("zoom"), elRot=document.getElementById("rot"), elTilt=document.getElementById("tilt");
+  var bE=document.getElementById("bExplode"), bS=document.getElementById("bSpin"), bR=document.getElementById("bReset"), sel=document.getElementById("comp");
+  function setEx(v){ S.exT=v?1:0; bE.setAttribute("aria-pressed",v?"true":"false"); }
+  function setSpin(v){ S.spin=v; bS.setAttribute("aria-pressed",v?"true":"false"); }
+  bE.onclick=function(){ setEx(S.exT<.5); }; bS.onclick=function(){ setSpin(!S.spin); };
+  bR.onclick=function(){ sel.value="whole"; select("whole"); setEx(false); setSpin(false); elZoom.value=35; elRot.value=20; elTilt.value=38; readSliders(); };
+  function readSliders(){ S.zoom=elZoom.value/100; S.yaw=elRot.value*Math.PI/180; S.pitch=elTilt.value*Math.PI/180; }
+  [elZoom,elRot,elTilt].forEach(function(e){ e.addEventListener("input",readSliders); });
+  sel.addEventListener("change",function(){ select(sel.value); });
+
+  function select(name){ S.sel=name; var I=INFO[name];
+    document.getElementById("iTitle").textContent=I.t; document.getElementById("iDesc").textContent=I.d;
+    document.getElementById("iSpecs").innerHTML=I.s.map(function(r){return "<dt>"+r[0]+"</dt><dd>"+r[1]+"</dd>";}).join("");
+    document.getElementById("iNote").textContent=I.n;
+    if(["esp","power","mpu"].indexOf(name)>=0) setEx(true);
+    Object.keys(GROUPS).forEach(function(n){ var on=(name==="whole"||n===name);
+      meshesOf(n).forEach(function(m){ var mt=m.material; mt.transparent=!on; mt.opacity=on?1:.16; mt.depthWrite=on; mt.needsUpdate=true;
+        if(mt.emissive && !mt.userData.e0){ mt.userData.e0=mt.emissive.clone(); mt.userData.ei=mt.emissiveIntensity; }
+        if(mt.emissive && name!=="whole" && n===name && !(mt.userData.ei>1)){ mt.emissive.setHex(0x0d3a36); mt.emissiveIntensity=1; }
+        else if(mt.emissive && mt.userData.e0){ mt.emissive.copy(mt.userData.e0); mt.emissiveIntensity=mt.userData.ei; } }); });
+  }
+  function focusPoint(){ var p=new THREE.Vector3();
+    if(S.sel==="whole") return DEF_TGT.clone();
+    if(S.sel==="strap") return new THREE.Vector3(0,-.6,0);
+    var g=GROUPS[S.sel==="case"?"case":S.sel]; g.getWorldPosition(p); if(S.sel==="case"||S.sel==="esp"||S.sel==="mpu"||S.sel==="power") p.y+=.6; return p; }
+
+  // drag to rotate, wheel to zoom (kept in sync with the sliders)
+  var drag=false,lx=0,ly=0;
+  canvas.addEventListener("pointerdown",function(e){drag=true;setSpin(false);lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener("pointermove",function(e){ if(!drag)return;
+    elRot.value=Math.max(-180,Math.min(180,+elRot.value-(e.clientX-lx)*.4)); elTilt.value=Math.max(5,Math.min(75,+elTilt.value+(e.clientY-ly)*.25));
+    lx=e.clientX; ly=e.clientY; readSliders(); });
+  canvas.addEventListener("pointerup",function(){drag=false;}); canvas.addEventListener("pointercancel",function(){drag=false;});
+  canvas.addEventListener("wheel",function(e){ e.preventDefault(); elZoom.value=Math.max(0,Math.min(100,+elZoom.value-e.deltaY*.05)); readSliders(); },{passive:false});
+
+  function resize(){ var w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+  window.addEventListener("resize",resize); resize();
+
+  var v=new THREE.Vector3(), clock=0, curTgt=DEF_TGT.clone(), curDist=24;
+  function ease(x){ return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2; }
+  function frame(){
+    S.ex+=(S.exT-S.ex)*.08; var k=ease(Math.max(0,Math.min(1,S.ex)));
+    Object.keys(LAYOUT).forEach(function(n){ var L=LAYOUT[n]; L.o.position.set(L.a[0]+(L.e[0]-L.a[0])*k,L.a[1]+(L.e[1]-L.a[1])*k,L.a[2]+(L.e[2]-L.a[2])*k); });
+    if(S.spin){ elRot.value=((+elRot.value+0.25+180)%360)-180; readSliders(); }
+    var focused=S.sel!=="whole";
+    var baseDist=(camera.aspect<1.1?36:27)*(1.55-S.zoom*1.05)*(focused?.62:1)*(1+.32*k*(focused?0:1));
+    var want=focusPoint(); if(!focused){ want.y+=5.3*k; want.x-=1.6*k; }
+    curTgt.lerp(want,.08); curDist+=(baseDist-curDist)*.08;
+    var pitch=S.pitch*(1-.55*k);
+    camera.position.set(curTgt.x+Math.sin(S.yaw)*Math.cos(pitch)*curDist, curTgt.y+Math.sin(pitch)*curDist, curTgt.z+Math.cos(S.yaw)*Math.cos(pitch)*curDist);
+    camera.lookAt(curTgt);
+    clock+=.045; var mR=fingerG.children[7]?null:null;
+    redL.intensity=.9+Math.abs(Math.sin(clock))*.9; ledL.intensity=.35+Math.abs(Math.sin(clock*.5))*.4;
+    renderer.render(scene,camera);
+    document.getElementById("vlabel").textContent= focused? ("Inspecting: "+INFO[S.sel].t) : (k>.5?"Exploded view":"Assembled view");
+    var W=stage.clientWidth,H=stage.clientHeight;
+    LABELS.forEach(function(L){ var show=(L.when==="exp"?k>.8:k<.3) && (S.sel==="whole" || (L.when==="exp"&&["esp","power","mpu","case"].indexOf(S.sel)>=0));
+      L.obj.localToWorld(v.copy(L.off)); v.project(camera);
+      var x=(v.x*.5+.5)*W,y=(-v.y*.5+.5)*H,ok=v.z<1&&x>10&&x<W-10&&y>40&&y<H-36;
+      L.el.style.opacity=(show&&ok)?"1":"0"; L.el.style.transform="translate("+x.toFixed(1)+"px,"+y.toFixed(1)+"px)"; });
+    requestAnimationFrame(frame);
+  }
+  select("whole"); readSliders(); frame();
+  window.NS={explode:function(v){setEx(v);S.ex=v?1:0;}, select:function(n){sel.value=n;select(n);}, set:function(z,r,t){elZoom.value=z;elRot.value=r;elTilt.value=t;readSliders();}};
+})();
+</script>

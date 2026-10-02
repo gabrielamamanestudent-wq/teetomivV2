@@ -36,11 +36,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
-def main():
-    if len(sys.argv) < 3:
-        sys.exit("Usage: python validate.py <device.csv> <reference.csv>")
-    device_path, ref_path = sys.argv[1], sys.argv[2]
-
+def agreement(device_path, ref_path):
+    """Compare device SpO2 with reference spot readings. Returns a dict of
+    Bland-Altman statistics, or None if fewer than 5 readings could be paired."""
     dev = pd.read_csv(device_path)
     dev["timestamp"] = pd.to_datetime(dev["timestamp"])
     dev = dev[dev["spo2_valid"] == 1][["timestamp", "spo2"]].sort_values("timestamp")
@@ -55,7 +53,7 @@ def main():
                             direction="nearest",
                             tolerance=pd.Timedelta("5s")).dropna()
     if len(matched) < 5:
-        sys.exit("Not enough matched readings to compare.")
+        return None
 
     device_vals = matched["spo2"].to_numpy(dtype=float)
     ref_vals = matched["ref_spo2"].to_numpy(dtype=float)
@@ -66,11 +64,24 @@ def main():
     sd = float(np.std(diff, ddof=1))
     loa_low, loa_high = bias - 1.96 * sd, bias + 1.96 * sd
     corr = float(np.corrcoef(device_vals, ref_vals)[0, 1]) if len(device_vals) > 1 else float("nan")
+    return {"n": len(matched), "device": device_vals, "ref": ref_vals, "diff": diff,
+            "mae": mae, "bias": bias, "sd": sd, "loa_low": loa_low, "loa_high": loa_high, "r": corr}
+
+
+def main():
+    if len(sys.argv) < 3:
+        sys.exit("Usage: python validate.py <device.csv> <reference.csv>")
+    device_path, ref_path = sys.argv[1], sys.argv[2]
+    a = agreement(device_path, ref_path)
+    if a is None:
+        sys.exit("Not enough matched readings to compare.")
+    matched_n, device_vals, ref_vals, diff = a["n"], a["device"], a["ref"], a["diff"]
+    mae, bias, loa_low, loa_high, corr = a["mae"], a["bias"], a["loa_low"], a["loa_high"], a["r"]
 
     print("\n" + "=" * 54)
     print("  NIGHT SIGNAL - ACCURACY vs REFERENCE OXIMETER")
     print("=" * 54)
-    print(f"  Paired readings compared : {len(matched)}")
+    print(f"  Paired readings compared : {matched_n}")
     print(f"  Mean absolute error      : {mae:4.2f} %")
     print(f"  Bias (device - reference): {bias:+.2f} %")
     print(f"  Limits of agreement      : {loa_low:+.2f} to {loa_high:+.2f} %")

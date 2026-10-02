@@ -49,23 +49,15 @@ def classify(ax, ay, az):
     return best
 
 
-def main():
-    if len(sys.argv) < 2:
-        sys.exit("Usage: python position.py <night.csv>")
-    csv_path = sys.argv[1]
-
+def position_stats(csv_path):
+    """Hours, apnea events and events/hour for each sleeping position."""
     raw = pd.read_csv(csv_path)
     if "ax" not in raw.columns:
-        sys.exit("This file has no accelerometer data (ax/ay/az). Record with "
-                 "the advanced firmware to use position analysis.")
+        return None
     raw["timestamp"] = pd.to_datetime(raw["timestamp"])
     raw["position"] = [classify(a, b, c)
                        for a, b, c in zip(raw["ax"], raw["ay"], raw["az"])]
-
-    # Hours spent in each position (rows are ~1 second apart).
-    hours = raw["position"].value_counts() / 3600.0
-
-    # Detect apnea events, then tag each with the position at that moment.
+    hours = raw["position"].value_counts() / 3600.0   # rows are ~1 second apart
     df = analyze.load(csv_path)
     events = analyze.find_events(df, drop=3.0, min_seconds=10.0, baseline_seconds=120.0)
     pos_by_time = raw.set_index("timestamp")["position"]
@@ -74,6 +66,23 @@ def main():
         idx = pos_by_time.index.get_indexer([ev["start_time"]], method="nearest")[0]
         ev_positions.append(pos_by_time.iloc[idx])
     ev_counts = pd.Series(ev_positions).value_counts()
+    out = {}
+    for p in ORDER:
+        h = float(hours.get(p, 0.0)); n = int(ev_counts.get(p, 0))
+        out[p] = {"hours": h, "events": n, "rate": n / h if h > 0.05 else 0.0}
+    return out
+
+
+def main():
+    if len(sys.argv) < 2:
+        sys.exit("Usage: python position.py <night.csv>")
+    csv_path = sys.argv[1]
+    stats = position_stats(csv_path)
+    if stats is None:
+        sys.exit("This file has no accelerometer data (ax/ay/az). Record with "
+                 "the advanced firmware to use position analysis.")
+    hours = pd.Series({p: v["hours"] for p, v in stats.items()})
+    ev_counts = pd.Series({p: v["events"] for p, v in stats.items()})
 
     # Build the results table: events per hour in each position.
     print("\n" + "=" * 56)

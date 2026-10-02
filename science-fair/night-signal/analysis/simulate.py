@@ -62,13 +62,18 @@ def main():
     ap.add_argument("--events", type=int, default=18)
     ap.add_argument("--out", default="demo_night.csv")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--profile", choices=["apnea", "heart", "asthma"], default="apnea",
+                    help="apnea (default), or a spin-off night: heart / asthma")
+    ap.add_argument("--start", default="23:00", help="clock time the night starts")
     args = ap.parse_args()
 
     random.seed(args.seed)
     np.random.seed(args.seed)
 
     total_s = int(args.hours * 3600)
-    start = dt.datetime.now().replace(microsecond=0) - dt.timedelta(seconds=total_s)
+    hh, mm = (int(x) for x in args.start.split(":"))
+    start = (dt.datetime.now() - dt.timedelta(days=1)).replace(hour=hh, minute=mm,
+                                                                second=0, microsecond=0)
 
     # "True" oxygen wanders gently around 97%; heart rate around 60 bpm.
     true_spo2 = 97 + np.cumsum(np.random.normal(0, 0.03, total_s))
@@ -107,24 +112,45 @@ def main():
         event_intervals.append((t, min(t + dur, total_s - 1)))
     event_intervals.sort()
 
+    # ---- spin-off nights (the default apnea night is left untouched) ----
+    cough = np.zeros(total_s)            # extra jolts added to the motion sensor
+    if args.profile == "heart":
+        # a racing-heart episode (tachycardia), a very slow stretch (bradycardia)
+        # and a few minutes of irregular rhythm
+        a = int(total_s * 0.38); hr[a:a + 200] = 112 + np.random.normal(0, 2, len(hr[a:a + 200]))
+        b = int(total_s * 0.62); hr[b:b + 150] = 37 + np.random.normal(0, 1, len(hr[b:b + 150]))
+        c = int(total_s * 0.80); seg = slice(c, c + 360)
+        hr[seg] = hr[seg] + np.random.uniform(-22, 22, len(hr[seg]))
+    elif args.profile == "asthma":
+        # early-morning worsening: faster breathing, higher heart rate,
+        # small oxygen dips and coughing in the last quarter of the night
+        w0 = int(total_s * 0.72)
+        ramp = np.clip((np.arange(total_s) - w0) / 1800.0, 0, 1)
+        hr = hr + ramp * (8 + 4.5 * np.sin(2 * np.pi * 0.36 * np.arange(total_s)))
+        for t in np.random.choice(np.arange(w0, total_s - 60), 8, replace=False):
+            d = random.randint(14, 25)
+            true_spo2[t:t + d] -= 3.5 * np.sin(np.pi * np.arange(d) / d)
+        for t in np.random.choice(np.arange(w0, total_s - 10), 26, replace=False):
+            cough[t:t + 3] = np.random.uniform(0.35, 0.8, 3) * np.random.choice([-1, 1], 3)
+
     # The DEVICE reading = truth + a little sensor error (what we validate).
     device_spo2 = np.clip(np.round(true_spo2 + np.random.normal(0, 0.6, total_s)),
                           70, 100).astype(int)
-    hr = np.clip(np.round(hr), 40, 140).astype(int)
+    hr = np.clip(np.round(hr), 30, 140).astype(int)
 
     # Write the main device log.
     with open(args.out, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["timestamp", "device_ms", "heart_rate", "hr_valid",
-                    "spo2", "spo2_valid", "ax", "ay", "az"])
+                    "spo2", "spo2_valid", "ax", "ay", "az", "finger", "battery"])
         for i in range(total_s):
             ts = (start + dt.timedelta(seconds=i)).isoformat(timespec="seconds")
             valid = 0 if random.random() < 0.01 else 1
             gx, gy, gz = POSITIONS[positions[i]]
             ax = round(gx + random.gauss(0, 0.05), 2)
             ay = round(gy + random.gauss(0, 0.05), 2)
-            az = round(gz + random.gauss(0, 0.05), 2)
-            w.writerow([ts, i * 1000, hr[i], valid, device_spo2[i], valid, ax, ay, az])
+            az = round(gz + random.gauss(0, 0.05) + cough[i], 2)
+            w.writerow([ts, i * 1000, hr[i], valid, device_spo2[i], valid, ax, ay, az, 1, -1])
 
     # Write a separate "reference oximeter" file: spot readings every ~2 min,
     # close to the truth (this is the gold standard you compare against).
