@@ -21,7 +21,7 @@ Target: 8 min 40 s spoken (limit 7–10 min) + 3 min questions.
 
 ## 1. Title  (15 s)
 
-Hi, I'm Gabriela. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.
+Hi, I’m Gabriel. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.
 
 ## 2. Purpose & hypothesis  (40 s)
 

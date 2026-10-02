@@ -58,11 +58,11 @@ eyebrow(s, "SCIENCE FAIR · HEALTH AND MEDICAL SCIENCES · EXPERIMENTAL PROJECT"
 s.addText("Night Signal", { isTextBox: true, x: 0.7, y: 1.6, w: 6.4, h: 1.2, margin: 0, fontFace: F, fontSize: 60, bold: true, color: C.WHITE });
 s.addText("A low-cost wearable that detects sleep apnea — and screens the heart and breathing too.",
   { isTextBox: true, x: 0.7, y: 2.9, w: 5.9, h: 1.1, margin: 0, fontFace: F, fontSize: 19, color: C.NSOFT, valign: "top" });
-s.addText([{ text: "Gabriela Mamane", options: { bold: true, color: C.WHITE } }, { text: "   ·   Grade ___", options: { color: C.NSOFT } }],
+s.addText([{ text: "Gabriel Mamane", options: { bold: true, color: C.WHITE } }, { text: "   ·   Grade ___", options: { color: C.NSOFT } }],
   { isTextBox: true, x: 0.7, y: 4.6, w: 6, h: 0.4, margin: 0, fontFace: F, fontSize: 16 });
 img(s, "3d_assembled.jpg", 6.75, 1.25, 6.1);
 s.addText("Educational prototype — not a medical device.", { isTextBox: true, x: 0.7, y: 6.95, w: 8, h: 0.3, margin: 0, fontFace: F, fontSize: 11, color: C.FAINT });
-notes(s, "Title", 15, "Hi, I'm Gabriela. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.");
+notes(s, "Title", 15, "Hi, I’m Gabriel. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.");
 
 /* ---------------- 2. PURPOSE & HYPOTHESIS ---------------- */
 s = slide(false); eyebrow(s, "PURPOSE & HYPOTHESIS", C.TEAL); title(s, "Can a ~$65 wearable catch sleep apnea?", C.INK);
