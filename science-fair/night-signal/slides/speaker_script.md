@@ -25,7 +25,7 @@ Hi, I’m Gabriel. My project is Night Signal: a wearable I designed that watche
 
 ## 2. Purpose & hypothesis  (40 s)
 
-My question: can a wearable that costs about sixty-five dollars catch sleep apnea? My hypothesis: if each breathing pause makes oxygen dip, a fingertip sensor reading once per second will see the dips, and software can count them per hour — the AHI doctors use. What I change is breath-hold length and sleeping position; what I measure is events, the AHI, and how closely my device agrees with a real oximeter.
+My question: can a low-cost wearable catch sleep apnea? My hypothesis: if each breathing pause makes oxygen dip, a fingertip sensor reading once per second will see the dips, and software can count them per hour — the AHI doctors use. What I change is breath-hold length and sleeping position; what I measure is events, the AHI, and how closely my device agrees with a real oximeter.
 
 ## 3. Scientific background  (50 s)
 

@@ -1,64 +1,89 @@
 <title>Night Signal 3D</title>
-<meta name="description" content="A closer look at the Night Signal wearable — sensor case, velcro strap and finger sensor in 3D, with an exploded view and every part at its real size.">
+<meta name="description" content="A closer look at the Night Signal wearable in 3D: exploded view, every part at its real size, and a full-screen presentation mode.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-  :root{ --bg:#0a1424; --bg2:#0d1a2e; --panel:#102036; --line:#22344f; --line2:#2d4363;
-    --ink:#eef3fb; --soft:#a3b3cc; --faint:#6f819c; --teal:#2bb3a6; --teal2:#3fb8cc; --red:#ff5a6e; }
+  :root{ --bg:#000; --panel:#1d1d1f; --panel2:#2c2c2e; --line:#38383a;
+    --ink:#f5f5f7; --soft:#a1a1a6; --faint:#6e6e73; --blue:#2997ff; --blueBtn:#0071e3; --teal:#2bb3a6; --red:#ff375f;
+    --sf:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","Inter",Arial,sans-serif; }
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{background:radial-gradient(120% 80% at 30% 0%, #12233d 0%, var(--bg) 60%);color:var(--ink);
-    font-family:"IBM Plex Sans",system-ui,sans-serif;min-height:100vh}
-  .wrap{max-width:1320px;margin:0 auto;padding-inline:24px;padding-block:22px 18px}
-  .eyebrow{font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.2em;font-size:.72rem;color:var(--teal2)}
-  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px}
-  h1{font-family:"Sora",sans-serif;font-weight:800;letter-spacing:-.035em;font-size:clamp(2rem,5vw,3.4rem);line-height:1.02;margin:6px 0 8px;text-wrap:balance}
-  .sub{color:var(--soft);margin:0;font-size:1.02rem}
-  .badge{border:1px solid var(--line2);border-radius:999px;padding:9px 16px;font-size:.86rem;color:var(--ink);white-space:nowrap}
-  .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start}
-  .view{position:relative;border:1px solid var(--line);border-radius:22px;overflow:hidden;height:min(68vh,640px);min-height:420px;
-    background:radial-gradient(70% 60% at 50% 55%, #173253 0%, #0e1e35 55%, #0a1526 100%)}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sf);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1320px;margin:0 auto;padding-inline:24px;padding-block:44px 22px}
+  header{text-align:center;margin-bottom:34px}
+  .eyebrow{font-size:1.05rem;font-weight:600;color:var(--red);letter-spacing:-.01em}
+  h1{font-weight:700;letter-spacing:-.025em;font-size:clamp(2.6rem,7vw,4.8rem);line-height:1.04;margin:6px 0 10px;text-wrap:balance}
+  .sub{color:var(--soft);margin:0 auto;font-size:clamp(1.05rem,2.2vw,1.45rem);font-weight:500;max-width:760px;letter-spacing:-.01em;text-wrap:balance}
+  .cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:22px}
+  .pill{font:inherit;font-size:1.02rem;border:0;border-radius:999px;padding:12px 22px;cursor:pointer;font-weight:500}
+  .pill.blue{background:var(--blueBtn);color:#fff} .pill.blue:hover{background:#0077ed}
+  .pill.ghost{background:transparent;color:var(--blue);padding-inline:6px} .pill.ghost:hover{text-decoration:underline}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+  .view{position:relative;border-radius:28px;overflow:hidden;height:min(68vh,660px);min-height:420px;
+    background:radial-gradient(65% 60% at 50% 58%, #1c1c1f 0%, #0a0a0b 60%, #000 100%)}
   canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
   canvas:active{cursor:grabbing}
-  .vlabel{position:absolute;left:22px;top:18px;font-size:.92rem;font-weight:500}
-  .vhint{position:absolute;left:22px;bottom:16px;font-size:.84rem;color:var(--soft)}
+  .vlabel{position:absolute;left:24px;top:20px;font-size:.95rem;font-weight:600;color:var(--soft)}
+  .vhint{position:absolute;left:24px;bottom:18px;font-size:.86rem;color:var(--faint)}
   .labels{position:absolute;inset:0;pointer-events:none}
-  .lab{position:absolute;left:0;top:0;transition:opacity .3s;white-space:nowrap}
-  .lab .pin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--teal2);box-shadow:0 0 0 3px rgba(63,184,204,.25);transform:translate(-50%,-50%)}
-  .lab .tag{position:absolute;transform:translate(12px,-50%);background:rgba(9,17,31,.9);border:1px solid var(--line2);
-    border-radius:8px;padding:4px 9px;font-size:.74rem;line-height:1.3}
-  .lab .tag b{display:block;font-family:"Sora",sans-serif;font-size:.78rem}
-  .lab .tag span{font-family:"IBM Plex Mono",monospace;color:var(--teal2);font-size:.7rem}
+  .lab{position:absolute;left:0;top:0;transition:opacity .35s;white-space:nowrap}
+  .lab .pin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(41,151,255,.22);transform:translate(-50%,-50%)}
+  .lab .tag{position:absolute;transform:translate(12px,-50%);background:rgba(29,29,31,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border-radius:12px;padding:6px 11px;font-size:.78rem;line-height:1.3}
+  .lab .tag b{display:block;font-size:.82rem;font-weight:600}
+  .lab .tag span{color:var(--soft);font-size:.74rem;font-variant-numeric:tabular-nums}
   .lab.left .tag{transform:translate(calc(-100% - 12px),-50%)}
-  aside h2{font-family:"Sora",sans-serif;font-size:1.45rem;margin:2px 0 16px}
+  aside{background:var(--panel);border-radius:22px;padding:24px}
+  aside h2{font-size:1.4rem;font-weight:700;letter-spacing:-.02em;margin:0 0 16px}
   .field{margin-bottom:16px}
-  .field label{display:block;font-size:.92rem;color:var(--soft);margin-bottom:6px}
-  select{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:8px 10px}
-  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
-  button{font:inherit;font-size:1rem;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;cursor:pointer}
-  button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#04201d;font-weight:600}
-  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal2);outline-offset:2px}
-  input[type=range]{width:100%;accent-color:#e9eef6}
+  .field label{display:block;font-size:.9rem;color:var(--soft);margin-bottom:7px}
+  select{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--panel2);border:0;border-radius:10px;padding:10px 12px}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  button{font:inherit}
+  .btns button{font-size:.95rem;color:var(--ink);background:var(--panel2);border:0;border-radius:999px;padding:10px 16px;cursor:pointer}
+  .btns button[aria-pressed="true"]{background:var(--ink);color:#1d1d1f;font-weight:600}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  input[type=range]{width:100%;accent-color:#f5f5f7}
   .info{border-top:1px solid var(--line);margin-top:6px;padding-top:18px}
-  .info h3{font-family:"Sora",sans-serif;font-size:1.2rem;margin:0 0 8px}
-  .info p{color:var(--soft);line-height:1.55;margin:0 0 14px;font-size:.95rem}
+  .info h3{font-size:1.15rem;font-weight:700;margin:0 0 8px;letter-spacing:-.01em}
+  .info p{color:var(--soft);line-height:1.5;margin:0 0 14px;font-size:.95rem}
   dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin:0 0 14px;font-size:.9rem}
   dt{color:var(--soft)} dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
   .note{font-size:.85rem;color:var(--faint);line-height:1.5}
-  footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:18px;color:var(--soft);font-size:.85rem}
+  footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:20px;color:var(--faint);font-size:.85rem}
   .fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--soft);padding:24px}
+  /* ---- presentation mode ---- */
+  .present{display:none;position:fixed;inset:0;z-index:20;pointer-events:none}
+  body.presenting{overflow:hidden}
+  body.presenting .present{display:block}
+  body.presenting .view{position:fixed;inset:0;height:100vh;min-height:0;border-radius:0;z-index:10;
+    background:radial-gradient(60% 55% at 50% 62%, #19191b 0%, #070708 62%, #000 100%)}
+  body.presenting .vlabel, body.presenting .vhint{display:none}
+  body.presenting canvas{cursor:pointer}
+  .pTitle{position:absolute;left:0;right:0;top:7vh;text-align:center;padding:0 6vw;transition:opacity .6s ease, transform .6s ease}
+  .pTitle.out{opacity:0;transform:translateY(14px)}
+  .pTitle h2{margin:0;font-size:clamp(2.2rem,5.4vw,5rem);font-weight:700;letter-spacing:-.03em;line-height:1.05;text-wrap:balance}
+  .pTitle p{margin:14px 0 0;font-size:clamp(1.05rem,1.9vw,1.7rem);font-weight:500;color:var(--soft);letter-spacing:-.01em;text-wrap:balance}
+  .pDots{position:absolute;left:50%;bottom:4.5vh;transform:translateX(-50%);display:flex;gap:10px;pointer-events:auto}
+  .pDots button{width:9px;height:9px;border-radius:50%;border:0;padding:0;background:#48484a;cursor:pointer;transition:background .3s,width .3s}
+  .pDots button.on{background:var(--ink);width:26px;border-radius:5px}
+  .pHint{position:absolute;right:28px;bottom:4vh;font-size:.82rem;color:var(--faint);transition:opacity 1s}
+  .pExit{position:absolute;right:22px;top:20px;pointer-events:auto;background:rgba(44,44,46,.7);color:var(--ink);border:0;border-radius:999px;padding:8px 14px;font-size:.88rem;cursor:pointer;opacity:.0;transition:opacity .3s}
+  body.presenting .present:hover .pExit, .pExit:focus-visible{opacity:1}
+  .pBrand{position:absolute;left:28px;bottom:4vh;font-size:.9rem;font-weight:600;color:var(--faint)}
   @media (max-width:900px){ .grid{grid-template-columns:1fr} .view{height:62vh} }
-  @media (prefers-reduced-motion:reduce){ .lab{transition:none} }
+  @media (prefers-reduced-motion:reduce){ .lab,.pTitle{transition:none} }
 </style>
 
 <div class="wrap">
   <header>
-    <div>
-      <div class="eyebrow">Night Signal · High school prototype</div>
-      <h1>A closer look at the wearable</h1>
-      <p class="sub">Explore the case, soft velcro strap and fingertip sensor — every part at its real size.</p>
+    <div class="eyebrow">Night Signal</div>
+    <h1>A closer look.</h1>
+    <p class="sub">The sensor case, velcro strap and fingertip sensor, with every part at its real size. This is the v2 design. Prototype v1 uses the same sensors in an armband.</p>
+    <div class="cta">
+      <button class="pill blue" id="bPresent">Present full screen</button>
+      <button class="pill ghost" id="bLoop">Play on loop ›</button>
     </div>
-    <span class="badge">Concept model · real part sizes</span>
   </header>
 
   <div class="grid">
@@ -66,8 +91,8 @@
       <canvas id="c"></canvas>
       <div class="labels" id="labels"></div>
       <div class="vlabel" id="vlabel">Assembled view</div>
-      <div class="vhint">Drag to rotate · Scroll or use Zoom · Choose a component to inspect</div>
-      <div class="fallback" id="fallback">The 3D view couldn’t load here — open this page in a normal browser tab.</div>
+      <div class="vhint">Drag to rotate · Scroll to zoom · Choose a component to inspect</div>
+      <div class="fallback" id="fallback">The 3D view couldn’t load here. Open this page in a normal browser tab.</div>
     </div>
 
     <aside>
@@ -103,8 +128,16 @@
 
   <footer>
     <span>Educational design demo. It does not diagnose or rule out sleep apnea.</span>
-    <span>Board sizes vary about ±2 mm between sellers — measure yours.</span>
+    <span>Board sizes vary about ±2 mm between sellers, so measure yours.</span>
   </footer>
+</div>
+
+<div class="present" id="present" aria-live="polite">
+  <div class="pTitle" id="pTitle"><h2 id="pH"></h2><p id="pS"></p></div>
+  <div class="pDots" id="pDots"></div>
+  <div class="pBrand">Night Signal</div>
+  <div class="pHint" id="pHint">← → or click · F full screen · Esc to exit</div>
+  <button class="pExit" id="pExit">Exit</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -113,7 +146,7 @@
   var INFO={
     whole:{t:"Whole wearable",d:"A small case on a soft velcro strap connects to a separate finger sensor. The case streams readings to the app over Bluetooth; all the graphs live in the app, so the wearable stays simple.",
       s:[["Case","70 × 45 × 29 mm"],["Strap","25 mm wide velcro"],["Cable","≈ 25 cm"],["Weight","≈ 65 g (estimate)"],["Readings","1 per second"]],
-      n:"Wear the case on the upper arm for the most accurate sleep-position readings, with the cuff on the index finger."},
+      n:"This is the planned v2 case. Prototype v1 uses the same sensors in a running armband, powered all night by a USB cable."},
     case:{t:"Sensor case",d:"A HoHaing black ABS project box (Amazon.ca) with a USB-C cut-out and a status light that blinks while it records.",
       s:[["Outside","70 × 45 × 29 mm"],["Inside","66 × 41 × 25 mm"],["Material","ABS — easy to drill"]],
       n:"Inside, the parts stack about 22 mm high: battery 6 mm, ESP32 with its pins ≈ 13 mm, motion sensor ≈ 3 mm. That leaves 3 mm spare."},
@@ -122,10 +155,10 @@
       n:"Must be a classic ESP32 (WROOM-32). C3, S2 and S3 chips can’t do Bluetooth Classic."},
     power:{t:"Battery & charging",d:"A LiPo cell powers the case; a USB-C board recharges it and a 3.3 V regulator keeps the ESP32 stable as the battery drains.",
       s:[["Battery","3.7 V 500 mAh · 35 × 30 × 6 mm"],["Charger","TP4056 USB-C · ≈ 28 × 17 mm"],["Regulator","TPS63020 3.3 V buck-boost"],["Runtime","≈ 4–5 h (estimate)"]],
-      n:"Bluetooth draws roughly 100 mA, so 500 mAh may not last a full night. Measure it with the battery runtime test; for full nights, plug the case into a small USB power bank."},
+      n:"Bluetooth draws roughly 100 mA, so 500 mAh lasts only about 4–5 hours. That is why prototype v1 runs on USB power; v2 needs a bigger battery or Bluetooth Low Energy."},
     mpu:{t:"Motion sensor",d:"The MPU-6050 feels which way gravity pulls, so the app knows if you’re on your back, side or stomach.",
       s:[["Board","GY-521 · ≈ 21 × 16 mm"],["Measures","Tilt + motion (6 axes)"],["Address","I²C 0x68"]],
-      n:"Shares the same two data wires (SDA/SCL) as the oxygen sensor."},
+      n:"Has its own two data wires (SDA → GPIO 33, SCL → GPIO 32), separate from the oxygen sensor, so nothing is spliced."},
     strap:{t:"Velcro strap",d:"Soft hook-and-loop fabric threads through the case’s lugs and adjusts to any arm.",
       s:[["Width","25 mm (1 inch)"],["Arm strap","cut ≈ 300 mm"],["Finger loop","cut ≈ 80 mm"],["Material","Hook-and-loop fabric"]],
       n:"Cut both straps from one VELCRO 1-inch roll."},
@@ -144,16 +177,16 @@
 
   (function(){ var pm=new THREE.PMREMGenerator(renderer), c=document.createElement("canvas"); c.width=512; c.height=256;
     var g=c.getContext("2d"), gr=g.createLinearGradient(0,0,0,256);
-    gr.addColorStop(0,"#2b3c5c"); gr.addColorStop(0.45,"#16243c"); gr.addColorStop(1,"#05080f"); g.fillStyle=gr; g.fillRect(0,0,512,256);
+    gr.addColorStop(0,"#4a4a4f"); gr.addColorStop(0.45,"#1c1c1f"); gr.addColorStop(1,"#030303"); g.fillStyle=gr; g.fillRect(0,0,512,256);
     g.fillStyle="rgba(240,246,255,.35)"; g.fillRect(70,30,90,10); g.fillRect(330,24,70,8);
     var t=new THREE.CanvasTexture(c); t.mapping=THREE.EquirectangularReflectionMapping;
     scene.environment=pm.fromEquirectangular(t).texture; t.dispose(); pm.dispose(); })();
 
-  scene.add(new THREE.HemisphereLight(0xc4d6ff,0x0b1220,0.55));
+  scene.add(new THREE.HemisphereLight(0xe8ecf2,0x0b0b0c,0.5));
   var key=new THREE.DirectionalLight(0xffffff,2.3); key.position.set(4,12,8); key.castShadow=true; key.shadow.mapSize.set(2048,2048);
   var sc=key.shadow.camera; sc.left=-12; sc.right=14; sc.top=12; sc.bottom=-12; sc.near=1; sc.far=50; key.shadow.bias=-0.0006; key.shadow.radius=5; scene.add(key);
-  var fill=new THREE.DirectionalLight(0xc8d8ff,0.7); fill.position.set(-9,5,6); scene.add(fill);
-  var rim=new THREE.DirectionalLight(0x9fc4e8,0.6); rim.position.set(-6,6,-9); scene.add(rim);
+  var fill=new THREE.DirectionalLight(0xe2e6ee,0.7); fill.position.set(-9,5,6); scene.add(fill);
+  var rim=new THREE.DirectionalLight(0xdfe6f0,0.9); rim.position.set(-6,6,-9); scene.add(rim);
 
   // ---- textures ----
   function tex(w,h,draw,rep){ var c=document.createElement("canvas"); c.width=w; c.height=h; draw(c.getContext("2d"),w,h);
@@ -167,8 +200,8 @@
   var hookT=tex(256,128,weave("#11655e",["#1a8a80","#0b4a45","#219a8f"],5200),[5,1]);
   function board(bg,label,sub){ return tex(512,256,function(g,w,h){ g.fillStyle=bg; g.fillRect(0,0,w,h);
     g.strokeStyle="rgba(255,255,255,.2)"; g.lineWidth=2; for(var i=0;i<14;i++){ g.beginPath(); g.moveTo(22+i*34,h-14); g.lineTo(22+i*34,h-40); g.stroke(); }
-    g.fillStyle="#eef2f8"; g.font="600 36px 'IBM Plex Mono', monospace"; g.fillText(label,24,60);
-    if(sub){ g.fillStyle="rgba(238,242,248,.72)"; g.font="500 26px 'IBM Plex Mono', monospace"; g.fillText(sub,24,100); } }); }
+    g.fillStyle="#eef2f8"; g.font="600 36px Menlo, 'SF Mono', Consolas, monospace"; g.fillText(label,24,60);
+    if(sub){ g.fillStyle="rgba(238,242,248,.72)"; g.font="500 26px Menlo, 'SF Mono', Consolas, monospace"; g.fillText(sub,24,100); } }); }
 
   var M={
     abs:new THREE.MeshPhysicalMaterial({color:0x151a23,roughness:.62,clearcoat:.08,clearcoatRoughness:.6}),
@@ -275,6 +308,8 @@
   var relief=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.55,16),M.relief); relief.position.set(cEnd.x,cEnd.y+.25,cEnd.z); cableG.add(relief);
   var relief2=new THREE.Mesh(new THREE.CylinderGeometry(.12,.14,.45,16),M.relief); relief2.rotation.z=Math.PI/2.4; relief2.position.set(3.65,CASEY+1.65,0); cableG.add(relief2);
 
+  // ---- Bluetooth signal rings (presentation mode only; added after the material pass below) ----
+  var RINGS=[], ringOn=0;
   // give every mesh its own material (so one part can be highlighted while others fade),
   // tag it with its nearest owning group, and convert hex colours from sRGB to linear once.
   var GROUP_OF=new Map(); Object.keys(GROUPS).forEach(function(n){ GROUP_OF.set(GROUPS[n],n); });
@@ -285,6 +320,10 @@
     mt.envMapIntensity=(mt.metalness>.5)?1.0:.45; o.material=mt; });
   // the case base/lid/lugs belong to "case" but internal parts are their own groups
   function meshesOf(name){ var out=[]; GROUPS[name].traverse(function(o){ if(o.isMesh && o.userData.group===name) out.push(o); }); return out; }
+
+  for(var ri=0;ri<3;ri++){ var rm=new THREE.Mesh(new THREE.RingGeometry(.92,1.0,96),
+      new THREE.MeshBasicMaterial({color:0x2997ff,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+    rm.rotation.x=-Math.PI/2; rm.position.set(0,CASEY+2.42,0); rm.renderOrder=5; root.add(rm); RINGS.push(rm); }
 
   // ---- exploded layout (case space) ----
   var LAYOUT={ lid:{a:[0,2.35,0],e:[0,10.6,0],o:lid}, mpu:{a:[1.2,1.85,0],e:[1.2,8.6,0],o:GROUPS.mpu},
@@ -335,43 +374,90 @@
     if(S.sel==="strap") return new THREE.Vector3(0,-.6,0);
     var g=GROUPS[S.sel==="case"?"case":S.sel]; g.getWorldPosition(p); if(S.sel==="case"||S.sel==="esp"||S.sel==="mpu"||S.sel==="power") p.y+=.6; return p; }
 
+  // ---- presentation mode: full-screen chapters, keyboard / clicker / click to advance ----
+  var CH=[
+    {h:"Night Signal.", s:"Sleep apnea screening you can wear.", ex:0, tgt:[3.9,.2,0], dist:34, pitch:20, spin:.0022, yaw:20},
+    {h:"It reads oxygen through your fingertip.", s:"Red and infrared light, 25 samples every second.", ex:0, tgt:[CLIP.x-.4,CLIP.y+.6,CLIP.z], dist:13, pitch:22, yaw:16, spin:.0006},
+    {h:"Everything inside. At real size.", s:"ESP32, motion sensor, battery and charger in a 70 × 45 mm case.", ex:1, tgt:[1.4,4.3,0], dist:45, pitch:12, yaw:24, labels:true},
+    {h:"One reading every second. All night.", s:"Streamed to the app over Bluetooth.", ex:0, tgt:[1.5,CASEY+.6,0], dist:27, pitch:26, yaw:-28, spin:.0015, rings:true},
+    {h:"Night Signal.", s:"Gabriel Mamane · Science Fair 2027", ex:0, tgt:[3.9,.2,0], dist:35, pitch:22, yaw:200, spin:.0022}
+  ];
+  var PRES=null, LOOP=false, loopTimer=null, P={yaw:0,pitch:.4};
+  var pTitle=document.getElementById("pTitle"), pH=document.getElementById("pH"), pS=document.getElementById("pS"), pDots=document.getElementById("pDots"), pHint=document.getElementById("pHint");
+  CH.forEach(function(c,i){ var b=document.createElement("button"); b.setAttribute("aria-label","Chapter "+(i+1)); b.onclick=function(e){ e.stopPropagation(); stopLoop(); goCh(i); }; pDots.appendChild(b); });
+  function goCh(i){ i=(i+CH.length)%CH.length; var first=PRES===null; PRES=i; var c=CH[i];
+    if(first){ P.yaw=c.yaw*Math.PI/180; P.pitch=c.pitch*Math.PI/180; }
+    else { var tY=c.yaw*Math.PI/180, d=((tY-P.yaw)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI; P.yawGoal=P.yaw+d; }
+    pTitle.classList.add("out");
+    setTimeout(function(){ pH.textContent=c.h; pS.textContent=c.s; pTitle.classList.remove("out"); }, first?0:420);
+    Array.prototype.forEach.call(pDots.children,function(b,j){ b.className=j===i?"on":""; });
+    setEx(!!c.ex); }
+  function startPresent(loop){ if(S.sel!=="whole"){ sel.value="whole"; select("whole"); }
+    document.body.classList.add("presenting"); setSpin(false); LOOP=!!loop; goCh(0); resize();
+    pHint.style.opacity="1"; setTimeout(function(){ pHint.style.opacity="0"; },4500);
+    if(LOOP){ loopTimer=setInterval(function(){ goCh(PRES+1); },7000); } }
+  function stopLoop(){ LOOP=false; if(loopTimer){ clearInterval(loopTimer); loopTimer=null; } }
+  function endPresent(){ stopLoop(); PRES=null; document.body.classList.remove("presenting"); setEx(false); resize();
+    if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }
+  function toggleFull(){ if(document.fullscreenElement){ document.exitFullscreen(); } else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); } }
+  document.getElementById("bPresent").onclick=function(){ startPresent(false); toggleFull(); };
+  document.getElementById("bLoop").onclick=function(){ startPresent(true); toggleFull(); };
+  document.getElementById("pExit").onclick=endPresent;
+  document.addEventListener("keydown",function(e){ if(PRES===null) return;
+    if(["ArrowRight","PageDown"," ","Enter"].indexOf(e.key)>=0){ e.preventDefault(); stopLoop(); goCh(PRES+1); }
+    else if(["ArrowLeft","PageUp","Backspace"].indexOf(e.key)>=0){ e.preventDefault(); stopLoop(); goCh(PRES-1); }
+    else if(e.key==="Escape"){ endPresent(); }
+    else if(e.key==="f"||e.key==="F"){ toggleFull(); } });
+  document.addEventListener("fullscreenchange",function(){ setTimeout(resize,60); });
+
   // drag to rotate, wheel to zoom (kept in sync with the sliders)
   var drag=false,lx=0,ly=0;
-  canvas.addEventListener("pointerdown",function(e){drag=true;setSpin(false);lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener("pointerdown",function(e){ if(PRES!==null){ stopLoop(); goCh(PRES+1); return; } drag=true;setSpin(false);lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
   canvas.addEventListener("pointermove",function(e){ if(!drag)return;
     elRot.value=Math.max(-180,Math.min(180,+elRot.value-(e.clientX-lx)*.4)); elTilt.value=Math.max(5,Math.min(75,+elTilt.value+(e.clientY-ly)*.25));
     lx=e.clientX; ly=e.clientY; readSliders(); });
   canvas.addEventListener("pointerup",function(){drag=false;}); canvas.addEventListener("pointercancel",function(){drag=false;});
-  canvas.addEventListener("wheel",function(e){ e.preventDefault(); elZoom.value=Math.max(0,Math.min(100,+elZoom.value-e.deltaY*.05)); readSliders(); },{passive:false});
+  canvas.addEventListener("wheel",function(e){ e.preventDefault(); if(PRES!==null) return; elZoom.value=Math.max(0,Math.min(100,+elZoom.value-e.deltaY*.05)); readSliders(); },{passive:false});
 
   function resize(){ var w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
   window.addEventListener("resize",resize); resize();
 
   var v=new THREE.Vector3(), clock=0, curTgt=DEF_TGT.clone(), curDist=24;
   function ease(x){ return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2; }
+  var lastT=performance.now();
+  function sm(a){ return 1-Math.pow(1-a,DT*60); }   // frame-rate independent smoothing
+  var DT=1/60;
   function frame(){
-    S.ex+=(S.exT-S.ex)*.08; var k=ease(Math.max(0,Math.min(1,S.ex)));
+    var now=performance.now(); DT=Math.min(.25,(now-lastT)/1000); lastT=now;
+    S.ex+=(S.exT-S.ex)*sm(.08); var k=ease(Math.max(0,Math.min(1,S.ex)));
     Object.keys(LAYOUT).forEach(function(n){ var L=LAYOUT[n]; L.o.position.set(L.a[0]+(L.e[0]-L.a[0])*k,L.a[1]+(L.e[1]-L.a[1])*k,L.a[2]+(L.e[2]-L.a[2])*k); });
-    if(S.spin){ elRot.value=((+elRot.value+0.25+180)%360)-180; readSliders(); }
-    var focused=S.sel!=="whole";
-    var baseDist=(camera.aspect<1.1?39:30)*(1.55-S.zoom*1.05)*(focused?.62:1)*(1+.32*k*(focused?0:1));
-    var want=focusPoint(); if(!focused){ want.y+=5.3*k; want.x-=1.6*k; }
-    curTgt.lerp(want,.08); curDist+=(baseDist-curDist)*.08;
-    var pitch=S.pitch*(1-.55*k);
-    camera.position.set(curTgt.x+Math.sin(S.yaw)*Math.cos(pitch)*curDist, curTgt.y+Math.sin(pitch)*curDist, curTgt.z+Math.cos(S.yaw)*Math.cos(pitch)*curDist);
-    camera.lookAt(curTgt);
-    clock+=.045; var mR=fingerG.children[7]?null:null;
+    if(S.spin){ elRot.value=((+elRot.value+0.25*DT*60+180)%360)-180; readSliders(); }
+    var focused=S.sel!=="whole", yaw=S.yaw, pitch, want, baseDist, c=PRES!==null?CH[PRES]:null;
+    if(c){ want=new THREE.Vector3(c.tgt[0],c.tgt[1],c.tgt[2]); baseDist=c.dist*(camera.aspect<1.1?1.35:1);
+      if(P.yawGoal!=null){ P.yaw+=(P.yawGoal-P.yaw)*sm(.05); if(Math.abs(P.yawGoal-P.yaw)<.01) P.yawGoal=null; }
+      else if(c.spin){ P.yaw+=c.spin*DT*60; }
+      P.pitch+=(c.pitch*Math.PI/180-P.pitch)*sm(.06); yaw=P.yaw; pitch=P.pitch; }
+    else { baseDist=(camera.aspect<1.1?39:30)*(1.55-S.zoom*1.05)*(focused?.62:1)*(1+.32*k*(focused?0:1));
+      want=focusPoint(); if(!focused){ want.y+=5.3*k; want.x-=1.6*k; } pitch=S.pitch*(1-.55*k); }
+    curTgt.lerp(want,sm(c?.06:.08)); curDist+=(baseDist-curDist)*sm(c?.06:.08);
+    camera.position.set(curTgt.x+Math.sin(yaw)*Math.cos(pitch)*curDist, curTgt.y+Math.sin(pitch)*curDist, curTgt.z+Math.cos(yaw)*Math.cos(pitch)*curDist);
+    if(c) camera.lookAt(curTgt.x,curTgt.y+curDist*(window.NS_NOSHIFT?0:.075),curTgt.z); else camera.lookAt(curTgt);   // presenting: model sits below the headline
+    clock+=.045*DT*60; var mR=fingerG.children[7]?null:null;
     redL.intensity=.9+Math.abs(Math.sin(clock))*.9; ledL.intensity=.35+Math.abs(Math.sin(clock*.5))*.4;
+    ringOn+=(((c&&c.rings)?1:0)-ringOn)*sm(.06);
+    RINGS.forEach(function(r,i){ var f=((clock*.12)+i/3)%1; r.scale.setScalar(1+f*4.2); r.material.opacity=(1-f)*.75*ringOn; r.visible=ringOn>.01; });
     renderer.render(scene,camera);
     document.getElementById("vlabel").textContent= focused? ("Inspecting: "+INFO[S.sel].t) : (k>.5?"Exploded view":"Assembled view");
     var W=stage.clientWidth,H=stage.clientHeight;
     LABELS.forEach(function(L){ var show=(L.when==="exp"?k>.8:k<.3) && (S.sel==="whole" || (L.when==="exp"&&["esp","power","mpu","case"].indexOf(S.sel)>=0));
+      if(c) show=!!c.labels && L.when==="exp" && k>.8;
       L.obj.localToWorld(v.copy(L.off)); v.project(camera);
       var x=(v.x*.5+.5)*W,y=(-v.y*.5+.5)*H,ok=v.z<1&&x>10&&x<W-10&&y>40&&y<H-36;
       L.el.style.opacity=(show&&ok)?"1":"0"; L.el.style.transform="translate("+x.toFixed(1)+"px,"+y.toFixed(1)+"px)"; });
     requestAnimationFrame(frame);
   }
   select("whole"); readSliders(); frame();
-  window.NS={explode:function(v){setEx(v);S.ex=v?1:0;}, select:function(n){sel.value=n;select(n);}, set:function(z,r,t){elZoom.value=z;elRot.value=r;elTilt.value=t;readSliders();}};
+  if(/present|loop/.test(location.hash)) startPresent(/loop/.test(location.hash));
+  window.NS={present:function(i,loop){ if(PRES===null) startPresent(!!loop); stopLoop(); goCh(i||0); }, endPresent:function(){endPresent();},explode:function(v){setEx(v);S.ex=v?1:0;}, select:function(n){sel.value=n;select(n);}, set:function(z,r,t){elZoom.value=z;elRot.value=r;elTilt.value=t;readSliders();}};
 })();
 </script>
