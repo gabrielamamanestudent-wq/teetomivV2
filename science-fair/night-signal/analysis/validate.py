@@ -35,6 +35,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+import chart_style as cs
+cs.apply()
+
 
 def agreement(device_path, ref_path):
     """Compare device SpO2 with reference spot readings. Returns a dict of
@@ -93,22 +96,20 @@ def main():
 
     # Bland-Altman plot: average of the two vs their difference.
     avg = (device_vals + ref_vals) / 2.0
-    fig, ax = plt.subplots(figsize=(9, 5.5))
-    ax.scatter(avg, diff, color="#1f8a9c", alpha=0.7, s=28, zorder=3)
-    ax.axhline(bias, color="#42505f", lw=1.4, label=f"bias {bias:+.2f}%")
-    ax.axhline(loa_high, color="#cf4747", ls="--", lw=1.2,
-               label=f"+1.96 SD ({loa_high:+.2f}%)")
-    ax.axhline(loa_low, color="#cf4747", ls="--", lw=1.2,
-               label=f"-1.96 SD ({loa_low:+.2f}%)")
-    ax.set_xlabel("Average of device & reference SpO₂ (%)", fontsize=12)
-    ax.set_ylabel("Device − reference (%)", fontsize=12)
-    ax.set_title("Bland-Altman: device vs reference oximeter",
-                 fontsize=14, fontweight="bold")
-    ax.legend(fontsize=10)
-    ax.grid(alpha=0.2)
+    fig, ax = plt.subplots(figsize=(5.8, 4.2))
+    ax.scatter(avg, diff, color=cs.BLUE, alpha=0.55, s=40, lw=0, zorder=3)
+    ax.axhline(bias, color=cs.INK, lw=1.6)
+    ax.axhline(loa_high, color=cs.PINK, ls=(0, (4, 4)), lw=1.4)
+    ax.axhline(loa_low, color=cs.PINK, ls=(0, (4, 4)), lw=1.4)
+    cs.end_label(ax, bias, f"bias {bias:+.2f}%", cs.INK)
+    cs.end_label(ax, loa_high, f"+1.96 SD {loa_high:+.2f}%", cs.PINK)
+    cs.end_label(ax, loa_low, f"−1.96 SD {loa_low:+.2f}%", cs.PINK)
+    cs.title(ax, "Device vs reference oximeter", "Bland–Altman agreement: each dot is one paired reading")
+    ax.set_xlabel("Average of device and reference SpO₂ (%)")
+    ax.set_ylabel("Device − reference (%)")
     fig.tight_layout()
     out = device_path.rsplit(".", 1)[0] + "_validation.png"
-    fig.savefig(out, dpi=150)
+    fig.savefig(out, dpi=180)
     print(f"Saved Bland-Altman plot -> {out}")
 
 

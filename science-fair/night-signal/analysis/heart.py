@@ -34,6 +34,8 @@ import matplotlib.dates as mdates
 from matplotlib.patches import Patch
 
 from signals import hrv
+import chart_style as cs
+cs.apply()
 
 FAST, SLOW = 100, 40          # bpm thresholds
 MIN_EPISODE_S = 60            # an episode must last at least this long
@@ -81,30 +83,29 @@ def describe(r, eps, name):
 
 def plot(r, out_png):
     df = r["df"]
-    fig, ax = plt.subplots(figsize=(12, 5.2))
+    fig, ax = plt.subplots(figsize=(7.4, 3.9))
     ts = df["timestamp"]
-    for eps, col in ((r["fast"], "#cf4747"), (r["slow"], "#3b6fd6"), (r["irregular"], "#e0a020")):
+    for eps, col in ((r["fast"], cs.RED), (r["slow"], cs.BLUE), (r["irregular"], cs.ORANGE)):
         for a, b in eps:
-            ax.axvspan(ts.iloc[a], ts.iloc[b], color=col, alpha=0.22, lw=0)
-    ax.plot(ts, r["smooth"], color="#e4568a", lw=1.6)
-    ax.axhline(FAST, color="#cf4747", ls="--", lw=1)
-    ax.axhline(SLOW, color="#3b6fd6", ls="--", lw=1)
-    ax.axhline(r["resting"], color="#6b7889", ls=":", lw=1.2)
-    ax.text(ts.iloc[5], FAST + 2, "  100 bpm = racing", color="#cf4747", fontsize=9)
-    ax.text(ts.iloc[5], SLOW - 6, "  40 bpm = very slow", color="#3b6fd6", fontsize=9)
-    ax.text(ts.iloc[5], r["resting"] + 1.5, f"  resting {r['resting']:.0f} bpm", color="#6b7889", fontsize=9)
+            ax.axvspan(ts.iloc[a], ts.iloc[b], color=col, alpha=0.18, lw=0, zorder=0)
+    ax.plot(ts, r["smooth"], color=cs.PINK, lw=1.8, zorder=3)
+    ax.axhline(FAST, color=cs.RED, ls=(0, (4, 4)), lw=1.1)
+    ax.axhline(SLOW, color=cs.BLUE, ls=(0, (4, 4)), lw=1.1)
+    ax.axhline(r["resting"], color=cs.GRAY, ls=":", lw=1.2)
+    cs.end_label(ax, FAST, "100 racing", cs.RED)
+    cs.end_label(ax, SLOW, "40 very slow", cs.BLUE)
+    cs.end_label(ax, r["resting"], f"{r['resting']:.0f} resting", cs.GRAY)
     ax.set_ylim(25, 135)
-    ax.set_ylabel("Heart rate (bpm)", fontsize=12)
-    ax.set_xlabel("Time", fontsize=12)
+    ax.set_ylabel("Heart rate (bpm)")
+    ax.margins(x=0)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.grid(axis="y", alpha=0.2)
-    ax.legend(handles=[Patch(color="#cf4747", alpha=.35, label="Racing heart"),
-                       Patch(color="#3b6fd6", alpha=.35, label="Very slow heart"),
-                       Patch(color="#e0a020", alpha=.35, label="Irregular rhythm")],
-              loc="upper right", fontsize=10, framealpha=.9)
-    fig.suptitle("Heart spin-off: what the same sensor sees", fontsize=15, fontweight="bold")
-    fig.tight_layout(rect=[0, 0, 1, .95])
-    fig.savefig(out_png, dpi=150)
+    ax.legend(handles=[Patch(color=cs.RED, alpha=.3, label="Racing"),
+                       Patch(color=cs.BLUE, alpha=.3, label="Very slow"),
+                       Patch(color=cs.ORANGE, alpha=.35, label="Irregular")],
+              loc="upper left", ncol=3, handlelength=1.2, columnspacing=1.4)
+    cs.title(ax, "Heart rate through the night", "Heart spin-off: the same sensor flags unusual episodes")
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=180)
     print(f"Saved chart -> {out_png}")
 
 

@@ -34,6 +34,8 @@ import matplotlib.dates as mdates
 
 import analyze
 from signals import breathing_rate
+import chart_style as cs
+cs.apply()
 
 WIN = 300               # 5-minute windows (seconds / samples)
 FAST_BREATHING = 20     # breaths per minute
@@ -81,26 +83,25 @@ def analyze_asthma(path):
 
 
 def plot(r, out_png):
-    fig, ax = plt.subplots(figsize=(12, 5.2))
+    fig, ax = plt.subplots(figsize=(7.4, 3.9))
     t = r["times"]
     step = pd.Timedelta(seconds=WIN)
     for ti, f in zip(t, r["fast"]):
         if f:
-            ax.axvspan(ti - step / 2, ti + step / 2, color="#cf4747", alpha=0.18, lw=0)
-    ax.plot(t, r["rates"], color="#1f8a9c", lw=2.2, marker="o", ms=3.5)
-    ax.axhline(r["limit"], color="#cf4747", ls="--", lw=1)
-    ax.text(t[0], r["limit"] + 0.4, f"  fast breathing (> {r['limit']:.0f}/min)", color="#cf4747", fontsize=9)
+            ax.axvspan(ti - step / 2, ti + step / 2, color=cs.RED, alpha=0.13, lw=0, zorder=0)
+    ax.plot(t, r["rates"], color=cs.BLUE, lw=2.2, marker="o", ms=4, mec="white", mew=0.8, zorder=3)
+    ax.axhline(r["limit"], color=cs.RED, ls=(0, (4, 4)), lw=1.1)
+    cs.end_label(ax, r["limit"], f"{r['limit']:.0f} fast", cs.RED)
     for c in r["coughs"]:
-        ax.plot([c, c], [6.2, 7.4], color="#e0a020", lw=1.6)
-    ax.text(t[0], 7.7, "  cough-like jolts (motion sensor)", color="#b07a10", fontsize=9)
+        ax.plot([c, c], [6.2, 7.6], color=cs.ORANGE, lw=1.8, solid_capstyle="round")
+    ax.text(t[0], 8.0, "Cough-like jolts (motion sensor)", color=cs.ORANGE, fontsize=10.5, fontweight="bold")
     ax.set_ylim(5.5, max(26, r["rates"].max() + 2))
-    ax.set_ylabel("Breaths per minute", fontsize=12)
-    ax.set_xlabel("Time", fontsize=12)
+    ax.set_ylabel("Breaths per minute")
+    ax.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.grid(axis="y", alpha=0.2)
-    fig.suptitle("Asthma spin-off: breathing through the night", fontsize=15, fontweight="bold")
-    fig.tight_layout(rect=[0, 0, 1, .95])
-    fig.savefig(out_png, dpi=150)
+    cs.title(ax, "Breathing rate through the night", "Asthma spin-off: breathing speeds up in the early morning")
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=180)
     print(f"Saved chart -> {out_png}")
 
 

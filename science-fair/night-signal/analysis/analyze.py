@@ -36,6 +36,8 @@ try:
     matplotlib.use("Agg")  # save to file without needing a display
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
+    import chart_style as cs
+    cs.apply()
 except ImportError:
     sys.exit("Missing dependencies. Run:  pip install -r requirements.txt")
 
@@ -115,46 +117,23 @@ def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
 
 def make_plot(df, events, out_png, title):
     """One simple chart built for a general audience: a single blood-oxygen
-    line over the night, with each apnea event shown as a red band. One line,
-    one axis — easy to read at a glance."""
-    from matplotlib.patches import Patch
-
-    TEAL = "#1f8a9c"    # SpO2 line
-    RED = "#cf4747"     # apnea events
-    GREY = "#6b7889"
-
-    fig, ax = plt.subplots(figsize=(12, 5.5))
-    fig.suptitle(title, fontsize=16, fontweight="bold")
-    ax.set_title(f"Each red band is an apnea event — you can see the blood "
-                 f"oxygen drop.   ({len(events)} events found)",
-                 fontsize=11, color="#42505f")
-
-    # Red event bands, drawn behind the line.
-    for ev in events:
-        ax.axvspan(ev["start_time"], ev["end_time"], color=RED, alpha=0.25, zorder=0)
-
-    # The one line: blood oxygen over time.
-    spo2_line, = ax.plot(df["timestamp"], df["spo2_smooth"], color=TEAL, lw=2.2,
-                         zorder=3, label="Blood oxygen")
-
-    # A simple reference line so a viewer knows what "low" means.
-    ax.axhline(90, color=GREY, lw=1.0, ls="--", zorder=1)
-    ax.text(df["timestamp"].iloc[2], 90.3, "  90% = low oxygen",
-            color=GREY, fontsize=9, va="bottom")
-
-    ax.set_ylabel("Blood oxygen  (SpO₂ %)", fontsize=12)
-    ax.set_xlabel("Time", fontsize=12)
-    ax.set_ylim(min(84, df["spo2"].min() - 2), 100)
-    ax.tick_params(labelsize=11)
-    ax.grid(axis="y", alpha=0.2)
+    line over the night, with each apnea event shown as a red band."""
+    fig, ax = plt.subplots(figsize=(7.6, 3.9))
+    for ev in events:                                   # event bands, behind the line
+        ax.axvspan(ev["start_time"], ev["end_time"], color=cs.RED, alpha=0.3, lw=0, zorder=0)
+    ax.plot(df["timestamp"], df["spo2_smooth"], color=cs.BLUE, lw=2.2, zorder=3)
+    ax.axhline(90, color=cs.GRAY, lw=1.0, ls=(0, (4, 4)), zorder=1)
+    cs.end_label(ax, 90, "90% low", cs.GRAY)
+    cs.end_label(ax, float(df["spo2_smooth"].iloc[-60:].mean()), "SpO₂", cs.BLUE)
+    cs.title(ax, "Blood oxygen through the night",
+             f"{title}  ·  {len(events)} events (red bands)")
+    ax.set_ylabel("SpO₂ %")
+    ax.set_ylim(min(84, df["spo2"].min() - 2), 100.5)
+    ax.margins(x=0)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-
-    event_patch = Patch(facecolor=RED, alpha=0.25, label="Apnea event")
-    ax.legend(handles=[spo2_line, event_patch], loc="lower left",
-              fontsize=11, framealpha=0.9)
-
-    fig.tight_layout(rect=[0, 0, 1, 0.95])
-    fig.savefig(out_png, dpi=150)
+    ax.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
+    fig.tight_layout()
+    fig.savefig(out_png, dpi=180)
     print(f"Saved graph -> {out_png}")
 
 
@@ -199,8 +178,8 @@ def main():
     print("  Educational prototype only. Not a medical diagnosis.\n")
 
     out_png = args.csv.rsplit(".", 1)[0] + "_report.png"
-    title = f"Night Signal - {df['timestamp'].iloc[0].strftime('%Y-%m-%d')}  " \
-            f"(AHI ~{ahi:.1f}, {band})"
+    d0 = df["timestamp"].iloc[0]
+    title = f"{d0:%B} {d0.day}, {d0.year}  ·  AHI {ahi:.1f} ({band})"
     make_plot(df, events, out_png, title)
 
 

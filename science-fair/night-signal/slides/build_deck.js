@@ -194,13 +194,13 @@ notes(s, "Results summary", 40, "Here's the summary. Over a seven-hour night, th
 
 /* ---------------- 9. RESULTS: NIGHT + ACCURACY ---------------- */
 s = slide(false); eyebrow(s, "Results"); title(s, "Every dip found. And the readings agree."); prelim(s);
-const oh = img(s, "oxygen.png", 0.75, 2.1, 6.95); caption(s, "One night: each red band is an apnea event found automatically", 0.75, 2.1 + oh + 0.12, 6.95);
-img(s, "validation.png", 7.95, 2.1, 4.63); caption(s, "Bland–Altman: 95% of readings within −1.5 to +1.7 %", 7.95, 2.1 + 4.63 * ratio("validation.png") + 0.12, 4.63);
+img(s, "oxygen.png", 0.75, 2.15, 6.95);
+img(s, "validation.png", 7.95, 2.15, 4.63); caption(s, "95% of readings within −1.5 to +1.7 % of the reference", 7.95, 2.15 + 4.63 * ratio("validation.png") + 0.15, 4.63);
 notes(s, "Results: detection + accuracy", 35, "On the left, a whole night of oxygen — every red band is an event my code found on its own. On the right is a Bland–Altman plot, the standard way medical papers compare two devices: the average difference is almost zero, and 95% of my readings fall within about one and a half percent of the reference.");
 
 /* ---------------- 10. RESULTS: POSITION + ML ---------------- */
 s = slide(false); eyebrow(s, "Results"); title(s, "Back-sleeping, and two detectors."); prelim(s);
-const poh = img(s, "position.png", 0.75, 2.1, 5.8); caption(s, "Apnea events per hour by position", 0.75, 2.1 + poh + 0.08, 5.8);
+img(s, "position.png", 0.75, 2.05, 5.6);
 s.addChart(p.charts.BAR, [{ name: "Precision", labels: ["Rule-based", "Machine learning"], values: [1.0, 0.92] },
   { name: "Recall (events caught)", labels: ["Rule-based", "Machine learning"], values: [0.63, 0.63] }],
   { x: 6.95, y: 2.05, w: 5.65, h: 3.7, barDir: "col", barGrouping: "clustered", barGapWidthPct: 60, chartColors: [C.BLUE, C.PINKD], showValue: true,

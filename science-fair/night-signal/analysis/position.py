@@ -27,6 +27,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import analyze   # reuse the event detector
+import chart_style as cs
+cs.apply()
 
 # Canonical gravity vectors for each position (ax, ay, az in g).
 REFS = {
@@ -107,19 +109,22 @@ def main():
         print("  -> The back was not the worst position here.")
     print("=" * 56 + "\n")
 
-    # Bar chart.
-    fig, ax = plt.subplots(figsize=(8, 5))
+    # Bar chart: the back is highlighted, the other positions are muted.
+    fig, ax = plt.subplots(figsize=(6.0, 4.4))
     ps = [p for p in ORDER if float(hours.get(p, 0)) > 0.05]
     vals = [rates[p] for p in ps]
-    ax.bar(ps, vals, color=[COLORS[p] for p in ps], width=0.6)
-    ax.set_ylabel("Apnea events per hour", fontsize=12)
-    ax.set_title("Does sleeping position affect apnea?", fontsize=14, fontweight="bold")
+    top = max(vals) if vals else 1
+    ax.bar(ps, vals, color=[cs.PINK if p == "Back" else cs.MUTED for p in ps], width=0.58, zorder=3)
     for i, v in enumerate(vals):
-        ax.text(i, v + 0.05, f"{v:.1f}", ha="center", fontsize=11, fontweight="bold")
-    ax.grid(axis="y", alpha=0.2)
+        ax.text(i, v + top * 0.03, f"{v:.1f}", ha="center", fontsize=14, fontweight="bold",
+                color=cs.PINK if ps[i] == "Back" else cs.INK)
+    cs.title(ax, "Apnea events per hour, by position", "The most events happened on the back")
+    ax.set_ylim(0, top * 1.18)
+    ax.tick_params(axis="x", labelsize=12.5, colors=cs.INK)
+    ax.set_ylabel("Events per hour")
     fig.tight_layout()
     out = csv_path.rsplit(".", 1)[0] + "_position.png"
-    fig.savefig(out, dpi=150)
+    fig.savefig(out, dpi=180)
     print(f"Saved chart -> {out}")
 
 
