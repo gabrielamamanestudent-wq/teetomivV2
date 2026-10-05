@@ -15,6 +15,7 @@ position all night, streams it over **Bluetooth**, and automatically detects
 ```
 night-signal/
 ├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
+├── Night_Signal_Ethics.docx         # ethics package: protocol, risk assessment, consent, data sheets
 ├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting
 ├── firmware/
 │   └── night_signal_esp32.ino        # v3.1: sensors + self-test + finger, 1 reading/s
