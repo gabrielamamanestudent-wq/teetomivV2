@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Night Signal Build Kit</title>
+<style>
+:root{--ink:#141a26;--soft:#44515f;--line:#dbe1ec;--bg:#f6f8fb;--card:#fff;--teal:#1f8a9c;--navy:#12414c;--gold:#c98a1e;--warnbg:#fbf2df;--okbg:#e5f4ef;--ok:#1d7a5c;--code:#eef1f7;
+ --w3v3:#d93838;--wgnd:#222;--wsda:#2f6fd6;--wscl:#e0b400;--wbat:#8a4fd1;--w5v:#e07b00}
+@media (prefers-color-scheme:dark){:root{--ink:#e8edf5;--soft:#a6b2c2;--line:#2c3646;--bg:#0f141c;--card:#171e29;--teal:#4cc0d2;--navy:#8fd3de;--warnbg:#3a2e17;--okbg:#16352b;--ok:#6fd3a8;--code:#232c3a;--wgnd:#cfd6e0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px}
+h1{margin:0 0 4px;font-size:30px;color:var(--navy)} .sub{color:var(--soft);margin:0 0 18px}
+h2{margin:36px 0 10px;color:var(--navy);font-size:22px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h2 .t{font-size:14px;color:var(--soft);font-weight:500}
+h3{margin:22px 0 8px;font-size:17px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+nav a{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;color:var(--teal);text-decoration:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+.note{background:var(--warnbg);border-left:4px solid var(--gold);padding:10px 14px;border-radius:8px;margin:12px 0}
+.done{background:var(--okbg);border-left:4px solid var(--ok);padding:10px 14px;border-radius:8px;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+td,th{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{color:var(--soft);font-weight:600}
+.tw{overflow-x:auto}
+code,pre{background:var(--code);border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px}
+code{padding:1px 5px;overflow-wrap:anywhere} pre{padding:10px 12px;overflow-x:auto;margin:8px 0;max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
+ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.steps>li{counter-increment:s;position:relative;min-width:0;padding:12px 12px 12px 52px;border-bottom:1px solid var(--line)}
+ol.steps>li:last-child{border-bottom:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:10px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;display:grid;place-items:center;font-size:14px}
+ol.steps>li.ck{cursor:pointer} ol.steps>li.ck.on{opacity:.55} ol.steps>li.ck.on::before{content:"✓";background:var(--ok)}
+.hint{font-size:13px;color:var(--soft)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.legend span{margin-right:14px;white-space:nowrap;font-size:14px}
+svg{width:100%;height:auto;display:block}
+.diag{overflow-x:auto}.diag svg{min-width:720px}
+@media (min-width:760px){.mob{display:none}}
+svg text{font-family:-apple-system,Helvetica,Arial,sans-serif;fill:var(--ink)}
+.box{fill:var(--card);stroke:var(--soft);stroke-width:1.5}
+label.cb{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}
+label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--teal)}
+@media print{nav{display:none}.card{break-inside:avoid}}
+.item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.item .n{flex:none;width:30px;height:30px;border-radius:8px;background:var(--teal);color:#fff;font-weight:700;display:grid;place-items:center}
+.item .body{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.item .body span{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--teal)}.item .body em{font-style:normal;font-size:13px;color:var(--soft)}
+.buy{flex:none;background:#ff9900;color:#111;text-decoration:none;font-weight:600;font-size:14px;padding:9px 13px;border-radius:9px}.buy:hover{background:#f08c00}
+@media(max-width:560px){.item{flex-wrap:wrap}.buy{width:100%;text-align:center}}
+@media print{.buy{background:none;padding:0;color:var(--teal)}.buy::after{content:" " attr(href);font-size:10px;word-break:break-all}}
+</style></head><body><div class="wrap">
+
+<h1>Night Signal: buy, build, connect</h1>
+<p class="sub">Gabriel Mamane · Science Fair 2027 · Everything in one place: the shopping list, the wiring, the build steps and Bluetooth. Easy version: <b>plug-in wires, no tools except scissors</b>, about 1½ hours.</p>
+<nav><a href="#need">Buy</a><a href="#wiring">Wiring</a><a href="#s1">1 · Solder 4 pins (helper)</a><a href="#s3">3 · Plug in</a><a href="#s4">4 · Upload</a><a href="#s5">5 · Finger cuff</a><a href="#s7">7 · Bluetooth</a><a href="#night">Every night</a><a href="#fix">Troubleshooting</a></nav>
+<p class="hint">Tip: tap a step to tick it off. Your ticks are saved in this browser.</p>
+
+<div class="done"><b>No soldering for you.</b> Everything plugs together with jumper wires, and a USB cable powers it all night. The one exception is 4 pins on the oxygen sensor: a teacher or anyone with a soldering iron can do them in about 5 minutes. Getting help with one build step is normal at a science fair, so thank them in your acknowledgements.</div>
+
+<h2 id="need">What to buy <span class="t">Amazon.ca</span></h2>
+<div class="item"><div class="n">1</div><div class="body"><b>AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)</b><span>≈ 52 × 28 mm · pins pre-soldered</span><em>Processor + Bluetooth Classic</em></div><a class="buy" href="https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">2</div><div class="body"><b>HiLetgo MAX30102 sensor</b><span>14 × 14 mm · 4 pins to solder</span><em>SpO₂ + heart rate (finger clip)</em></div><a class="buy" href="https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">3</div><div class="body"><b>SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)</b><span>≈ 21 × 16 mm</span><em>Sleep position + cough jolts</em></div><a class="buy" href="https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">4</div><div class="body"><b>ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)</b><span>20 cm each</span><em>Plug-in wiring, no soldering</em></div><a class="buy" href="https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">5</div><div class="body"><b>Running armband phone pouch</b><span>fits phones up to 6.9 in</span><em>Holds the ESP32 on the forearm</em></div><a class="buy" href="https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">6</div><div class="body"><b>Anker Powerline+ USB-A to USB-C cable</b><span>3 m (10 ft)</span><em>All-night power from a phone charger</em></div><a class="buy" href="https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">7</div><div class="body"><b>Anker USB-C to USB-A adapter (2-pack)</b><span>USB-C → USB-A</span><em>Plug the cable into a MacBook</em></div><a class="buy" href="https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">8</div><div class="body"><b>VELCRO Brand 1 in × 30 ft roll</b><span>25 mm wide · cut ≈ 80 mm</span><em>Finger loop</em></div><a class="buy" href="https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="item"><div class="n">9</div><div class="body"><b>Elite Medica fingertip pulse oximeter</b><span>Health Canada authorized</span><em>Reference for the accuracy test</em></div><a class="buy" href="https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB" target="_blank" rel="noopener">Open on Amazon.ca →</a></div>
+<div class="card"><ul style="margin:0;padding-left:20px">
+<li><b>Order 1–6 first:</b> that's everything you need to get readings. Prices change, so check each listing.</li>
+<li><b>From home:</b> a USB phone charger (the wall plug), scissors, black electrical tape.</li>
+<li><b>A helper for 5 minutes</b> with a soldering iron, for step 1 only.</li>
+</ul></div>
+
+<h2 id="wiring">The wiring at a glance</h2>
+<div class="card">
+<div class="legend"><span><i class="sw" style="background:var(--w3v3)"></i>3V3</span><span><i class="sw" style="background:var(--w5v)"></i>VIN (5 V)</span><span><i class="sw" style="background:var(--wgnd)"></i>GND</span><span><i class="sw" style="background:var(--wsda)"></i>SDA</span><span><i class="sw" style="background:var(--wscl)"></i>SCL</span></div>
+<p class="hint">Each sensor has its own four pins, so nothing is shared. The pin names are printed on the ESP32: <b>match the names, not the positions.</b> A little bump in a wire means it passes over the other wire without touching it. <span class="mob">Swipe sideways to see the whole diagram.</span></p>
+<div class="diag">
+<svg viewBox="0 0 900 520" role="img" aria-label="Wiring diagram: the ESP32 in the middle, the motion sensor on the left and the oxygen sensor on the right">
+<path d="M382,190 H150 V250" fill="none" stroke="var(--wscl)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M382,214 H180 V250" fill="none" stroke="var(--wsda)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M382,382 H35 V226 H120 V250" fill="none" stroke="var(--wgnd)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M382,406 H20 V238 H27 a8,8 0 0 1 16,0 H90 V250" fill="none" stroke="var(--w5v)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M518,94 H770 V250" fill="none" stroke="var(--wscl)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M518,166 H740 V250" fill="none" stroke="var(--wsda)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M518,406 H660 V232 H710 V250" fill="none" stroke="var(--w3v3)" stroke-width="4" stroke-linejoin="round"/>
+<path d="M518,382 H652 a8,8 0 0 1 16,0 H865 V226 H800 V250" fill="none" stroke="var(--wgnd)" stroke-width="4" stroke-linejoin="round"/>
+<rect x="370" y="40" width="160" height="400" rx="10" class="box" style="stroke:var(--teal);stroke-width:2.5"/>
+<rect x="420" y="60" width="60" height="70" rx="4" fill="none" stroke="var(--soft)" stroke-width="1.2"/>
+<text x="450" y="236" text-anchor="middle" font-weight="700" font-size="17">ESP32</text><text x="450" y="254" text-anchor="middle" font-size="11" style="fill:var(--soft)">Bluetooth</text>
+<circle cx="382" cy="70" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="74" font-size="10.5" text-anchor="start" style="fill:var(--soft)">EN</text>
+<circle cx="382" cy="94" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="98" font-size="10.5" text-anchor="start" style="fill:var(--soft)">VP</text>
+<circle cx="382" cy="118" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="122" font-size="10.5" text-anchor="start" style="fill:var(--soft)">VN</text>
+<circle cx="382" cy="142" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="146" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D34</text>
+<circle cx="382" cy="166" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="170" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D35</text>
+<circle cx="382" cy="190" r="6" fill="var(--wscl)" stroke="var(--card)" stroke-width="1.5"/><text x="392" y="194" font-size="12" font-weight="700" text-anchor="start">D32</text>
+<circle cx="382" cy="214" r="6" fill="var(--wsda)" stroke="var(--card)" stroke-width="1.5"/><text x="392" y="218" font-size="12" font-weight="700" text-anchor="start">D33</text>
+<circle cx="382" cy="238" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="242" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D25</text>
+<circle cx="382" cy="262" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="266" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D26</text>
+<circle cx="382" cy="286" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="290" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D27</text>
+<circle cx="382" cy="310" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="314" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D14</text>
+<circle cx="382" cy="334" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="338" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D12</text>
+<circle cx="382" cy="358" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="392" y="362" font-size="10.5" text-anchor="start" style="fill:var(--soft)">D13</text>
+<circle cx="382" cy="382" r="6" fill="var(--wgnd)" stroke="var(--card)" stroke-width="1.5"/><text x="392" y="386" font-size="12" font-weight="700" text-anchor="start">GND</text>
+<circle cx="382" cy="406" r="6" fill="var(--w5v)" stroke="var(--card)" stroke-width="1.5"/><text x="392" y="410" font-size="12" font-weight="700" text-anchor="start">VIN</text>
+<circle cx="518" cy="70" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="74" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D23</text>
+<circle cx="518" cy="94" r="6" fill="var(--wscl)" stroke="var(--card)" stroke-width="1.5"/><text x="508" y="98" font-size="12" font-weight="700" text-anchor="end">D22</text>
+<circle cx="518" cy="118" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="122" font-size="10.5" text-anchor="end" style="fill:var(--soft)">TX0</text>
+<circle cx="518" cy="142" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="146" font-size="10.5" text-anchor="end" style="fill:var(--soft)">RX0</text>
+<circle cx="518" cy="166" r="6" fill="var(--wsda)" stroke="var(--card)" stroke-width="1.5"/><text x="508" y="170" font-size="12" font-weight="700" text-anchor="end">D21</text>
+<circle cx="518" cy="190" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="194" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D19</text>
+<circle cx="518" cy="214" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="218" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D18</text>
+<circle cx="518" cy="238" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="242" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D5</text>
+<circle cx="518" cy="262" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="266" font-size="10.5" text-anchor="end" style="fill:var(--soft)">TX2</text>
+<circle cx="518" cy="286" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="290" font-size="10.5" text-anchor="end" style="fill:var(--soft)">RX2</text>
+<circle cx="518" cy="310" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="314" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D4</text>
+<circle cx="518" cy="334" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="338" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D2</text>
+<circle cx="518" cy="358" r="3.5" fill="none" stroke="var(--soft)" stroke-width="1.2"/><text x="508" y="362" font-size="10.5" text-anchor="end" style="fill:var(--soft)">D15</text>
+<circle cx="518" cy="382" r="6" fill="var(--wgnd)" stroke="var(--card)" stroke-width="1.5"/><text x="508" y="386" font-size="12" font-weight="700" text-anchor="end">GND</text>
+<circle cx="518" cy="406" r="6" fill="var(--w3v3)" stroke="var(--card)" stroke-width="1.5"/><text x="508" y="410" font-size="12" font-weight="700" text-anchor="end">3V3</text>
+<rect x="432" y="436" width="36" height="14" rx="3" fill="var(--soft)"/><path d="M450,450 V478" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+<text x="450" y="500" text-anchor="middle" font-size="12.5">USB-C · 3 m cable → phone charger (or the Mac)</text>
+<rect x="60" y="250" width="160" height="92" rx="8" class="box"/>
+<rect x="86" y="243" width="8" height="9" fill="var(--soft)"/><text x="90" y="266" text-anchor="middle" font-size="10.5" font-weight="700">VCC</text>
+<rect x="116" y="243" width="8" height="9" fill="var(--soft)"/><text x="120" y="266" text-anchor="middle" font-size="10.5" font-weight="700">GND</text>
+<rect x="146" y="243" width="8" height="9" fill="var(--soft)"/><text x="150" y="266" text-anchor="middle" font-size="10.5" font-weight="700">SCL</text>
+<rect x="176" y="243" width="8" height="9" fill="var(--soft)"/><text x="180" y="266" text-anchor="middle" font-size="10.5" font-weight="700">SDA</text>
+<text x="140" y="292" text-anchor="middle" font-weight="700" font-size="14">GY-521 motion</text><text x="140" y="309" text-anchor="middle" font-size="11" style="fill:var(--soft)">in the pouch, or on the chest</text>
+<text x="140" y="327" text-anchor="middle" font-size="10" style="fill:var(--soft)">other 4 pins: leave empty</text>
+<rect x="680" y="250" width="160" height="92" rx="8" class="box"/>
+<rect x="706" y="243" width="8" height="9" fill="var(--soft)"/><text x="710" y="266" text-anchor="middle" font-size="10.5" font-weight="700">VIN</text>
+<rect x="736" y="243" width="8" height="9" fill="var(--soft)"/><text x="740" y="266" text-anchor="middle" font-size="10.5" font-weight="700">SDA</text>
+<rect x="766" y="243" width="8" height="9" fill="var(--soft)"/><text x="770" y="266" text-anchor="middle" font-size="10.5" font-weight="700">SCL</text>
+<rect x="796" y="243" width="8" height="9" fill="var(--soft)"/><text x="800" y="266" text-anchor="middle" font-size="10.5" font-weight="700">GND</text>
+<text x="760" y="292" text-anchor="middle" font-weight="700" font-size="14">MAX30102 oxygen</text><text x="760" y="309" text-anchor="middle" font-size="11" style="fill:var(--soft)">finger cuff · 40 cm wires</text>
+</svg>
+
+</div>
+</div>
+
+<h2 id="s1">Step 1 · Get 4 pins soldered on the oxygen sensor <span class="t">5 min · helper</span></h2>
+<div class="card"><ol class="steps" data-k="s1">
+<li>Give your helper the <b>MAX30102</b> board and its strip of pins. Ask them to solder pins to at least <b>VIN, SDA, SCL and GND</b> (doing all 7 is fine).</li>
+<li>The pins must stick out of the <b>back</b>, which is the side <i>without</i> the small black sensor window. The ESP32 and the GY-521 already come with pins.</li>
+</ol></div>
+
+<h2 id="s2">Step 2 · Install the software <span class="t">15 min · one time</span></h2>
+<div class="card"><ol class="steps" data-k="s2">
+<li>Install the <b>Arduino IDE</b> from arduino.cc/en/software.</li>
+<li>Go to <i>Arduino IDE ▸ Settings ▸ Additional boards manager URLs</i> and paste <code>https://espressif.github.io/arduino-esp32/package_esp32_index.json</code>. Then open <i>Tools ▸ Board ▸ Boards Manager</i> and install <b>esp32 by Espressif Systems</b>.</li>
+<li>Open <i>Sketch ▸ Include Library ▸ Manage Libraries</i> and install <b>SparkFun MAX3010x Pulse and Proximity Sensor Library</b>.</li>
+</ol></div>
+
+<h2 id="s3">Step 3 · Plug in the wires <span class="t">15 min</span></h2>
+<div class="card">
+<h3 style="margin-top:0">Oxygen sensor (MAX30102), on the right side</h3>
+<p>These wires go to your finger, so make each one about <b>40 cm</b> by joining two wires end to end:</p>
+<ol>
+<li>Push a <b>male–female</b> wire's female end onto the ESP32 pin.</li>
+<li>Push its male end into a <b>female–female</b> wire.</li>
+<li>Push the female–female wire's other end onto the sensor.</li>
+</ol>
+<div class="tw"><table><tr><th>MAX30102</th><th>ESP32</th><th>Colour</th></tr>
+<tr><td>VIN</td><td><b>3V3</b> (never VIN or 5 V)</td><td><i class="sw" style="background:var(--w3v3)"></i>red</td></tr>
+<tr><td>GND</td><td><b>GND</b> (right side)</td><td><i class="sw" style="background:var(--wgnd)"></i>black</td></tr>
+<tr><td>SDA</td><td><b>D21</b></td><td><i class="sw" style="background:var(--wsda)"></i>blue</td></tr>
+<tr><td>SCL</td><td><b>D22</b></td><td><i class="sw" style="background:var(--wscl)"></i>yellow</td></tr></table></div>
+<h3>Motion sensor (GY-521), on the left side</h3>
+<p>A single <b>female–female</b> wire (20 cm) for each pin is enough.</p>
+<div class="tw"><table><tr><th>GY-521</th><th>ESP32</th><th>Colour</th></tr>
+<tr><td>VCC</td><td><b>VIN</b></td><td><i class="sw" style="background:var(--w5v)"></i>orange</td></tr>
+<tr><td>GND</td><td><b>GND</b> (left side)</td><td><i class="sw" style="background:var(--wgnd)"></i>black</td></tr>
+<tr><td>SDA</td><td><b>D33</b></td><td><i class="sw" style="background:var(--wsda)"></i>blue</td></tr>
+<tr><td>SCL</td><td><b>D32</b></td><td><i class="sw" style="background:var(--wscl)"></i>yellow</td></tr></table></div>
+<p class="hint" style="margin-bottom:0">Leave the GY-521's XDA, XCL, AD0 and INT pins empty. Push every plug all the way on, and wrap a little tape around each place where two wires join so they can't pull apart.</p>
+</div>
+
+<h2 id="s4">Step 4 · Upload the code <span class="t">10 min</span></h2>
+<div class="card"><ol class="steps" data-k="s4">
+<li>Connect the ESP32 to your MacBook with the <b>3 m cable plus the USB-C adapter</b>.</li>
+<li>Open <code>4 - Code/firmware/night_signal_esp32.ino</code>. Choose <i>Tools ▸ Board ▸ esp32 ▸ ESP32 Dev Module</i>, then <i>Tools ▸ Port ▸ /dev/cu.usbserial-…</i>. If no port appears, install the Silicon Labs <b>CP210x</b> driver and try again.</li>
+<li>Click <b>Upload</b> (the → arrow). If it sticks on <code>Connecting....</code>, hold the <b>BOOT</b> button on the ESP32 until it starts.</li>
+<li>Open <i>Tools ▸ Serial Monitor</i> at <b>115200</b>. You should see <code>#STATUS,fw=3.1,max30102=OK,mpu6050=OK,battery=-1</code>. <code>battery=-1</code> just means it's on USB power.</li>
+<li>Rest a fingertip on the sensor. After about 15 s, numbers like <code>372145,68,1,97,1,…</code> appear. <b>Two <code>OK</code>s means the electronics work.</b></li>
+</ol></div>
+
+<h2 id="s5">Step 5 · Make the finger cuff <span class="t">10 min · scissors</span></h2>
+<div class="card"><ol class="steps" data-k="s5">
+<li>Cut <b>≈ 80 mm</b> of the VELCRO roll, then cut a small <b>1 cm slit</b> in the middle.</li>
+<li>Hold the sensor on the <b>soft side</b> with its black window facing up, and push its plugs through the slit. If the plugs are already on the sensor's pins, unplug them, push the bare pins through the slit, then plug them back in.</li>
+<li>Wrap it around the pad of your <b>index finger</b> with the window touching the skin. It should be snug, not tight, because a tight cuff squeezes the blood out and the readings get worse.</li>
+<li>Wrap one layer of <b>black electrical tape</b> around the outside to block room light.</li>
+</ol></div>
+
+<h2 id="s6">Step 6 · Put it on <span class="t">5 min</span></h2>
+<div class="card"><ol class="steps" data-k="s6">
+<li>Put the ESP32 in the <b>armband pouch</b> and wear it on your <b>forearm</b>. Let the finger wires and the USB cable come out through the zip.</li>
+<li>Plug the 3 m cable into a <b>USB phone charger</b> next to the bed. That powers it all night.</li>
+</ol>
+<div class="note"><b>Sleep-position nights: motion sensor on the chest.</b> <code>position.py</code> expects the GY-521 flat on your <b>chest</b> (breastbone), with its chips facing out and the printed <b>X arrow pointing to your right side</b>.
+<ol>
+<li>Lengthen its 4 wires to about <b>60 cm</b>: plug two male–female wires into each other, then a female–female wire on the end.</li>
+<li>Tape the board to your chest with medical tape. No code change is needed.</li>
+<li><b>Check it:</b> lie on your back, left side, right side and stomach for 1 minute each, then run <code>position.py</code>. It should name all four positions correctly.</li>
+</ol>
+For demos and the oxygen tests, it can lie flat in the pouch.</div></div>
+
+<h2 id="s7">Step 7 · Connect to your Mac by Bluetooth</h2>
+<p>The ESP32 appears as a Bluetooth device named <b>NightSignal</b>. Your computer treats it like a cable connection, so the scripts and the app read it the same way.</p>
+<div class="card"><ol class="steps" data-k="d">
+<li><b>Turn it on.</b> Plug the USB cable into the charger. The blue LED blinks <b>once per second</b> when it is working. Fast blinking means a sensor isn't plugged in properly.</li>
+<li><b>Pair it.</b> Open <b>System Settings ▸ Bluetooth</b>, find <b>NightSignal</b> under <i>Nearby Devices</i> and click <b>Connect</b>. If it asks for a PIN, try <code>1234</code>.</li>
+<li><b>Find its name.</b> Open Terminal and type <code>ls /dev/cu.*</code>, then look for <code>/dev/cu.NightSignal</code>.</li>
+<li><b>Check that the device works.</b> It must say <b>READY</b>.
+<pre>cd "4 - Code/analysis"
+pip3 install -r requirements.txt
+python3 check_device.py --port /dev/cu.NightSignal</pre></li>
+<li><b>Record a night.</b> <code>caffeinate</code> stops the Mac from sleeping. Press Ctrl+C in the morning.
+<pre>caffeinate -i python3 record.py --port /dev/cu.NightSignal</pre></li>
+<li><b>Watch it live in the app.</b>
+ <ol>
+  <li>In the <code>3 - App</code> folder, run <code>python3 start_app.py</code>.</li>
+  <li>Open <b>Chrome</b> at <code>http://localhost:8000</code> and go to the <b>Live</b> tab.</li>
+  <li>Click <b>Connect device</b> and pick NightSignal.</li>
+ </ol></li>
+</ol>
+<p class="hint" style="margin-bottom:0">In Bluetooth settings the Mac often shows NightSignal as "Not connected". That is normal. The link opens when a program opens the port.</p></div>
+<h3>Windows</h3>
+<div class="card"><ol class="steps" data-k="w">
+<li>Open <i>Settings ▸ Bluetooth &amp; devices ▸ Add device ▸ Bluetooth</i> and choose <b>NightSignal</b>.</li>
+<li>Open <i>More Bluetooth settings ▸ COM Ports</i>. The <b>Outgoing</b> port (for example <code>COM5</code>) is the one to use.</li>
+<li>Run <code>python check_device.py --port COM5</code>, then <code>python record.py --port COM5</code>.</li>
+</ol></div>
+<div class="note"><b>If Bluetooth won't cooperate:</b>
+<ol>
+<li><i>Forget This Device</i>, unplug the ESP32 and plug it back in, then pair it again.</li>
+<li>Some macOS versions are fussy with ESP32 Bluetooth. <b>The USB cable always works:</b> plug the 3 m cable into the Mac (with the adapter) instead of the charger, and use the same commands with the <code>/dev/cu.usbserial-…</code> port. The data is identical.</li>
+</ol></div>
+
+<h2 id="night">Before every night</h2>
+<div class="card" id="nightlist">
+<label class="cb"><input type="checkbox">The USB cable is plugged into the charger (or into the Mac)</label>
+<label class="cb"><input type="checkbox"><span><code>check_device.py</code> says <b>READY</b></span></label>
+<label class="cb"><input type="checkbox">The finger cuff is snug on the index-finger pad, and the armband is on the forearm</label>
+<label class="cb"><input type="checkbox"><span>The laptop is plugged in, within about 5 m, and running <code>caffeinate -i python3 record.py …</code></span></label>
+<p class="hint" style="margin:8px 0 0"><a href="#" id="resetNight" style="color:var(--teal)">Clear for the next night</a></p>
+</div>
+
+<h2 id="fix">Troubleshooting</h2>
+<div class="card tw"><table>
+<tr><th>Symptom</th><th>Fix</th></tr>
+<tr><td><code>max30102=FAIL</code></td><td>A plug is loose, or SDA/SCL are swapped. VIN must go to <b>3V3</b>. Some purple MAX30102 boards need a small fix: send a photo and we'll sort it out.</td></tr>
+<tr><td><code>mpu6050=FAIL</code></td><td>A plug is loose, or SDA/SCL are swapped (SDA→D33, SCL→D32). VCC goes to <b>VIN</b>.</td></tr>
+<tr><td><code>finger=0</code> the whole time</td><td>The cuff is loose or the sensor window is covered. A cold finger can also cause it, so warm your hands.</td></tr>
+<tr><td>Readings jump around</td><td>Movement, a cuff that's too tight, or room light reaching the sensor. Add black tape.</td></tr>
+<tr><td>No port in <i>Tools ▸ Port</i></td><td>Use the Anker cable (some cables only charge). Install the CP210x driver.</td></tr>
+<tr><td>Upload stuck on <code>Connecting...</code></td><td>Hold <b>BOOT</b> while it uploads.</td></tr>
+<tr><td>Data stops in the night</td><td>A plug came loose or the Mac slept. Tape the joins, and use <code>caffeinate</code>.</td></tr>
+</table></div>
+
+<h2>Later (optional): the v2 sealed case</h2>
+<div class="card"><p style="margin:0">The 3D model shows version 2: a 70 × 45 × 29 mm box with its own battery on a velcro strap. Building it needs soldering (a battery, a charger board and a 3.3 V regulator), so do it with help only if you have time after your nights are recorded. <b>Prototype v1 is enough for the fair.</b></p></div>
+</div>
+<script>
+(function(){
+  var KEY="nightsignal-build-v1", st={};
+  try{ st=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ st={}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+  document.querySelectorAll("ol.steps").forEach(function(ol){
+    var k=ol.dataset.k;
+    Array.prototype.forEach.call(ol.children,function(li,i){
+      var id=k+i; li.classList.add("ck"); if(st[id]) li.classList.add("on");
+      li.addEventListener("click",function(ev){
+        if(ev.target.closest("a,code,pre")) return;
+        li.classList.toggle("on"); st[id]=li.classList.contains("on"); save();
+      });
+    });
+  });
+  var boxes=document.querySelectorAll("#nightlist input");
+  boxes.forEach(function(b,i){ b.checked=!!st["n"+i]; b.addEventListener("change",function(){ st["n"+i]=b.checked; save(); }); });
+  document.getElementById("resetNight").addEventListener("click",function(e){ e.preventDefault(); boxes.forEach(function(b,i){ b.checked=false; st["n"+i]=false; }); save(); });
+})();
+</script>
+</body></html>

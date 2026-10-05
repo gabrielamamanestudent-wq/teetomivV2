@@ -17,10 +17,10 @@ function dims(file) {                       // read width/height from PNG or JPE
 const ratio = (f) => { const d = dims(A(f)); return d.h / d.w; };
 
 const LINKS = {
-  app: "https://claude.ai/artifact/KCkbwVKfmBhQoC9cxCn7qZ",
-  d3: "https://claude.ai/artifact/7wqAASJ8qWxBBKBuVHAqLt",
+  app: "https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/app/",
+  d3: "https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/app/3d.html",
   code: "https://github.com/gabrielamamanestudent-wq/teetomivV2/tree/claude/science-fair-medical-project-7k0wk4/science-fair/night-signal",
-  build: "https://github.com/gabrielamamanestudent-wq/teetomivV2/blob/claude/science-fair-medical-project-7k0wk4/science-fair/night-signal/BUILD_GUIDE.md",
+  build: "https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/build-kit.html",
 };
 
 const p = new pptxgen();

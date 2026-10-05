@@ -48,6 +48,20 @@ night-signal/
 
 ---
 
+## Public links (QR codes)
+
+The slides' QR codes open these pages in Safari or any phone browser, with no login:
+
+- App: https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/app/
+- 3D model (click **Present full screen**): https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/app/3d.html
+- Buy, build, connect: https://gabrielamamanestudent-wq.github.io/teetomivV2/science-fair/night-signal/build-kit.html
+
+They are served by **GitHub Pages**, which must be switched on once: repository **Settings → Pages →
+Deploy from a branch → `claude/science-fair-medical-project-7k0wk4`, folder `/ (root)` → Save**.
+Regenerate the QR images with `python slides/make_qr.py`.
+
+---
+
 ## Try everything right now (no hardware)
 
 ```bash
