@@ -36,13 +36,13 @@ const F = "Helvetica Neue";                 // on every Mac; PowerPoint on Windo
 const MONO = "Menlo";
 const NOTES = [];                           // [title, seconds, script] — also written to speaker_script.md
 
-function slide(dark, bg) { const s = p.addSlide(); s.background = { color: bg || (dark ? C.BLACK : C.WHITE) }; s._dark = dark; return s; }
+function slide(dark, bg, glow) { const s = p.addSlide(); s.background = glow ? { path: A(glow) } : { color: bg || (dark ? C.BLACK : C.WHITE) }; s._dark = dark; s._bg = bg; return s; }
 const fg = (s) => (s._dark ? C.WHITE : C.INK), soft = (s) => (s._dark ? C.GRAYD : C.GRAY), accent = (s) => (s._dark ? C.PINKD : C.PINK);
 function T(s, text, o) { s.addText(text, Object.assign({ isTextBox: true, margin: 0, fontFace: F, valign: "top" }, o)); }
 function eyebrow(s, t, o) { T(s, t, Object.assign({ x: 0.75, y: 0.55, w: 11.8, h: 0.35, fontSize: 16, bold: true, color: accent(s) }, o || {})); }
 function title(s, t, o) { T(s, t, Object.assign({ x: 0.75, y: 0.92, w: 11.8, h: 0.95, fontSize: 40, bold: true, color: fg(s), lineSpacingMultiple: 0.92 }, o || {})); }
 function tag(s, text) { const x = 10.35, y = 0.55, w = 2.25, h = 0.36;
-  s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.18, fill: { color: s._dark ? C.CARDD2 : C.CARD }, line: { type: "none" } });
+  s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.18, fill: { color: s._dark ? C.CARDD2 : s._bg === C.OFF ? C.WHITE : C.CARD }, line: { type: "none" } });
   T(s, text, { x, y, w, h, align: "center", valign: "middle", fontSize: 10.5, bold: true, color: soft(s) }); }
 const prelim = (s) => tag(s, "Example data");
 const appendix = (s) => tag(s, "Appendix · not presented");
@@ -52,14 +52,25 @@ function bullets(s, items, x, y, w, size, gap, color) { let yy = y; const sz = s
     const lines = Math.ceil(it.length / Math.floor((w - 0.25) * 72 / (sz * 0.52)));
     T(s, it, { x: x + 0.25, y: yy, w: w - 0.25, h: lines * lineH + 0.08, fontSize: sz, color: color || fg(s) });
     yy += lines * lineH + (gap || 0.2); }); return yy; }
-function card(s, x, y, w, h, fill) { s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.22, fill: { color: fill || (s._dark ? C.CARDD : C.CARD) }, line: { type: "none" } }); }
+function card(s, x, y, w, h, fill) { const glass = !fill && s._dark;   // frosted cards on the dark glow slides
+  s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.22, fill: glass ? { color: "FFFFFF", transparency: 91 } : { color: fill || C.CARD },
+    line: glass ? { color: "FFFFFF", transparency: 84, width: 0.75 } : { type: "none" } }); }
+function bar(s, x, y, color) { s.addShape(p.ShapeType.roundRect, { x, y, w: 0.5, h: 0.07, rectRadius: 0.035, fill: { color }, line: { type: "none" } }); }
+// a chart picture sitting in a white rounded card (on the light-grey chart slides)
+function chartCard(s, f, x, y, w, h) { card(s, x, y, w, h, C.WHITE); const pad = 0.22, iw = w - 2 * pad, ih = iw * ratio(f);
+  const fh = Math.min(ih, h - 2 * pad), fw = fh / ratio(f); s.addImage({ path: A(f), x: x + (w - fw) / 2, y: y + (h - fh) / 2, w: fw, h: fh }); }
+function tile(s, x, y, w, h, big, label, color) { card(s, x, y, w, h);
+  T(s, big, { x: x + 0.3, y: y + 0.22, w: w - 0.5, h: 0.65, fontSize: 32, bold: true, color });
+  T(s, label, { x: x + 0.3, y: y + 0.88, w: w - 0.5, h: 0.45, fontSize: 12.5, color: soft(s) }); }
+function footer(s, n) { T(s, "Night Signal", { x: 0.75, y: 7.08, w: 4, h: 0.25, fontSize: 9.5, bold: true, color: s._dark ? C.GRAY : C.GRAYL });
+  T(s, String(n), { x: 11.58, y: 7.08, w: 1.0, h: 0.25, fontSize: 9.5, align: "right", color: s._dark ? C.GRAY : C.GRAYL }); }
 function img(s, f, x, y, w, opts) { const h = w * ratio(f); s.addImage(Object.assign({ path: A(f), x, y, w, h }, opts || {})); return h; }
 function imgH(s, f, x, y, h) { const w = h / ratio(f); s.addImage({ path: A(f), x, y, w, h }); return w; }
 function caption(s, t, x, y, w, align) { T(s, t, { x, y, w, h: 0.3, align: align || "center", fontSize: 12, color: soft(s) }); }
 function link(s, label, url, x, y, w, size, align) { s.addText([{ text: label + " ›", options: { hyperlink: { url, tooltip: url }, color: s._dark ? C.BLUED : C.BLUE } }],
   { isTextBox: true, x, y, w, h: 0.34, margin: 0, fontFace: F, fontSize: size || 14, align: align || "left" }); }
 function qr(s, f, url, x, y, w) { card(s, x - 0.08, y - 0.08, w + 0.16, w + 0.16, C.WHITE); s.addImage({ path: A(f), x, y, w, h: w, hyperlink: { url, tooltip: url } }); }
-function notes(s, t, secs, script) { NOTES.push([t, secs, script]); s.addNotes(`[${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}] ${script}`); }
+function notes(s, t, secs, script) { NOTES.push([t, secs, script]); if (secs > 0 && NOTES.length > 1) footer(s, NOTES.length); s.addNotes(`[${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}] ${script}`); }
 function phone(s, f, x, y, w) { const h = w * ratio(f); s.addShape(p.ShapeType.roundRect, { x: x - 0.09, y: y - 0.09, w: w + 0.18, h: h + 0.18, rectRadius: 0.28, fill: { color: C.INK }, line: { type: "none" } });
   s.addImage({ path: A(f), x, y, w, h }); return h; }
 // hairline tables: no grid, a thin rule under every row
@@ -74,11 +85,11 @@ function table(s, rows, o) {
 }
 
 /* ---------------- 1. TITLE ---------------- */
-let s = slide(true);
+let s = slide(true, null, "bg_glow_center.png");
 T(s, "Health and Medical Sciences · Experimental project", { x: 0.75, y: 0.5, w: 11.83, h: 0.32, align: "center", fontSize: 14, bold: true, color: C.GRAYD });
 T(s, "Night Signal.", { x: 0.75, y: 0.88, w: 11.83, h: 1.1, align: "center", fontSize: 66, bold: true, color: C.WHITE });
 T(s, "Sleep apnea screening you can wear.", { x: 0.75, y: 1.98, w: 11.83, h: 0.5, align: "center", fontSize: 24, color: C.GRAYD });
-{ const h = 3.85, w = h / ratio("hero_black.jpg"); s.addImage({ path: A("hero_black.jpg"), x: (13.333 - w) / 2, y: 2.62, w, h }); }
+{ const h = 3.95, w = h / ratio("hero_alpha.png"); s.addImage({ path: A("hero_alpha.png"), x: (13.333 - w) / 2, y: 2.58, w, h }); }
 T(s, [{ text: "Gabriel Mamane", options: { bold: true, color: C.WHITE } }, { text: "   ·   Grade ___", options: { color: C.GRAYD } }],
   { x: 0.75, y: 6.62, w: 11.83, h: 0.35, align: "center", fontSize: 15 });
 T(s, "Educational prototype. Not a medical device.", { x: 0.75, y: 6.98, w: 11.83, h: 0.28, align: "center", fontSize: 10.5, color: C.GRAY });
@@ -86,19 +97,20 @@ notes(s, "Title", 15, "Hi, I’m Gabriel. My project is Night Signal: a wearable
 
 /* ---------------- 2. PURPOSE & HYPOTHESIS ---------------- */
 s = slide(false); eyebrow(s, "Purpose and hypothesis"); title(s, "Can a low-cost wearable catch sleep apnea?");
-card(s, 0.75, 2.15, 5.8, 2.55); card(s, 6.78, 2.15, 5.8, 2.55);
-T(s, "Purpose", { x: 1.1, y: 2.42, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.PINK });
+card(s, 0.75, 2.1, 5.8, 2.65); card(s, 6.78, 2.1, 5.8, 2.65);
+bar(s, 1.1, 2.4, C.PINK); bar(s, 7.13, 2.4, C.BLUE);
+T(s, "Purpose", { x: 1.1, y: 2.55, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.PINK });
 T(s, "Find out whether a low-cost wearable can detect the oxygen drops caused by sleep apnea accurately enough to estimate how many events happen per hour: the number doctors use (AHI).",
-  { x: 1.1, y: 2.85, w: 5.1, h: 1.7, fontSize: 17, color: C.INK, lineSpacingMultiple: 1.05 });
-T(s, "Hypothesis", { x: 7.13, y: 2.42, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.BLUE });
+  { x: 1.1, y: 2.98, w: 5.1, h: 1.7, fontSize: 17, color: C.INK, lineSpacingMultiple: 1.05 });
+T(s, "Hypothesis", { x: 7.13, y: 2.55, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.BLUE });
 T(s, "If breathing pauses make blood oxygen dip, then a fingertip sensor read once per second will reveal the dips, and software can count them per hour, because oxygen-rich and oxygen-poor blood absorb red and infrared light differently.",
-  { x: 7.13, y: 2.85, w: 5.1, h: 1.75, fontSize: 15.5, color: C.INK, lineSpacingMultiple: 1.05 });
-[["Independent variables", "Breath-hold length (10, 15, 20 s) and sleeping position"],
- ["Dependent variables", "Events detected, AHI score, agreement with a reference oximeter"],
- ["Controls", "Same finger, cuff tightness, room, firmware and detection settings"]].forEach((v, i) => {
-  const x = 0.75 + i * 4.03;
-  T(s, v[0], { x, y: 5.15, w: 3.75, h: 0.35, fontSize: 16, bold: true, color: C.INK });
-  T(s, v[1], { x, y: 5.55, w: 3.75, h: 0.9, fontSize: 14, color: C.GRAY, lineSpacingMultiple: 1.05 }); });
+  { x: 7.13, y: 2.98, w: 5.1, h: 1.65, fontSize: 15.5, color: C.INK, lineSpacingMultiple: 1.05 });
+[["Independent variables", "Breath-hold length (10, 15, 20 s) and sleeping position", C.ORANGE],
+ ["Dependent variables", "Events detected, AHI score, agreement with a reference oximeter", C.GREEN],
+ ["Controls", "Same finger, cuff tightness, room, firmware and detection settings", C.GRAYL]].forEach((v, i) => {
+  const x = 0.75 + i * 4.0; card(s, x, 4.98, 3.83, 1.75); bar(s, x + 0.3, 5.22, v[2]);
+  T(s, v[0], { x: x + 0.3, y: 5.38, w: 3.3, h: 0.35, fontSize: 15.5, bold: true, color: C.INK });
+  T(s, v[1], { x: x + 0.3, y: 5.78, w: 3.3, h: 0.85, fontSize: 13.5, color: C.GRAY }); });
 notes(s, "Purpose & hypothesis", 40, "My question: can a low-cost wearable catch sleep apnea? My hypothesis: if each breathing pause makes oxygen dip, a fingertip sensor reading once per second will see the dips, and software can count them per hour — the AHI doctors use. What I change is breath-hold length and sleeping position; what I measure is events, the AHI, and how closely my device agrees with a real oximeter.");
 
 /* ---------------- 3. BACKGROUND ---------------- */
@@ -119,9 +131,9 @@ T(s, "adults worldwide have obstructive sleep apnea. Most don’t know it (Benja
 notes(s, "Scientific background", 50, "Sleep apnea is when the airway collapses during sleep and breathing stops for ten seconds or more, over and over. About 936 million adults have it, and most don't know. Every pause drops blood oxygen. A pulse oximeter measures that by shining red and infrared light through the fingertip — oxygen-rich blood absorbs the two colours differently. Doctors count the events per hour — the AHI — and grade it from normal to severe. The problem: the standard test is an overnight lab study that costs thousands.");
 
 /* ---------------- 4. DESIGN ---------------- */
-s = slide(true); eyebrow(s, "Design", { align: "center" }); title(s, "The wearable.", { align: "center", fontSize: 48, y: 0.9 });
-{ const h = 3.45; const w1 = h / ratio("hero_black.jpg"), w2 = h / ratio("exploded_black.jpg"), gap = 0.9, x0 = (13.333 - w1 - w2 - gap) / 2;
-  s.addImage({ path: A("hero_black.jpg"), x: x0, y: 1.95, w: w1, h }); s.addImage({ path: A("exploded_black.jpg"), x: x0 + w1 + gap, y: 1.95, w: w2, h });
+s = slide(true, null, "bg_glow_low.png"); eyebrow(s, "Design", { align: "center" }); title(s, "The wearable.", { align: "center", fontSize: 48, y: 0.9 });
+{ const h = 3.5; const w1 = h / ratio("hero_alpha.png"), w2 = h / ratio("exploded_alpha.png"), gap = 1.0, x0 = (13.333 - w1 - w2 - gap) / 2;
+  s.addImage({ path: A("hero_alpha.png"), x: x0, y: 1.9, w: w1, h }); s.addImage({ path: A("exploded_alpha.png"), x: x0 + w1 + gap, y: 1.9, w: w2, h });
   caption(s, "v2 design: sealed case on a velcro strap", x0 - 0.3, 5.45, w1 + 0.6); caption(s, "Exploded: every v2 part at its real size", x0 + w1 + gap - 0.3, 5.45, w2 + 0.6); }
 [["Prototype v1", "armband + plug-in wires"], ["All night", "USB power"], ["14 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
   const x = 0.75 + i * 2.45; T(s, k[0], { x, y: 6.0, w: 2.35, h: 0.45, fontSize: 22, bold: true, color: C.WHITE });
@@ -180,6 +192,8 @@ notes(s, "The app", 35, "This is my companion app. On the Live tab it connects d
 
 /* ---------------- 8. RESULTS TABLE ---------------- */
 s = slide(false); eyebrow(s, "Results"); title(s, "What one night showed."); prelim(s);
+[["2.7", "events per hour (AHI): Normal", C.GREEN], ["± 0.56 %", "agreement with the reference", C.BLUE],
+ ["84 %", "lowest blood oxygen", C.PINK], ["3 ×", "more events on the back", C.ORANGE]].forEach((t, i) => tile(s, 0.75 + i * 3.0, 2.0, 2.83, 1.38, t[0], t[1], t[2]));
 table(s, [["Measure", "Result", "Meaning"],
   ["Recording", "7.0 h · 25,200 readings", "a full night captured"],
   ["Apnea events", "19  →  AHI 2.7 / hour", "Normal range (< 5)"],
@@ -188,22 +202,23 @@ table(s, [["Measure", "Result", "Meaning"],
   ["Events caught: rule / ML", "63 % / 63 %", "precision 1.00 / 0.92"],
   ["Sleep position", "back 3.8 / h  vs  sides 1.1–1.3 / h", "≈ 3 × more events on the back"],
   ["Spin-offs", "3 heart episodes · breathing 13 → 22 / min", "patterns flagged correctly"]],
-  { x: 0.75, y: 2.1, w: 11.83, colW: [3.5, 4.4, 3.93], fontSize: 15, rowH: 0.5, softCols: [2] });
-T(s, "Example data from my simulator, replaced with my own recorded nights before the final submission.", { x: 0.75, y: 6.6, w: 11.8, h: 0.3, fontSize: 12, color: C.GRAY });
+  { x: 0.75, y: 3.62, w: 11.83, colW: [3.5, 4.4, 3.93], fontSize: 13, rowH: 0.37, softCols: [2] });
+T(s, "Example data from my simulator, replaced with my own recorded nights before the final submission.", { x: 0.75, y: 6.72, w: 11.8, h: 0.28, fontSize: 11, color: C.GRAY });
 notes(s, "Results summary", 40, "Here's the summary. Over a seven-hour night, the software found 19 events — an AHI of 2.7, which is in the normal range. Oxygen averaged 97.5% and dropped to 84% at the lowest. Against a reference oximeter, my device was within about half a percent. The detector caught 63% of known events with zero false alarms. And events were about three times more frequent on the back than on the sides.");
 
 /* ---------------- 9. RESULTS: NIGHT + ACCURACY ---------------- */
-s = slide(false); eyebrow(s, "Results"); title(s, "Every dip found. And the readings agree."); prelim(s);
-img(s, "oxygen.png", 0.75, 2.15, 6.95);
-img(s, "validation.png", 7.95, 2.15, 4.63); caption(s, "95% of readings within −1.5 to +1.7 % of the reference", 7.95, 2.15 + 4.63 * ratio("validation.png") + 0.15, 4.63);
+s = slide(false, C.OFF); eyebrow(s, "Results"); title(s, "Every dip found. And the readings agree."); prelim(s);
+chartCard(s, "oxygen.png", 0.75, 2.05, 7.2, 4.2); chartCard(s, "validation.png", 8.15, 2.05, 4.43, 4.2);
+caption(s, "95% of readings within −1.5 to +1.7 % of the reference", 8.15, 6.42, 4.43);
+caption(s, "Every red band is an apnea event the software found on its own", 0.75, 6.42, 7.2);
 notes(s, "Results: detection + accuracy", 35, "On the left, a whole night of oxygen — every red band is an event my code found on its own. On the right is a Bland–Altman plot, the standard way medical papers compare two devices: the average difference is almost zero, and 95% of my readings fall within about one and a half percent of the reference.");
 
 /* ---------------- 10. RESULTS: POSITION + ML ---------------- */
-s = slide(false); eyebrow(s, "Results"); title(s, "Back-sleeping, and two detectors."); prelim(s);
-img(s, "position.png", 0.75, 2.05, 5.6);
+s = slide(false, C.OFF); eyebrow(s, "Results"); title(s, "Back-sleeping, and two detectors."); prelim(s);
+chartCard(s, "position.png", 0.75, 2.05, 5.81, 4.45); card(s, 6.77, 2.05, 5.81, 4.45, C.WHITE);
 s.addChart(p.charts.BAR, [{ name: "Precision", labels: ["Rule-based", "Machine learning"], values: [1.0, 0.92] },
   { name: "Recall (events caught)", labels: ["Rule-based", "Machine learning"], values: [0.63, 0.63] }],
-  { x: 6.95, y: 2.05, w: 5.65, h: 3.7, barDir: "col", barGrouping: "clustered", barGapWidthPct: 60, chartColors: [C.BLUE, C.PINKD], showValue: true,
+  { x: 7.0, y: 2.25, w: 5.35, h: 4.05, barDir: "col", barGrouping: "clustered", barGapWidthPct: 60, chartColors: [C.BLUE, C.PINKD], showValue: true,
     dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12, dataLabelFontFace: F, dataLabelColor: C.INK,
     valAxisMaxVal: 1.2, valAxisMinVal: 0, valAxisLabelFormatCode: "0.0", valAxisHidden: true, valAxisLineShow: false,
     showLegend: true, legendPos: "b", legendFontSize: 12, legendFontFace: F, legendColor: C.GRAY,
@@ -213,7 +228,7 @@ s.addChart(p.charts.BAR, [{ name: "Precision", labels: ["Rule-based", "Machine l
 notes(s, "Results: position + ML", 30, "Two more results. Events happened most on the back — 3.8 per hour versus about 1 on the sides. And I compared my simple rule with a machine-learning model: on new data, both caught the same share of events, but the rule had no false alarms, so for now the simpler method wins.");
 
 /* ---------------- 11. ANALYSIS: INTERPRETATION ---------------- */
-s = slide(true); eyebrow(s, "Main analysis"); title(s, "What the results mean.");
+s = slide(true, null, "bg_glow_corner.png"); eyebrow(s, "Main analysis"); title(s, "What the results mean.");
 [["Accurate enough to trust", "Agreement within about ±1.6 % is in line with commercial fingertip oximeters (about ±2–3 %), so the drops it sees are real, not sensor noise.", C.BLUED],
  ["Cautious, not over-eager", "Perfect precision but 63 % recall means it misses shallow events. My AHI is probably an under-estimate: the safe direction for a screening tool.", C.GREEND],
  ["Position matters", "Three times more events on the back matches “positional” sleep apnea in the literature. A simple, free change (side-sleeping) could help.", C.ORANGED],
@@ -224,7 +239,7 @@ s = slide(true); eyebrow(s, "Main analysis"); title(s, "What the results mean.")
 notes(s, "Analysis: interpretation", 45, "What does it mean? First, accuracy within about one and a half percent is in the same range as store-bought oximeters, so the dips are real. Second, the detector is cautious — no false alarms but it misses shallow events, so my AHI is probably an underestimate, which is the safer mistake for a screening tool. Third, the back-sleeping result matches what doctors call positional sleep apnea. And fourth, machine learning didn't win yet because it only had one night to learn from — more data matters more than fancier code.");
 
 /* ---------------- 12. ANALYSIS: SOURCES OF ERROR ---------------- */
-s = slide(true); eyebrow(s, "Main analysis"); title(s, "What could make it wrong.");
+s = slide(true, null, "bg_glow_corner.png"); eyebrow(s, "Main analysis"); title(s, "What could make it wrong.");
 T(s, "Measurement", { x: 0.75, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.BLUED });
 bullets(s, ["Finger movement, pressure and cold hands distort the light signal", "The 4-second averaging window smooths very short dips", "The reference oximeter itself is only ±2 %", "Arm angle only approximates body position"], 0.75, 2.65, 5.7, 15, 0.16, C.GRAYL);
 T(s, "Method", { x: 6.77, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.PINKD });
@@ -235,17 +250,17 @@ s.addText([{ text: "Engineering finding.  ", options: { bold: true, color: C.ORA
 notes(s, "Analysis: sources of error", 35, "Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: Bluetooth draws about 100 milliamps, so a small 500 milliamp-hour battery would last only four to five hours. That's why version 1 runs on USB power all night, and version 2 needs a bigger battery or Bluetooth Low Energy.");
 
 /* ---------------- 13. SPIN-OFFS ---------------- */
-s = slide(false); eyebrow(s, "Further considerations"); title(s, "Same sensor. Two more uses."); prelim(s);
-const hh = img(s, "heart.png", 0.75, 2.1, 5.81); img(s, "asthma.png", 6.77, 2.1, 5.81);
+s = slide(false, C.OFF); eyebrow(s, "Further considerations"); title(s, "Same sensor. Two more uses."); prelim(s);
+const hh = 3.3; chartCard(s, "heart.png", 0.75, 2.05, 5.81, hh); chartCard(s, "asthma.png", 6.77, 2.05, 5.81, hh);
 s.addText([{ text: "Heart.  ", options: { bold: true, color: C.PINK } }, { text: "Flags racing (>100 bpm), very slow (<40 bpm) and irregular-rhythm episodes, plus resting heart rate and HRV.", options: { color: C.GRAY } }],
-  { isTextBox: true, x: 0.75, y: 2.3 + hh, w: 5.81, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
+  { isTextBox: true, x: 0.95, y: 2.3 + hh, w: 5.5, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
 s.addText([{ text: "Asthma.  ", options: { bold: true, color: C.BLUE } }, { text: "Tracks breathing rate from the heart’s rhythm and coughs from the motion sensor, catching early-morning worsening (13 → 22 breaths/min).", options: { color: C.GRAY } }],
-  { isTextBox: true, x: 6.77, y: 2.3 + hh, w: 5.81, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
-T(s, "Screening ideas only. Confirming an arrhythmia or asthma needs a doctor.", { x: 0.75, y: 6.75, w: 11.8, h: 0.3, fontSize: 12, color: C.GRAY });
+  { isTextBox: true, x: 6.97, y: 2.3 + hh, w: 5.5, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
+T(s, "Screening ideas only. Confirming an arrhythmia or asthma needs a doctor.", { x: 0.75, y: 6.62, w: 11.8, h: 0.3, fontSize: 12, color: C.GRAY });
 notes(s, "Spin-offs", 40, "The same hardware opened two spin-offs. Heart: it flags racing, very slow and irregular-rhythm episodes. Asthma: night-time asthma often gets worse around 4 a.m., and my code tracks breathing rate from the heart's rhythm plus coughs from sudden jolts of the motion sensor — here it caught breathing climbing from 13 to 22 breaths a minute. These are screening ideas, not diagnoses.");
 
 /* ---------------- 14. CONCLUSION ---------------- */
-s = slide(true); eyebrow(s, "Conclusion"); title(s, "Supported. So far.", { fontSize: 54, h: 1.1 });
+s = slide(true, null, "bg_glow_low.png"); eyebrow(s, "Conclusion"); title(s, "Supported. So far.", { fontSize: 54, h: 1.1 });
 T(s, "A low-cost wearable measured blood oxygen within about half a percent of a reference, found apnea events on its own, scored the night’s severity, and showed back-sleeping triples events.",
   { x: 0.75, y: 2.15, w: 11.8, h: 1.1, fontSize: 19, color: C.GRAYL, lineSpacingMultiple: 1.08 });
 T(s, "Next", { x: 0.75, y: 3.55, w: 6, h: 0.4, fontSize: 19, bold: true, color: C.WHITE });
