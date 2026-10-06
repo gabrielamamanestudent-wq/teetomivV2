@@ -85,7 +85,7 @@ function table(s, rows, o) {
 }
 
 /* ---------------- 1. TITLE ---------------- */
-let s = slide(true, null, "bg_glow_center.png");
+let s = slide(true, null, "bg_glow_center.jpg");
 T(s, "Health and Medical Sciences · Experimental project", { x: 0.75, y: 0.5, w: 11.83, h: 0.32, align: "center", fontSize: 14, bold: true, color: C.GRAYD });
 T(s, "Night Signal.", { x: 0.75, y: 0.88, w: 11.83, h: 1.1, align: "center", fontSize: 66, bold: true, color: C.WHITE });
 T(s, "Sleep apnea screening you can wear.", { x: 0.75, y: 1.98, w: 11.83, h: 0.5, align: "center", fontSize: 24, color: C.GRAYD });
@@ -131,7 +131,7 @@ T(s, "adults worldwide have obstructive sleep apnea. Most don’t know it (Benja
 notes(s, "Scientific background", 50, "Sleep apnea is when the airway collapses during sleep and breathing stops for ten seconds or more, over and over. About 936 million adults have it, and most don't know. Every pause drops blood oxygen. A pulse oximeter measures that by shining red and infrared light through the fingertip — oxygen-rich blood absorbs the two colours differently. Doctors count the events per hour — the AHI — and grade it from normal to severe. The problem: the standard test is an overnight lab study that costs thousands.");
 
 /* ---------------- 4. DESIGN ---------------- */
-s = slide(true, null, "bg_glow_low.png"); eyebrow(s, "Design", { align: "center" }); title(s, "The wearable.", { align: "center", fontSize: 48, y: 0.9 });
+s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Design", { align: "center" }); title(s, "The wearable.", { align: "center", fontSize: 48, y: 0.9 });
 { const h = 3.5; const w1 = h / ratio("hero_alpha.png"), w2 = h / ratio("exploded_alpha.png"), gap = 1.0, x0 = (13.333 - w1 - w2 - gap) / 2;
   s.addImage({ path: A("hero_alpha.png"), x: x0, y: 1.9, w: w1, h }); s.addImage({ path: A("exploded_alpha.png"), x: x0 + w1 + gap, y: 1.9, w: w2, h });
   caption(s, "v2 design: sealed case on a velcro strap", x0 - 0.3, 5.45, w1 + 0.6); caption(s, "Exploded: every v2 part at its real size", x0 + w1 + gap - 0.3, 5.45, w2 + 0.6); }
@@ -228,7 +228,7 @@ s.addChart(p.charts.BAR, [{ name: "Precision", labels: ["Rule-based", "Machine l
 notes(s, "Results: position + ML", 30, "Two more results. Events happened most on the back — 3.8 per hour versus about 1 on the sides. And I compared my simple rule with a machine-learning model: on new data, both caught the same share of events, but the rule had no false alarms, so for now the simpler method wins.");
 
 /* ---------------- 11. ANALYSIS: INTERPRETATION ---------------- */
-s = slide(true, null, "bg_glow_corner.png"); eyebrow(s, "Main analysis"); title(s, "What the results mean.");
+s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "What the results mean.");
 [["Accurate enough to trust", "Agreement within about ±1.6 % is in line with commercial fingertip oximeters (about ±2–3 %), so the drops it sees are real, not sensor noise.", C.BLUED],
  ["Cautious, not over-eager", "Perfect precision but 63 % recall means it misses shallow events. My AHI is probably an under-estimate: the safe direction for a screening tool.", C.GREEND],
  ["Position matters", "Three times more events on the back matches “positional” sleep apnea in the literature. A simple, free change (side-sleeping) could help.", C.ORANGED],
@@ -239,7 +239,7 @@ s = slide(true, null, "bg_glow_corner.png"); eyebrow(s, "Main analysis"); title(
 notes(s, "Analysis: interpretation", 45, "What does it mean? First, accuracy within about one and a half percent is in the same range as store-bought oximeters, so the dips are real. Second, the detector is cautious — no false alarms but it misses shallow events, so my AHI is probably an underestimate, which is the safer mistake for a screening tool. Third, the back-sleeping result matches what doctors call positional sleep apnea. And fourth, machine learning didn't win yet because it only had one night to learn from — more data matters more than fancier code.");
 
 /* ---------------- 12. ANALYSIS: SOURCES OF ERROR ---------------- */
-s = slide(true, null, "bg_glow_corner.png"); eyebrow(s, "Main analysis"); title(s, "What could make it wrong.");
+s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "What could make it wrong.");
 T(s, "Measurement", { x: 0.75, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.BLUED });
 bullets(s, ["Finger movement, pressure and cold hands distort the light signal", "The 4-second averaging window smooths very short dips", "The reference oximeter itself is only ±2 %", "Arm angle only approximates body position"], 0.75, 2.65, 5.7, 15, 0.16, C.GRAYL);
 T(s, "Method", { x: 6.77, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.PINKD });
@@ -260,7 +260,7 @@ T(s, "Screening ideas only. Confirming an arrhythmia or asthma needs a doctor.",
 notes(s, "Spin-offs", 40, "The same hardware opened two spin-offs. Heart: it flags racing, very slow and irregular-rhythm episodes. Asthma: night-time asthma often gets worse around 4 a.m., and my code tracks breathing rate from the heart's rhythm plus coughs from sudden jolts of the motion sensor — here it caught breathing climbing from 13 to 22 breaths a minute. These are screening ideas, not diagnoses.");
 
 /* ---------------- 14. CONCLUSION ---------------- */
-s = slide(true, null, "bg_glow_low.png"); eyebrow(s, "Conclusion"); title(s, "Supported. So far.", { fontSize: 54, h: 1.1 });
+s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Conclusion"); title(s, "Supported. So far.", { fontSize: 54, h: 1.1 });
 T(s, "A low-cost wearable measured blood oxygen within about half a percent of a reference, found apnea events on its own, scored the night’s severity, and showed back-sleeping triples events.",
   { x: 0.75, y: 2.15, w: 11.8, h: 1.1, fontSize: 19, color: C.GRAYL, lineSpacingMultiple: 1.08 });
 T(s, "Next", { x: 0.75, y: 3.55, w: 6, h: 0.4, fontSize: 19, bold: true, color: C.WHITE });
