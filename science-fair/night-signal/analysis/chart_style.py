@@ -50,11 +50,18 @@ def apply():
     })
 
 
-def title(ax, main, sub=None):
-    """Bold left-aligned title with an optional grey subtitle underneath."""
-    ax.set_title(main, loc="left", fontsize=15, fontweight="bold", color=INK, pad=30 if sub else 14)
+def title(ax, main, sub=None, demo=False):
+    """Bold left-aligned title with an optional grey subtitle underneath.
+    demo=True stamps the chart as simulated demonstration data (top-right corner)."""
+    from matplotlib.transforms import offset_copy
+    pad = (30 if sub else 14) + (17 if demo else 0)
+    ax.set_title(main, loc="left", fontsize=15, fontweight="bold", color=INK, pad=pad)
     if sub:
         ax.text(0, 1.03, sub, transform=ax.transAxes, fontsize=11.5, color=GRAY, va="bottom", ha="left")
+    if demo:   # its own line between the title and the subtitle
+        tr = offset_copy(ax.transAxes, fig=ax.figure, y=(17 if sub else 2), units="points")
+        ax.text(0, 1.03, "DEMONSTRATION DATA (simulated) · not a real recording", transform=tr, fontsize=10.5,
+                fontweight="bold", color="#b25000", va="bottom", ha="left")
 
 
 def end_label(ax, y, text, color, x=1.005, va="center"):

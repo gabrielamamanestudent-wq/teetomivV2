@@ -88,188 +88,190 @@ function table(s, rows, o) {
 let s = slide(true, null, "bg_glow_center.jpg");
 T(s, "Health and Medical Sciences · Experimental project", { x: 0.75, y: 0.5, w: 11.83, h: 0.32, align: "center", fontSize: 14, bold: true, color: C.GRAYD });
 T(s, "Night Signal.", { x: 0.75, y: 0.88, w: 11.83, h: 1.1, align: "center", fontSize: 66, bold: true, color: C.WHITE });
-T(s, "Sleep apnea screening you can wear.", { x: 0.75, y: 1.98, w: 11.83, h: 0.5, align: "center", fontSize: 24, color: C.GRAYD });
-{ const h = 3.95, w = h / ratio("hero_alpha.png"); s.addImage({ path: A("hero_alpha.png"), x: (13.333 - w) / 2, y: 2.58, w, h }); }
+T(s, "How accurately can a low-cost wearable measure blood oxygen?", { x: 0.75, y: 1.98, w: 11.83, h: 0.5, align: "center", fontSize: 24, color: C.GRAYD });
+{ const h = 3.85, w = h / ratio("hero_alpha.png"); s.addImage({ path: A("hero_alpha.png"), x: (13.333 - w) / 2, y: 2.62, w, h }); }
 T(s, [{ text: "Gabriel Mamane", options: { bold: true, color: C.WHITE } }, { text: "   ·   Grade ___", options: { color: C.GRAYD } }],
   { x: 0.75, y: 6.62, w: 11.83, h: 0.35, align: "center", fontSize: 15 });
-T(s, "Educational prototype. Not a medical device.", { x: 0.75, y: 6.98, w: 11.83, h: 0.28, align: "center", fontSize: 10.5, color: C.GRAY });
-notes(s, "Title", 15, "Hi, I’m Gabriel. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.");
+T(s, "Educational prototype. It measures SpO₂ and heart rate; it does not diagnose sleep apnea.", { x: 0.75, y: 6.98, w: 11.83, h: 0.28, align: "center", fontSize: 10.5, color: C.GRAY });
+notes(s, "Title", 15, "Good morning. My name is Gabriel Mamane. My project, Night Signal, asks how accurately a low-cost wearable can measure blood oxygen and heart rate, and whether software can flag drops in oxygen. It is not a test for sleep apnea.");
 
 /* ---------------- 2. PURPOSE & HYPOTHESIS ---------------- */
-s = slide(false); eyebrow(s, "Purpose and hypothesis"); title(s, "Can a low-cost wearable catch sleep apnea?");
+s = slide(false); eyebrow(s, "Purpose and hypothesis"); title(s, "Is a low-cost oxygen wearable accurate?");
 card(s, 0.75, 2.1, 5.8, 2.65); card(s, 6.78, 2.1, 5.8, 2.65);
 bar(s, 1.1, 2.4, C.PINK); bar(s, 7.13, 2.4, C.BLUE);
-T(s, "Purpose", { x: 1.1, y: 2.55, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.PINK });
-T(s, "Find out whether a low-cost wearable can detect the oxygen drops caused by sleep apnea accurately enough to estimate how many events happen per hour: the number doctors use (AHI).",
-  { x: 1.1, y: 2.98, w: 5.1, h: 1.7, fontSize: 17, color: C.INK, lineSpacingMultiple: 1.05 });
+T(s, "Question", { x: 1.1, y: 2.55, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.PINK });
+T(s, "How closely do SpO₂ and heart-rate readings from a MAX30102 + ESP32 wearable agree with a Health Canada-authorized fingertip pulse oximeter, and can software reliably flag oxygen desaturation events (≥ 3 points for ≥ 10 s)?",
+  { x: 1.1, y: 2.98, w: 5.1, h: 1.65, fontSize: 15, color: C.INK });
 T(s, "Hypothesis", { x: 7.13, y: 2.55, w: 5.1, h: 0.35, fontSize: 15, bold: true, color: C.BLUE });
-T(s, "If breathing pauses make blood oxygen dip, then a fingertip sensor read once per second will reveal the dips, and software can count them per hour, because oxygen-rich and oxygen-poor blood absorb red and infrared light differently.",
-  { x: 7.13, y: 2.98, w: 5.1, h: 1.65, fontSize: 15.5, color: C.INK, lineSpacingMultiple: 1.05 });
-[["Independent variables", "Breath-hold length (10, 15, 20 s) and sleeping position", C.ORANGE],
- ["Dependent variables", "Events detected, AHI score, agreement with a reference oximeter", C.GREEN],
- ["Controls", "Same finger, cuff tightness, room, firmware and detection settings", C.GRAYL]].forEach((v, i) => {
+T(s, "If the wearable is worn correctly and only good-quality readings are used, its SpO₂ will agree with the reference within about ±3 percentage points (95% limits of agreement), because both measure red/infrared light absorption.",
+  { x: 7.13, y: 2.98, w: 5.1, h: 1.65, fontSize: 15, color: C.INK });
+[["Independent variables", "Measuring device (wearable vs reference); test condition (seated rest; optional breath-holds only if approved)", C.ORANGE],
+ ["Dependent variables", "Device − reference difference (bias, 95% limits, mean error); desaturation events flagged; % valid signal", C.GREEN],
+ ["Controls", "Same participant, finger, cuff tightness, room and lighting; paired readings every 2 min; same settings", C.GRAYL]].forEach((v, i) => {
   const x = 0.75 + i * 4.0; card(s, x, 4.98, 3.83, 1.75); bar(s, x + 0.3, 5.22, v[2]);
   T(s, v[0], { x: x + 0.3, y: 5.38, w: 3.3, h: 0.35, fontSize: 15.5, bold: true, color: C.INK });
-  T(s, v[1], { x: x + 0.3, y: 5.78, w: 3.3, h: 0.85, fontSize: 13.5, color: C.GRAY }); });
-notes(s, "Purpose & hypothesis", 40, "My question: can a low-cost wearable catch sleep apnea? My hypothesis: if each breathing pause makes oxygen dip, a fingertip sensor reading once per second will see the dips, and software can count them per hour — the AHI doctors use. What I change is breath-hold length and sleeping position; what I measure is events, the AHI, and how closely my device agrees with a real oximeter.");
+  T(s, v[1], { x: x + 0.3, y: 5.78, w: 3.3, h: 0.85, fontSize: 12.5, color: C.GRAY }); });
+notes(s, "Purpose & hypothesis", 45, "My question is how closely my wearable's oxygen and heart-rate readings agree with a Health Canada-authorized fingertip oximeter, and whether software can reliably flag oxygen desaturation events. My hypothesis is that, when it is worn properly and only good-quality readings are used, it will agree within about three percentage points, because both devices measure how blood absorbs red and infrared light. What I change is the measuring device and the test condition; what I measure is the difference between the two devices, the events flagged, and how much of the signal is valid.");
 
 /* ---------------- 3. BACKGROUND ---------------- */
-s = slide(false); eyebrow(s, "Scientific background"); title(s, "Breathing stops. Oxygen drops.");
+s = slide(false); eyebrow(s, "Scientific background"); title(s, "An oxygen dip is a clue, not a diagnosis.");
 bullets(s, [
-  "Obstructive sleep apnea: the airway collapses during sleep and breathing pauses for 10 seconds or more, many times a night.",
-  "Each pause lowers blood oxygen (a desaturation) and makes the heart speed up and slow down.",
-  "Pulse oximetry: red (660 nm) and infrared (880 nm) light shine through the fingertip. Oxygen-rich blood absorbs them differently, giving SpO₂.",
-  "Doctors count events per hour of sleep: the Apnea–Hypopnea Index (AHI). A clinical sleep study costs thousands and needs a lab.",
-], 0.75, 2.15, 7.3, 15.5, 0.2);
+  "Pulse oximetry: red (660 nm) and infrared (880 nm) light shine through the fingertip. Oxygen-rich and oxygen-poor blood absorb them differently, giving SpO₂.",
+  "A desaturation is a short drop in SpO₂. Sleep studies count drops of 3% or more, alongside other signals.",
+  "Sleep apnea is diagnosed with a sleep study that also measures airflow, breathing effort and sleep. Oxygen alone cannot do this.",
+  "Not every oxygen drop is an apnea (movement, poor contact, other causes), and not every apnea causes a large drop.",
+], 0.75, 2.15, 7.3, 15, 0.18);
 card(s, 8.45, 2.1, 4.13, 2.75, C.BLACK);
 T(s, "936 million", { x: 8.75, y: 2.4, w: 3.6, h: 0.75, fontSize: 40, bold: true, color: C.WHITE });
-T(s, "adults worldwide have obstructive sleep apnea. Most don’t know it (Benjafield et al., 2019).", { x: 8.75, y: 3.25, w: 3.6, h: 1.4, fontSize: 14.5, color: C.GRAYD, lineSpacingMultiple: 1.05 });
-[["< 5", "Normal", C.GREEN], ["5–15", "Mild", C.ORANGE], ["15–30", "Moderate", "B4410B"], ["> 30", "Severe", C.RED]].forEach((b, i) => {
-  const x = 0.75 + i * 3.0; card(s, x, 5.45, 2.83, 1.35);
-  T(s, b[0], { x, y: 5.6, w: 2.83, h: 0.6, align: "center", fontSize: 30, bold: true, color: b[2] });
-  T(s, b[1] + " · events per hour", { x, y: 6.25, w: 2.83, h: 0.35, align: "center", fontSize: 12.5, color: C.GRAY }); });
-notes(s, "Scientific background", 50, "Sleep apnea is when the airway collapses during sleep and breathing stops for ten seconds or more, over and over. About 936 million adults have it, and most don't know. Every pause drops blood oxygen. A pulse oximeter measures that by shining red and infrared light through the fingertip — oxygen-rich blood absorbs the two colours differently. Doctors count the events per hour — the AHI — and grade it from normal to severe. The problem: the standard test is an overnight lab study that costs thousands.");
+T(s, "adults worldwide are estimated to have obstructive sleep apnea, and most are undiagnosed (Benjafield et al., 2019).", { x: 8.75, y: 3.25, w: 3.6, h: 1.4, fontSize: 14, color: C.GRAYD });
+[["SpO₂", "can show oxygen dips", C.BLUE], ["Heart rate", "can show pulse changes", C.PINK], ["Not measured", "airflow · breathing effort · sleep stage", C.GRAY]].forEach((b, i) => {
+  const x = 0.75 + i * 4.0; card(s, x, 5.45, 3.83, 1.35);
+  T(s, b[0], { x: x + 0.3, y: 5.62, w: 3.3, h: 0.5, fontSize: 22, bold: true, color: b[2] });
+  T(s, b[1], { x: x + 0.3, y: 6.2, w: 3.3, h: 0.4, fontSize: 13, color: C.GRAY }); });
+notes(s, "Scientific background", 50, "A pulse oximeter shines red and infrared light through the fingertip; oxygen-rich and oxygen-poor blood absorb them differently, which gives the oxygen saturation, SpO2. A desaturation is a short drop in SpO2, and sleep studies count drops of three percent or more, but only together with other signals. Sleep apnea is diagnosed with a sleep study that measures airflow, breathing effort and sleep itself. My device measures only oxygen and heart rate, so it cannot tell an apnea from other causes of a dip, and it would miss apneas that cause little or no drop. That is why my project is about measurement accuracy and oxygen dips, not about diagnosing sleep apnea.");
 
 /* ---------------- 4. DESIGN ---------------- */
 s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Design", { align: "center" }); title(s, "The wearable.", { align: "center", fontSize: 48, y: 0.9 });
 { const h = 3.5; const w1 = h / ratio("hero_alpha.png"), w2 = h / ratio("exploded_alpha.png"), gap = 1.0, x0 = (13.333 - w1 - w2 - gap) / 2;
   s.addImage({ path: A("hero_alpha.png"), x: x0, y: 1.9, w: w1, h }); s.addImage({ path: A("exploded_alpha.png"), x: x0 + w1 + gap, y: 1.9, w: w2, h });
-  caption(s, "v2 design: sealed case on a velcro strap", x0 - 0.3, 5.45, w1 + 0.6); caption(s, "Exploded: every v2 part at its real size", x0 + w1 + gap - 0.3, 5.45, w2 + 0.6); }
-[["Prototype v1", "armband + plug-in wires"], ["All night", "USB power"], ["14 × 14 mm", "finger sensor"], ["1 / second", "readings"]].forEach((k, i) => {
+  caption(s, "3D design of a later version (v2): sealed case", x0 - 0.3, 5.45, w1 + 0.6); caption(s, "Exploded: every v2 part at its real size", x0 + w1 + gap - 0.3, 5.45, w2 + 0.6); }
+[["Prototype v1", "armband + plug-in wires"], ["Not built yet", "parts list ready"], ["MAX30102", "red + infrared finger sensor"], ["1 / second", "SpO₂ + heart rate"]].forEach((k, i) => {
   const x = 0.75 + i * 2.45; T(s, k[0], { x, y: 6.0, w: 2.35, h: 0.45, fontSize: 22, bold: true, color: C.WHITE });
   T(s, k[1], { x, y: 6.47, w: 2.35, h: 0.3, fontSize: 13, color: C.GRAYD }); });
 qr(s, "qr_3d.png", LINKS.d3, 11.62, 5.95, 0.95); link(s, "Interactive 3D", LINKS.d3, 10.1, 6.25, 1.4, 13, "right");
-notes(s, "Design", 40, "Here's the design. My working prototype, version 1, is built to be simple and reliable: the ESP32 sits in a running armband, each sensor plugs into its own pins with no soldered splices, and a USB cable powers it all night. A velcro finger clip holds the MAX30102 oxygen sensor. The 3D model shows version 2 — a 70 by 45 millimetre sealed case with its own battery on a velcro strap. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.");
+notes(s, "Design", 40, "This is the design. The first prototype keeps things simple: an ESP32 board in a running armband, a MAX30102 sensor in a velcro finger cuff, and a USB cable for power, with every wire plugged in. It reads oxygen and heart rate once per second. The 3D model shows a possible later version in a sealed case. The prototype has not been built yet; the parts list and build guide are ready.");
 
 /* ---------------- 5. HOW IT WORKS ---------------- */
-s = slide(false); eyebrow(s, "How it works"); title(s, "From fingertip to sleep report.");
-const flow = [["01", "Finger sensor", "MAX30102 · red + infrared light"], ["02", "ESP32 on the arm", "computes SpO₂ + pulse, reads position"], ["03", "Bluetooth or USB", "one line of data every second"], ["04", "App + analysis", "events, AHI, heart, breathing"]];
+s = slide(false); eyebrow(s, "How it works"); title(s, "From fingertip to data file.");
+const flow = [["01", "Finger sensor", "MAX30102 · red + infrared light"], ["02", "ESP32 on the arm", "computes SpO₂ and pulse once per second"], ["03", "Bluetooth or USB", "one line of data every second"], ["04", "App + analysis", "signal quality, desaturation events, agreement"]];
 flow.forEach((f, i) => { const x = 0.75 + i * 3.0; card(s, x, 2.1, 2.78, 1.55);
   T(s, f[0], { x: x + 0.28, y: 2.3, w: 2.3, h: 0.3, fontSize: 13, bold: true, color: C.BLUE });
   T(s, f[1], { x: x + 0.28, y: 2.62, w: 2.3, h: 0.4, fontSize: 17, bold: true, color: C.INK });
   T(s, f[2], { x: x + 0.28, y: 3.03, w: 2.3, h: 0.55, fontSize: 12.5, color: C.GRAY }); });
-T(s, "A built-in self-test proves it’s working before every recording.", { x: 0.75, y: 4.0, w: 11.8, h: 0.4, fontSize: 17, bold: true, color: C.INK });
+T(s, "A device check runs before every session (tested so far on a simulated device).", { x: 0.75, y: 4.0, w: 11.8, h: 0.4, fontSize: 17, bold: true, color: C.INK });
 card(s, 0.75, 4.52, 7.0, 2.4, C.BLACK);
 s.addText([
-  { text: "$ python check_device.py --port /dev/cu.NightSignal", options: { color: C.GRAYD, breakLine: true } },
+  { text: "$ python check_device.py --port /dev/pts/3   (simulated device)", options: { color: C.GRAYD, breakLine: true } },
   { text: "[PASS] Data arriving        1 reading/s", options: { color: C.GREEND, breakLine: true } },
   { text: "[PASS] Self-test            oxygen OK · motion OK", options: { color: C.GREEND, breakLine: true } },
   { text: "[PASS] Finger on sensor     100%", options: { color: C.GREEND, breakLine: true } },
   { text: "[PASS] Believable values    SpO2 97–98%, HR 60–64", options: { color: C.GREEND, breakLine: true } },
-  { text: "RESULT: READY — sending real data", options: { color: C.WHITE, bold: true } }],
+  { text: "RESULT: READY", options: { color: C.WHITE, bold: true } }],
   { isTextBox: true, x: 1.05, y: 4.72, w: 6.5, h: 2.1, margin: 0, fontFace: MONO, fontSize: 12.5, valign: "top", paraSpaceAfter: 3 });
-bullets(s, ["Firmware re-checks both sensors every 30 s.", "No finger: readings are marked invalid, never trusted.", "The app shows the same checks live, every second.", "A broken sensor is caught: “NOT READY”."], 8.15, 4.6, 4.45, 15, 0.16);
-notes(s, "How it works", 35, "The data path: the finger sensor's light readings go to the ESP32, which calculates oxygen and pulse and reads body position, then sends one line per second over Bluetooth or USB to my app and analysis code. To make sure it's really working, I built a self-test: every recording starts with a device check that has to say READY — and when I tested with a broken motion sensor, it correctly said NOT READY.");
+bullets(s, ["Firmware re-checks both sensors every 30 s.", "No finger: readings are marked invalid and excluded.", "A broken sensor gives “NOT READY” (checked with the simulated device).", "Real hardware has not been tested yet."], 8.15, 4.6, 4.45, 15, 0.16);
+notes(s, "How it works", 35, "The finger sensor's light readings go to the ESP32, which calculates oxygen and pulse once per second and sends each reading over Bluetooth or USB to my app and analysis code. Every session will start with a device check that must say READY. So far I have tested this check only on a simulated device, where it also correctly reported a broken sensor; it still has to be tested on the real hardware.");
 
 /* ---------------- 6. PROTOCOL ---------------- */
-s = slide(false); eyebrow(s, "Experimental protocol"); title(s, "How I test it.");
-[["Device check", "every session must pass check_device.py"],
- ["Accuracy test", "awake, side by side with a store-bought oximeter every 2 min for 30 min"],
- ["Detection test", "supervised, awake breath-holds of 10, 15 and 20 s: known events"],
- ["Full-night power test", "USB power, 8 h of data with no gaps"],
- ["Recorded nights", "at least 5 nights; armband on forearm, clip on index finger"]].forEach((st, i) => {
-  const y = 2.1 + i * 0.92; s.addShape(p.ShapeType.ellipse, { x: 0.75, y, w: 0.52, h: 0.52, fill: { color: C.BLUE }, line: { type: "none" } });
+s = slide(false); eyebrow(s, "Experimental protocol · planned"); title(s, "How I will test it.");
+[["Approvals first", "Ms. Ireland, the ethics committee and signed consent, before any data"],
+ ["Accuracy sessions (main)", "seated; wearable on one finger, reference on the other; SpO₂ + heart rate every 2 min for 30 min; several sessions"],
+ ["Signal-quality checks", "finger on, sensor-valid flag, believable range, movement excluded"],
+ ["Overnight recordings (if approved)", "signal quality and desaturation events per valid hour; not verifiable overnight"],
+ ["Breath-hold test (optional, if approved)", "awake and supervised; are induced dips flagged? Not a test of sleep apnea"]].forEach((st, i) => {
+  const y = 2.05 + i * 0.93; s.addShape(p.ShapeType.ellipse, { x: 0.75, y, w: 0.52, h: 0.52, fill: { color: i === 0 ? C.RED : C.BLUE }, line: { type: "none" } });
   T(s, String(i + 1), { x: 0.75, y, w: 0.52, h: 0.52, align: "center", valign: "middle", fontSize: 17, bold: true, color: C.WHITE });
   s.addText([{ text: st[0] + "   ", options: { bold: true, color: C.INK } }, { text: st[1], options: { color: C.GRAY } }],
-    { isTextBox: true, x: 1.5, y: y + 0.07, w: 6.95, h: 0.5, margin: 0, fontFace: F, fontSize: 15.5, valign: "top" }); });
+    { isTextBox: true, x: 1.5, y: y + 0.02, w: 6.95, h: 0.8, margin: 0, fontFace: F, fontSize: 14, valign: "top" }); });
 card(s, 8.75, 2.05, 3.83, 4.55);
 T(s, "Safety", { x: 9.05, y: 2.3, w: 3.3, h: 0.35, fontSize: 17, bold: true, color: C.RED });
-bullets(s, ["Breath-holds only while awake, seated and supervised. Never asleep.", "20 seconds at most. Stop at any dizziness.", "Parent/guardian consent", "Ethics approval (human subject) before any test"], 9.05, 2.8, 3.3, 14.5, 0.18);
-notes(s, "Protocol", 45, "My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a full-night power test — eight hours with no gaps. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.");
+bullets(s, ["No testing on anyone, including me, before approval and consent", "Breath-holds only if approved: awake, seated, supervised, 20 s at most, never asleep", "Stop at any dizziness or discomfort", "Not a medical device; no diagnosis"], 9.05, 2.8, 3.3, 14, 0.18);
+notes(s, "Protocol", 50, "This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher approves the revised scope, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.");
 
 /* ---------------- 7. THE APP ---------------- */
-s = slide(false, C.OFF); eyebrow(s, "The app"); title(s, "The companion app measures real data.");
+s = slide(false, C.OFF); eyebrow(s, "The app"); title(s, "The companion app.");
 const ph = phone(s, "phone_sleep.png", 1.05, 2.05, 2.15); phone(s, "phone_live.png", 3.75, 2.05, 2.15);
-caption(s, "Sleep report", 1.05, 2.05 + ph + 0.15, 2.15); caption(s, "Live + device health", 3.75, 2.05 + ph + 0.15, 2.15);
-bullets(s, ["The Live tab connects straight to the wearable (USB or Bluetooth) and shows oxygen, heart rate and position every second.",
-  "Device health checks run the whole time: data flowing, self-test, finger on, power.",
-  "Saving a session gives the same CSV the analysis uses, so every number is traceable.",
-  "Heart, Asthma and Progress tabs for the spin-offs and my build log."], 6.95, 2.15, 5.65, 15.5, 0.22);
+caption(s, "Night report (demo data)", 0.85, 2.05 + ph + 0.15, 2.55); caption(s, "Live + device health (demo)", 3.55, 2.05 + ph + 0.15, 2.55);
+bullets(s, ["Night tab: oxygen chart, flagged desaturation events, events per hour of valid recording, and % valid signal.",
+  "Live tab connects to the wearable (USB or Bluetooth) and runs the device checks every second.",
+  "Saving a session gives the same CSV the analysis uses, so every number can be traced.",
+  "Everything shown so far is labelled demonstration data. Heart and breathing tabs are exploratory ideas."], 6.95, 2.15, 5.65, 15, 0.22);
 qr(s, "qr_app.png", LINKS.app, 7.05, 5.6, 1.05);
 link(s, "Open the app", LINKS.app, 8.4, 5.78, 3, 16);
 T(s, "Scan to try it. A demo device is built in.", { x: 8.4, y: 6.18, w: 4.2, h: 0.3, fontSize: 12.5, color: C.GRAY });
-notes(s, "The app", 35, "This is my companion app. On the Live tab it connects directly to the wearable and shows oxygen, heart rate and position every second, with health checks running the whole time. Saving a session gives the exact CSV my analysis uses, so every number is traceable. Scan the code to try it — there's a demo device built in.");
+notes(s, "The app", 30, "This is my companion app. The Night tab shows the oxygen chart, the desaturation events it flagged, the event rate per hour of valid recording and how much of the signal was valid. The Live tab connects to the wearable and runs the device checks. Everything you see so far is clearly labelled demonstration data.");
 
 /* ---------------- 8. RESULTS TABLE ---------------- */
-s = slide(false); eyebrow(s, "Results"); title(s, "What one night showed."); prelim(s);
-[["2.7", "events per hour (AHI): Normal", C.GREEN], ["± 0.56 %", "agreement with the reference", C.BLUE],
- ["84 %", "lowest blood oxygen", C.PINK], ["3 ×", "more events on the back", C.ORANGE]].forEach((t, i) => tile(s, 0.75 + i * 3.0, 2.0, 2.83, 1.38, t[0], t[1], t[2]));
-table(s, [["Measure", "Result", "Meaning"],
-  ["Recording", "7.0 h · 25,200 readings", "a full night captured"],
-  ["Apnea events", "19  →  AHI 2.7 / hour", "Normal range (< 5)"],
-  ["Blood oxygen (avg / lowest)", "97.5 % / 84 %", "lowest point during an event"],
-  ["Accuracy vs reference", "± 0.56 %  (r = 0.88)", "210 paired readings"],
-  ["Events caught: rule / ML", "63 % / 63 %", "precision 1.00 / 0.92"],
-  ["Sleep position", "back 3.8 / h  vs  sides 1.1–1.3 / h", "≈ 3 × more events on the back"],
-  ["Spin-offs", "3 heart episodes · breathing 13 → 22 / min", "patterns flagged correctly"]],
-  { x: 0.75, y: 3.62, w: 11.83, colW: [3.5, 4.4, 3.93], fontSize: 13, rowH: 0.37, softCols: [2] });
-T(s, "Example data from my simulator, replaced with my own recorded nights before the final submission.", { x: 0.75, y: 6.72, w: 11.8, h: 0.28, fontSize: 11, color: C.GRAY });
-notes(s, "Results summary", 40, "Here's the summary. Over a seven-hour night, the software found 19 events — an AHI of 2.7, which is in the normal range. Oxygen averaged 97.5% and dropped to 84% at the lowest. Against a reference oximeter, my device was within about half a percent. The detector caught 63% of known events with zero false alarms. And events were about three times more frequent on the back than on the sides.");
+s = slide(false); eyebrow(s, "Results · not yet collected"); title(s, "What will be measured."); tag(s, "No real data yet");
+table(s, [["Measure", "How it is calculated", "Demonstration (simulated)", "Real result"],
+  ["SpO₂ agreement", "device − reference, paired every 2 min: bias, 95% limits", "+0.07 (−1.47 to +1.61) points", "pending"],
+  ["Heart-rate agreement", "same pairing, in beats per minute", "−0.0 (−2.3 to +2.3) bpm", "pending"],
+  ["Valid signal", "finger on, sensor-valid, 70–100%, no movement", "98% (6.88 of 7.0 h)", "pending"],
+  ["Desaturation events", "≥ 3 points below a 120-s baseline for ≥ 10 s", "19 events", "pending"],
+  ["Desaturation event rate", "events ÷ hours of VALID recording", "2.8 per valid hour (19 ÷ 6.88 h)", "pending"],
+  ["Breath-hold dips flagged (if approved)", "flags within ±30 s of each logged hold", "not simulated", "pending"]],
+  { x: 0.75, y: 2.05, w: 11.83, colW: [2.75, 4.15, 3.33, 1.6], fontSize: 13, rowH: 0.52, softCols: [1] });
+card(s, 0.75, 5.95, 11.83, 0.95, "FFF4E5");
+T(s, [{ text: "Demonstration values come from simulated data. ", options: { bold: true, color: "B25000" } }, { text: "They only show that the analysis works; they are not findings. The simulated “reference” was made from the same invented data. The event rate is not an apnea–hypopnea index.", options: { color: C.INK } }],
+  { x: 1.05, y: 6.08, w: 11.3, h: 0.75, fontSize: 13 });
+notes(s, "Results table", 40, "These are the results I will collect. I have not collected any real data yet. The table shows each measure, how it is calculated, and a demonstration value from simulated data, which only proves that my analysis code runs; they are not findings. The event rate is the number of desaturation events divided by the hours of valid signal, not hours in bed, and it is not an apnea-hypopnea index. The last column will be filled in with real results before January eleventh.");
 
-/* ---------------- 9. RESULTS: NIGHT + ACCURACY ---------------- */
-s = slide(false, C.OFF); eyebrow(s, "Results"); title(s, "Every dip found. And the readings agree."); prelim(s);
+/* ---------------- 9. DEMONSTRATION CHARTS ---------------- */
+s = slide(false, C.OFF); eyebrow(s, "Results · demonstration"); title(s, "How the results will be shown."); tag(s, "Simulated data");
 chartCard(s, "oxygen.png", 0.75, 2.05, 7.2, 4.2); chartCard(s, "validation.png", 8.15, 2.05, 4.43, 4.2);
-caption(s, "95% of readings within −1.5 to +1.7 % of the reference", 8.15, 6.42, 4.43);
-caption(s, "Every red band is an apnea event the software found on its own", 0.75, 6.42, 7.2);
-notes(s, "Results: detection + accuracy", 35, "On the left, a whole night of oxygen — every red band is an event my code found on its own. On the right is a Bland–Altman plot, the standard way medical papers compare two devices: the average difference is almost zero, and 95% of my readings fall within about one and a half percent of the reference.");
+caption(s, "Red bands = flagged desaturation events (simulated night)", 0.75, 6.42, 7.2);
+caption(s, "Bland–Altman agreement chart (simulated pairs)", 8.15, 6.42, 4.43);
+notes(s, "Demonstration charts", 30, "These two charts show how the results will be presented, using simulated data. On the left, the oxygen line with each flagged desaturation event as a red band. On the right, a Bland-Altman chart, the standard way to compare two measuring devices: each dot is a pair of readings, and the dashed lines show the range that ninety-five percent of differences fall in. With real data, that range is what tests my hypothesis.");
 
-/* ---------------- 10. RESULTS: POSITION + ML ---------------- */
-s = slide(false, C.OFF); eyebrow(s, "Results"); title(s, "Back-sleeping, and two detectors."); prelim(s);
-chartCard(s, "position.png", 0.75, 2.05, 5.81, 4.45); card(s, 6.77, 2.05, 5.81, 4.45, C.WHITE);
-s.addChart(p.charts.BAR, [{ name: "Precision", labels: ["Rule-based", "Machine learning"], values: [1.0, 0.92] },
-  { name: "Recall (events caught)", labels: ["Rule-based", "Machine learning"], values: [0.63, 0.63] }],
-  { x: 7.0, y: 2.25, w: 5.35, h: 4.05, barDir: "col", barGrouping: "clustered", barGapWidthPct: 60, chartColors: [C.BLUE, C.PINKD], showValue: true,
-    dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12, dataLabelFontFace: F, dataLabelColor: C.INK,
-    valAxisMaxVal: 1.2, valAxisMinVal: 0, valAxisLabelFormatCode: "0.0", valAxisHidden: true, valAxisLineShow: false,
-    showLegend: true, legendPos: "b", legendFontSize: 12, legendFontFace: F, legendColor: C.GRAY,
-    catAxisLabelFontSize: 13, catAxisLabelFontFace: F, catAxisLabelColor: C.INK, catAxisLineShow: false,
-    valGridLine: { style: "none" }, catGridLine: { style: "none" },
-    showTitle: true, title: "Detector scores on unseen data", titleFontSize: 14, titleFontFace: F, titleColor: C.INK });
-notes(s, "Results: position + ML", 30, "Two more results. Events happened most on the back — 3.8 per hour versus about 1 on the sides. And I compared my simple rule with a machine-learning model: on new data, both caught the same share of events, but the rule had no false alarms, so for now the simpler method wins.");
+/* ---------------- 10. SIGNAL QUALITY ---------------- */
+s = slide(false); eyebrow(s, "Method · signal quality"); title(s, "Only good readings count.");
+[["Finger on the sensor", "Infrared level shows a finger is present; otherwise the reading is excluded.", C.BLUE],
+ ["Sensor confidence", "The sensor marks each SpO₂ reading valid or invalid; invalid ones are excluded.", C.GREEN],
+ ["Believable range", "SpO₂ outside 70–100% is excluded as an error.", C.ORANGE],
+ ["Movement", "5 s on each side of a sudden movement is excluded (motion distorts the light signal).", C.PINK]].forEach((k, i) => {
+  const x = 0.75 + (i % 2) * 6.02, y = 2.05 + Math.floor(i / 2) * 1.62; card(s, x, y, 5.81, 1.45); bar(s, x + 0.3, y + 0.25, k[2]);
+  T(s, k[0], { x: x + 0.3, y: y + 0.4, w: 5.2, h: 0.4, fontSize: 16.5, bold: true, color: C.INK });
+  T(s, k[1], { x: x + 0.3, y: y + 0.82, w: 5.2, h: 0.55, fontSize: 13, color: C.GRAY }); });
+card(s, 0.75, 5.4, 11.83, 1.4, C.BLACK);
+T(s, [{ text: "Desaturation event rate  =  ", options: { color: C.WHITE, bold: true } }, { text: "flagged events  ÷  hours of valid signal", options: { color: C.BLUED, bold: true } }],
+  { x: 1.1, y: 5.58, w: 11.2, h: 0.5, fontSize: 21 });
+T(s, "Not hours in bed and not sleep time (the device cannot measure sleep). An event may never span a gap in the valid data. Each report states the % of valid signal.",
+  { x: 1.1, y: 6.15, w: 11.2, h: 0.55, fontSize: 13, color: C.GRAYD });
+notes(s, "Signal quality", 35, "Only good readings count. A reading is used only if a finger is on the sensor, the sensor marks it valid, it is in a believable range, and there was no sudden movement within five seconds. The event rate is the number of flagged events divided by the hours of valid signal. It is not per hour of sleep, because my device cannot measure sleep, and every report states how much of the signal was valid.");
 
 /* ---------------- 11. ANALYSIS: INTERPRETATION ---------------- */
-s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "What the results mean.");
-[["Accurate enough to trust", "Agreement within about ±1.6 % is in line with commercial fingertip oximeters (about ±2–3 %), so the drops it sees are real, not sensor noise.", C.BLUED],
- ["Cautious, not over-eager", "Perfect precision but 63 % recall means it misses shallow events. My AHI is probably an under-estimate: the safe direction for a screening tool.", C.GREEND],
- ["Position matters", "Three times more events on the back matches “positional” sleep apnea in the literature. A simple, free change (side-sleeping) could help.", C.ORANGED],
- ["More data beats fancier code", "Machine learning only tied the rule because it trained on one night. It needs many labeled nights to learn more than a rule.", C.PINKD]].forEach((k, i) => {
-  const x = 0.75 + (i % 2) * 6.02, y = 2.1 + Math.floor(i / 2) * 2.4; card(s, x, y, 5.81, 2.2);
+s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis · plan"); title(s, "How I will interpret the results.");
+[["Agreement", "If 95% of SpO₂ differences fall within ±3 points of the reference at rest, the hypothesis is supported for these conditions. The reference itself is only ±2 points.", C.BLUED],
+ ["Desaturation events", "A flagged event means an oxygen dip, not an apnea. Overnight events cannot be checked, because the reference cannot record overnight.", C.GREEND],
+ ["Breath-hold test (if approved)", "Shows whether awake, induced dips are flagged at the logged times. It does not show that sleep apnea can be detected during sleep.", C.ORANGED],
+ ["What would go against it", "Limits wider than ±3 points, a consistent bias, a low % of valid signal, or logged dips that are missed.", C.PINKD]].forEach((k, i) => {
+  const x = 0.75 + (i % 2) * 6.02, y = 2.05 + Math.floor(i / 2) * 2.4; card(s, x, y, 5.81, 2.2);
   T(s, k[0], { x: x + 0.35, y: y + 0.28, w: 5.1, h: 0.45, fontSize: 19, bold: true, color: k[2] });
-  T(s, k[1], { x: x + 0.35, y: y + 0.82, w: 5.1, h: 1.3, fontSize: 14.5, color: C.GRAYL, lineSpacingMultiple: 1.05 }); });
-notes(s, "Analysis: interpretation", 45, "What does it mean? First, accuracy within about one and a half percent is in the same range as store-bought oximeters, so the dips are real. Second, the detector is cautious — no false alarms but it misses shallow events, so my AHI is probably an underestimate, which is the safer mistake for a screening tool. Third, the back-sleeping result matches what doctors call positional sleep apnea. And fourth, machine learning didn't win yet because it only had one night to learn from — more data matters more than fancier code.");
+  T(s, k[1], { x: x + 0.35, y: y + 0.82, w: 5.1, h: 1.3, fontSize: 14, color: C.GRAYL }); });
+notes(s, "Analysis: interpretation", 45, "This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.");
 
 /* ---------------- 12. ANALYSIS: SOURCES OF ERROR ---------------- */
-s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "What could make it wrong.");
-T(s, "Measurement", { x: 0.75, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.BLUED });
-bullets(s, ["Finger movement, pressure and cold hands distort the light signal", "The 4-second averaging window smooths very short dips", "The reference oximeter itself is only ±2 %", "Arm angle only approximates body position"], 0.75, 2.65, 5.7, 15, 0.16, C.GRAYL);
-T(s, "Method", { x: 6.77, y: 2.1, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.PINKD });
-bullets(s, ["Awake breath-holds aren’t the same as real obstructive apnea", "Oxygen only: no airflow or brain-wave sensors like a lab study", "One person, few nights: can’t generalize yet", "Results so far use simulated example data"], 6.77, 2.65, 5.8, 15, 0.16, C.GRAYL);
-card(s, 0.75, 5.3, 11.83, 1.45);
-s.addText([{ text: "Engineering finding.  ", options: { bold: true, color: C.ORANGED } }, { text: "Bluetooth draws about 100 mA, so a 500 mAh battery would last only 4–5 hours: not a full night. So prototype v1 runs on USB power, and the sealed v2 case needs a bigger battery or Bluetooth Low Energy.", options: { color: C.WHITE } }],
-  { isTextBox: true, x: 1.1, y: 5.55, w: 11.15, h: 1.05, margin: 0, fontFace: F, fontSize: 15.5, valign: "top", lineSpacingMultiple: 1.05 });
-notes(s, "Analysis: sources of error", 35, "Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: Bluetooth draws about 100 milliamps, so a small 500 milliamp-hour battery would last only four to five hours. That's why version 1 runs on USB power all night, and version 2 needs a bigger battery or Bluetooth Low Energy.");
+s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "Sources of error and limitations.");
+T(s, "Measurement", { x: 0.75, y: 2.05, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.BLUED });
+bullets(s, ["Movement, finger pressure, cold hands and room light distort the light signal", "Pulse oximeters can be less accurate on darker skin (Sjoding et al., 2020)", "The reference oximeter is only accurate to about ±2 points", "4-second averaging can smooth very short dips"], 0.75, 2.6, 5.7, 14.5, 0.14, C.GRAYL);
+T(s, "Method", { x: 6.77, y: 2.05, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.PINKD });
+bullets(s, ["Oxygen and heart rate only: no airflow, breathing effort or sleep staging, so apnea cannot be identified", "Awake rest is not the same as sleep; breath-holds are not apneas", "One participant: results cannot be generalized", "The reference cannot record overnight, so night events are unverified"], 6.77, 2.6, 5.8, 14.5, 0.14, C.GRAYL);
+card(s, 0.75, 5.45, 11.83, 1.3);
+s.addText([{ text: "Engineering estimate (to be measured).  ", options: { bold: true, color: C.ORANGED } }, { text: "Bluetooth draws roughly 100 mA, so a 500 mAh battery would last only about 4–5 hours. That is why prototype v1 is planned to run on USB power.", options: { color: C.WHITE } }],
+  { isTextBox: true, x: 1.1, y: 5.65, w: 11.15, h: 0.95, margin: 0, fontFace: F, fontSize: 15, valign: "top" });
+notes(s, "Sources of error", 40, "Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is only accurate to about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.");
 
-/* ---------------- 13. SPIN-OFFS ---------------- */
-s = slide(false, C.OFF); eyebrow(s, "Further considerations"); title(s, "Same sensor. Two more uses."); prelim(s);
-const hh = 3.3; chartCard(s, "heart.png", 0.75, 2.05, 5.81, hh); chartCard(s, "asthma.png", 6.77, 2.05, 5.81, hh);
-s.addText([{ text: "Heart.  ", options: { bold: true, color: C.PINK } }, { text: "Flags racing (>100 bpm), very slow (<40 bpm) and irregular-rhythm episodes, plus resting heart rate and HRV.", options: { color: C.GRAY } }],
-  { isTextBox: true, x: 0.95, y: 2.3 + hh, w: 5.5, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
-s.addText([{ text: "Asthma.  ", options: { bold: true, color: C.BLUE } }, { text: "Tracks breathing rate from the heart’s rhythm and coughs from the motion sensor, catching early-morning worsening (13 → 22 breaths/min).", options: { color: C.GRAY } }],
-  { isTextBox: true, x: 6.97, y: 2.3 + hh, w: 5.5, h: 1.0, margin: 0, fontFace: F, fontSize: 14.5, valign: "top" });
-T(s, "Screening ideas only. Confirming an arrhythmia or asthma needs a doctor.", { x: 0.75, y: 6.62, w: 11.8, h: 0.3, fontSize: 12, color: C.GRAY });
-notes(s, "Spin-offs", 40, "The same hardware opened two spin-offs. Heart: it flags racing, very slow and irregular-rhythm episodes. Asthma: night-time asthma often gets worse around 4 a.m., and my code tracks breathing rate from the heart's rhythm plus coughs from sudden jolts of the motion sensor — here it caught breathing climbing from 13 to 22 breaths a minute. These are screening ideas, not diagnoses.");
+/* ---------------- 13. STATUS ---------------- */
+s = slide(false); eyebrow(s, "Project status"); title(s, "What is done, and what is planned.");
+card(s, 0.75, 2.05, 5.81, 4.7); card(s, 6.77, 2.05, 5.81, 4.7);
+T(s, "Done", { x: 1.1, y: 2.28, w: 5.1, h: 0.4, fontSize: 19, bold: true, color: C.GREEN });
+bullets(s, ["Design, parts list and build guide", "Firmware written (not yet run on hardware)", "Analysis software and simulator, tested on simulated data", "App and 3D model", "Original proposal submitted (Sep 25); revised proposal and ethics package drafted"], 1.1, 2.8, 5.2, 13.5, 0.14);
+T(s, "Planned or pending", { x: 7.12, y: 2.28, w: 5.1, h: 0.4, fontSize: 19, bold: true, color: C.ORANGE });
+bullets(s, ["Ms. Ireland’s approval of the revised scope", "Ethics approval and signed consent", "Build and check the prototype", "Accuracy sessions against the reference", "Overnight recordings and optional breath-hold test (if approved)", "Real results and analysis (by January 11)"], 7.12, 2.8, 5.2, 13.5, 0.14);
+notes(s, "Status", 35, "To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. Still pending are my teacher's approval of the revised scope, ethics approval and consent, building the prototype, and all of the real measurements.");
 
 /* ---------------- 14. CONCLUSION ---------------- */
-s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Conclusion"); title(s, "Supported. So far.", { fontSize: 54, h: 1.1 });
-T(s, "A low-cost wearable measured blood oxygen within about half a percent of a reference, found apnea events on its own, scored the night’s severity, and showed back-sleeping triples events.",
-  { x: 0.75, y: 2.15, w: 11.8, h: 1.1, fontSize: 19, color: C.GRAYL, lineSpacingMultiple: 1.08 });
-T(s, "Next", { x: 0.75, y: 3.55, w: 6, h: 0.4, fontSize: 19, bold: true, color: C.WHITE });
-bullets(s, ["Record more people and many more nights", "Add a nasal airflow sensor to separate apnea from hypopnea", "Bigger battery or Bluetooth Low Energy for full nights", "Shrink it into a finger ring and compare with a real sleep lab"], 0.75, 4.05, 7.3, 15.5, 0.14, C.GRAYL);
-qr(s, "qr_app.png", LINKS.app, 8.95, 3.75, 1.45); qr(s, "qr_3d.png", LINKS.d3, 10.98, 3.75, 1.45);
-T(s, "App", { x: 8.95, y: 5.35, w: 1.45, h: 0.3, align: "center", fontSize: 13, color: C.GRAYD });
-T(s, "3D model", { x: 10.98, y: 5.35, w: 1.45, h: 0.3, align: "center", fontSize: 13, color: C.GRAYD });
+s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Conclusion"); title(s, "No conclusion yet.", { fontSize: 54, h: 1.1 });
+T(s, "No real data has been collected, so the hypothesis has not been tested. This slide will be written after the accuracy sessions.",
+  { x: 0.75, y: 2.15, w: 11.8, h: 0.8, fontSize: 19, color: C.GRAYL });
+T(s, "What this project will be able to show", { x: 0.75, y: 3.2, w: 7.6, h: 0.4, fontSize: 17, bold: true, color: C.WHITE });
+bullets(s, ["How closely the wearable agrees with a reference oximeter at rest", "How much of a recording gives a valid signal", "Whether flagged desaturation events match logged dips (if approved)"], 0.75, 3.7, 7.5, 14.5, 0.12, C.GRAYL);
+T(s, "What it cannot show", { x: 0.75, y: 5.05, w: 7.6, h: 0.4, fontSize: 17, bold: true, color: C.WHITE });
+bullets(s, ["Whether anyone has, or does not have, sleep apnea"], 0.75, 5.55, 7.5, 14.5, 0.12, C.GRAYL);
+qr(s, "qr_app.png", LINKS.app, 8.95, 3.4, 1.45); qr(s, "qr_3d.png", LINKS.d3, 10.98, 3.4, 1.45);
+T(s, "App", { x: 8.95, y: 5.0, w: 1.45, h: 0.3, align: "center", fontSize: 13, color: C.GRAYD });
+T(s, "3D model", { x: 10.98, y: 5.0, w: 1.45, h: 0.3, align: "center", fontSize: 13, color: C.GRAYD });
 T(s, "Thank you. Questions?", { x: 0.75, y: 6.3, w: 11.8, h: 0.6, fontSize: 28, bold: true, color: C.WHITE });
-notes(s, "Conclusion", 35, "Back to my hypothesis: so far it's supported — a low-cost wearable measured oxygen within about half a percent of a reference, found apnea events by itself, scored the night, and showed back-sleeping triples events. Next I'd test more people and nights, add an airflow sensor, fix the battery life, and shrink it into a ring to compare against a real sleep lab. Thank you — I'm happy to take questions.");
+notes(s, "Conclusion", 30, "I do not have a conclusion yet, because no real data has been collected. After the accuracy sessions, this project will show how closely the wearable agrees with a reference oximeter at rest, how much of a recording gives a valid signal, and, if approved, whether flagged dips match logged ones. It cannot show whether anyone has sleep apnea. Thank you; I am happy to take questions.");
 
 /* ================= APPENDIX (in slides, not presented) ================= */
 const atitle = (s, t) => title(s, t, { fontSize: 30, h: 0.7 });
@@ -278,32 +280,33 @@ const L = (t, u) => ({ text: t, options: { hyperlink: { url: u, tooltip: u }, co
 const parts = [
   ["AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)", "≈ 52 × 28 mm · pins pre-soldered", "Processor + Bluetooth Classic", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN"],
   ["HiLetgo MAX30102 sensor", "14 × 14 mm · 4 pins to solder", "SpO₂ + heart rate (finger clip)", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ"],
-  ["SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)", "≈ 21 × 16 mm", "Sleep position + cough jolts", "https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4"],
+  ["SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)", "≈ 21 × 16 mm", "Movement check + position (exploratory)", "https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4"],
   ["ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)", "20 cm each", "Plug-in wiring, no soldering", "https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78"],
   ["Running armband phone pouch", "fits phones up to 6.9 in", "Holds the ESP32 on the forearm", "https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4"],
   ["Anker Powerline+ USB-A to USB-C cable", "3 m (10 ft)", "All-night power from a phone charger", "https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS"],
   ["Anker USB-C to USB-A adapter (2-pack)", "USB-C → USB-A", "Plug the cable into a MacBook", "https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61"],
   ["VELCRO Brand 1 in × 30 ft roll", "25 mm wide · cut ≈ 80 mm", "Finger loop", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1"],
-  ["Elite Medica fingertip pulse oximeter", "Health Canada authorized", "Reference for the accuracy test", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB"]];
+  ["Elite Medica fingertip pulse oximeter", "confirm Health Canada licence", "Reference for the accuracy test", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB"]];
 table(s, [["Part", "Size", "Purpose", "Buy"]].concat(parts.map((r) => [r[0], r[1], r[2], { text: [L("Amazon.ca ›", r[3])] }])),
   { x: 0.75, y: 1.75, w: 11.83, colW: [4.4, 3.3, 2.83, 1.3], fontSize: 11.5, rowH: 0.43, softCols: [1, 2] });
 T(s, "Every part is on Amazon.ca (click Buy). Prices change and several items are multi-packs. Only the MAX30102’s 4 header pins need soldering (about 5 minutes); everything else plugs in.", { x: 0.75, y: 6.45, w: 11.8, h: 0.5, fontSize: 11.5, color: C.GRAY });
 notes(s, "Appendix A — materials", 0, "Appendix — not presented. Full parts list with exact dimensions and links.");
 
-s = slide(false); appendix(s); eyebrow(s, "Appendix B · Full protocol"); atitle(s, "Full experimental protocol.");
+s = slide(false); appendix(s); eyebrow(s, "Appendix B · Full protocol (planned)"); atitle(s, "Full experimental protocol (planned, not yet started).");
 const proto = [
-  "Build: plug the MAX30102 into 3V3 / GND / GPIO 21 / 22 and the GY-521 into VIN / GND / SDA→GPIO 33 / SCL→GPIO 32 (two separate I²C buses, no splices); ESP32 in the armband, USB power. Flash firmware v3.1.",
-  "Device check: run check_device.py; record the result. Do not continue unless it says READY.",
-  "Full-night power test: on USB power, stream with a finger on the sensor for 8 h; confirm there are no gaps in the data.",
-  "Accuracy test: seated, awake, 30 min. Every 2 min write down the reference oximeter value with the time. Analyse with validate.py (Bland–Altman, r).",
-  "Detection test: supervised, awake, seated; 5 breath-holds each of 10, 15 and 20 s after a normal breath out, 2 min apart; log start/end times as ground-truth labels. Score with train_model.py.",
-  "Recorded nights: at least 5 nights; armband on the forearm, finger clip on the index finger; record.py logs all night; note bedtime and wake time.",
-  "Analysis: analyze.py, signals.py, position.py, heart.py, asthma.py on each night; rebuild the app and slides with build_app.py and build_deck.js.",
-  "Controls: same finger, cuff tightness, room temperature, firmware v3.1 and detection settings (3 % drop, 10 s, 120 s baseline)."];
-proto.forEach((t, i) => { const y = 1.8 + i * 0.62;
-  T(s, String(i + 1), { x: 0.75, y, w: 0.4, h: 0.4, fontSize: 14, bold: true, color: C.BLUE });
-  T(s, t, { x: 1.2, y, w: 11.4, h: 0.6, fontSize: 12.5, color: C.INK }); });
-notes(s, "Appendix B — protocol", 0, "Appendix — not presented. Step-by-step protocol including controls.");
+  ["Approvals first.", "Ms. Ireland approves the revised scope, the ethics committee approves, and informed consent is signed (participant and parent/guardian). No data is collected from anyone, including me, before all three."],
+  ["Build and device check.", "MAX30102 → 3V3 / GND / GPIO 21 / 22; GY-521 → VIN / GND / SDA→GPIO 33 / SCL→GPIO 32 (two separate I²C buses); USB power. check_device.py must report READY before every session."],
+  ["Accuracy sessions (main test).", "Seated, awake, at rest, warm hands. Wearable on one index finger, reference oximeter on the other hand. Every 2 min: time, reference SpO₂ and heart rate (15 pairs per 30-min session); several sessions on different days. validate.py: bias, 95% limits of agreement, mean absolute difference."],
+  ["Signal-quality checks.", "Each 1-s reading counts only if a finger is present, the sensor marks it valid, SpO₂ is 70–100%, and there is no sudden movement within 5 s. Every report states the % of valid signal."],
+  ["Overnight recordings (only if approved).", "% valid signal and desaturation events per hour of valid recording. The reference cannot record overnight, so these events cannot be verified. The rate is not an apnea–hypopnea index."],
+  ["Breath-hold test (optional, only if approved).", "Awake, seated, adult-supervised, holds of at most 20 s, stop at any discomfort; start and end times logged. Tests only whether induced dips are flagged; it does not validate detecting sleep apnea during sleep."],
+  ["Analysis.", "analyze.py (events, valid hours) and validate.py (agreement). Position, heart-rate and breathing-rate scripts are exploratory (Appendix D) and are not used to test the hypothesis."],
+  ["Controls.", "Same participant, finger and cuff tightness, room and lighting, firmware, reference oximeter and detection settings (3-point drop, ≥ 10 s, 120-s baseline)."]];
+proto.forEach((t, i) => { const y = 1.68 + i * 0.67;
+  T(s, String(i + 1), { x: 0.75, y, w: 0.4, h: 0.4, fontSize: 14, bold: true, color: i === 0 ? C.RED : C.BLUE });
+  s.addText([{ text: t[0] + "  ", options: { bold: true, color: C.INK } }, { text: t[1], options: { color: C.GRAY } }],
+    { isTextBox: true, x: 1.2, y, w: 11.4, h: 0.6, margin: 0, fontFace: F, fontSize: 12, valign: "top" }); });
+notes(s, "Appendix B — protocol", 0, "Appendix — not presented. Planned step-by-step protocol, including approvals, signal-quality checks and controls. None of these steps has been carried out yet.");
 
 s = slide(false); appendix(s); eyebrow(s, "Appendix C · Design plans"); atitle(s, "Wiring (v1) and case layout (v2).");
 table(s, [["From", "To (ESP32)", "Notes"],
@@ -317,31 +320,35 @@ card(s, 7.7, 1.75, 4.88, 3.6, C.BLACK);
 caption(s, "v2: the stack inside the 25 mm-tall case", 7.7, 5.45, 4.88);
 T(s, "Planned v2: a 70 × 45 × 29 mm box with its own battery. Layer heights: battery 6 mm + ESP32 with pins ≈ 13 mm + GY-521 ≈ 3 mm ≈ 22 mm, inside the box’s 25 mm. v1 uses each sensor’s own pins, so nothing needs splicing.",
   { x: 7.7, y: 5.85, w: 4.88, h: 1.2, fontSize: 12, color: C.GRAY });
-notes(s, "Appendix C — design plans", 0, "Appendix — not presented. Prototype v1 wiring table, and the planned v2 case layout with layer heights.");
+notes(s, "Appendix C — design plans", 0, "Appendix — not presented. Prototype v1 wiring table, and the planned v2 case layout with layer heights. Neither has been built yet.");
 
-s = slide(false); appendix(s); eyebrow(s, "Appendix D · Data and pictures"); atitle(s, "More data and pictures.");
-const p1 = phone(s, "phone_heart.png", 0.95, 1.85, 2.25); caption(s, "App · Heart tab", 0.95, 1.85 + p1 + 0.15, 2.25);
-table(s, [["Analysis", "Result (example data)"],
-  ["Breathing rate (signals.py)", "13.5 breaths/min"], ["HRV (SDNN / RMSSD)", "69 / 50 ms"], ["Lowest heart rate", "46 bpm"],
-  ["Heart spin-off", "racing 3.3 min (106–118 bpm) · slow 2.5 min (34–39) · irregular 5.9 min"],
-  ["Asthma spin-off", "normal 13.4 → early morning 21.6 /min · 85 min fast · 24 cough-like jolts"],
-  ["ML model relies on", "heart-rate swing and jitter, then oxygen swing"],
-  ["Device check (simulated device)", "healthy → READY · broken motion sensor → NOT READY"]],
-  { x: 3.7, y: 1.8, w: 8.88, colW: [3.0, 5.88], fontSize: 12.5, rowH: 0.46 });
-link(s, "All code, data tools and raw CSV format on GitHub", LINKS.code, 3.7, 5.95, 8, 13.5);
-link(s, "Build guide: buy, build, connect", LINKS.build, 3.7, 6.35, 8, 13.5);
-notes(s, "Appendix D — data", 0, "Appendix — not presented. Remaining numbers, app screenshot and links to all data and code.");
+s = slide(false); appendix(s); eyebrow(s, "Appendix D · Exploratory ideas"); atitle(s, "Exploratory ideas (simulated data only).");
+table(s, [["Idea (script)", "Demonstration output (simulated)", "Why it is not a finding"],
+  ["Body position (position.py)", "events per valid hour: back 3.8, stomach 3.2, left 1.3, right 1.1", "simulated; few hours per position; not an apnea measure"],
+  ["Machine-learning flagger (train_model.py)", "recall 0.63 vs rule-based 0.63, on simulated labels", "labels are invented; breath-hold labels would not validate apnea detection"],
+  ["Heart-rate patterns (heart.py)", "1 fast stretch (> 100 bpm), 1 very slow, 1 unsteady", "per-second optical heart rate cannot identify arrhythmias"],
+  ["Breathing-rate estimate (signals.py, asthma.py)", "13.5 breaths/min; higher late in the simulated night", "estimated from heart-rate rhythm, never measured; cannot detect asthma"],
+  ["Device check (check_device.py)", "simulated device: healthy → READY; broken motion sensor → NOT READY", "not yet run on real hardware"]],
+  { x: 0.75, y: 1.75, w: 11.83, colW: [3.4, 4.4, 4.03], fontSize: 12, rowH: 0.6, softCols: [2] });
+card(s, 0.75, 5.5, 11.83, 0.62, "FFF4E5");
+T(s, [{ text: "Demonstration data only. ", options: { bold: true, color: "B25000" } }, { text: "These ideas are outside the revised scope and are not used to test the hypothesis.", options: { color: C.INK } }],
+  { x: 1.05, y: 5.66, w: 11.3, h: 0.35, fontSize: 12.5 });
+link(s, "All code, data tools and raw CSV format on GitHub", LINKS.code, 0.75, 6.32, 8, 13.5);
+link(s, "Build guide: buy, build, connect", LINKS.build, 0.75, 6.68, 8, 13.5);
+notes(s, "Appendix D — exploratory ideas", 0, "Appendix — not presented. Exploratory analyses shown only on simulated demonstration data. None of these numbers is a finding, and none of these ideas is part of the revised research question.");
 
 s = slide(false); appendix(s); eyebrow(s, "Bibliography · APA"); atitle(s, "References.");
 ["American Academy of Sleep Medicine. (2014). International classification of sleep disorders (3rd ed.).",
  "Benjafield, A. V., et al. (2019). Estimation of the global prevalence and burden of obstructive sleep apnoea: A literature-based analysis. The Lancet Respiratory Medicine, 7(8), 687–698.",
  "Berry, R. B., et al. (2012). Rules for scoring respiratory events in sleep. Journal of Clinical Sleep Medicine, 8(5), 597–619.",
  "Bland, J. M., & Altman, D. G. (1986). Statistical methods for assessing agreement between two methods of clinical measurement. The Lancet, 327(8476), 307–310.",
- "Global Initiative for Asthma. (2024). Global strategy for asthma management and prevention.",
+ "International Organization for Standardization. (2017). Medical electrical equipment — Part 2-61: Particular requirements for basic safety and essential performance of pulse oximeter equipment (ISO 80601-2-61:2017).",
  "Jubran, A. (2015). Pulse oximetry. Critical Care, 19, 272.",
+ "Kapur, V. K., et al. (2017). Clinical practice guideline for diagnostic testing for adult obstructive sleep apnea. Journal of Clinical Sleep Medicine, 13(3), 479–504.",
  "Maxim Integrated. (2020). MAX30102 high-sensitivity pulse oximeter and heart-rate sensor [Datasheet].",
+ "Sjoding, M. W., Dickson, R. P., Iwashyna, T. J., Gay, S. E., & Valley, T. S. (2020). Racial bias in pulse oximetry measurement. New England Journal of Medicine, 383(25), 2477–2478.",
  "Task Force of the European Society of Cardiology and NASPE. (1996). Heart rate variability: Standards of measurement, physiological interpretation, and clinical use. Circulation, 93(5), 1043–1065."]
-  .forEach((r, i) => T(s, r, { x: 0.75, y: 1.8 + i * 0.62, w: 11.8, h: 0.6, fontSize: 13, color: C.GRAY }));
+  .forEach((r, i) => T(s, r, { x: 0.75, y: 1.75 + i * 0.52, w: 11.8, h: 0.5, fontSize: 12, color: C.GRAY }));
 notes(s, "Bibliography", 0, "Appendix — not presented. References in APA style.");
 
 /* ---------------- write deck + speaker script ---------------- */

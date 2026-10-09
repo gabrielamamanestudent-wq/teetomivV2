@@ -3,11 +3,11 @@
 Night Signal - sleep position analysis  (upgrade #3)
 ====================================================
 
-Uses the accelerometer to work out which way the body was facing all night,
-then tests the hypothesis: do apnea events happen more often on the back?
-
-For each body position it reports the apnea rate (events per hour) — the same
-kind of number a sleep doctor uses — so you can see if position matters.
+EXPLORATORY (not part of the main research question).
+Uses the accelerometer to estimate body position, then reports how many oxygen
+DESATURATION events happened per hour of VALID recording in each position.
+Position is only meaningful if the motion sensor is worn on the chest; on the
+forearm it mostly reflects arm angle. This does not measure sleep apnea.
 
 USAGE
 -----
@@ -52,17 +52,14 @@ def classify(ax, ay, az):
 
 
 def position_stats(csv_path):
-    """Hours, apnea events and events/hour for each sleeping position."""
-    raw = pd.read_csv(csv_path)
-    if "ax" not in raw.columns:
+    """Valid hours, desaturation events and events per valid hour for each position."""
+    if "ax" not in pd.read_csv(csv_path, nrows=1).columns:
         return None
-    raw["timestamp"] = pd.to_datetime(raw["timestamp"])
-    raw["position"] = [classify(a, b, c)
-                       for a, b, c in zip(raw["ax"], raw["ay"], raw["az"])]
-    hours = raw["position"].value_counts() / 3600.0   # rows are ~1 second apart
-    df = analyze.load(csv_path)
+    df = analyze.load(csv_path)                       # valid samples only (same as the event detector)
+    df["position"] = [classify(a, b, c) for a, b, c in zip(df["ax"], df["ay"], df["az"])]
+    hours = df["position"].value_counts() / 3600.0    # valid samples are ~1 second apart
     events = analyze.find_events(df, drop=3.0, min_seconds=10.0, baseline_seconds=120.0)
-    pos_by_time = raw.set_index("timestamp")["position"]
+    pos_by_time = df.set_index("timestamp")["position"]
     ev_positions = []
     for ev in events:
         idx = pos_by_time.index.get_indexer([ev["start_time"]], method="nearest")[0]
@@ -88,9 +85,11 @@ def main():
 
     # Build the results table: events per hour in each position.
     print("\n" + "=" * 56)
-    print("  SLEEP POSITION vs APNEA")
+    print("  BODY POSITION vs DESATURATION EVENTS (exploratory)")
+    if analyze.is_demo(csv_path):
+        print("  *** DEMONSTRATION DATA (simulated) ***")
     print("=" * 56)
-    print(f"  {'Position':<10}{'Hours':>8}{'Events':>9}{'Events/hr':>12}")
+    print(f"  {'Position':<10}{'Valid h':>8}{'Events':>9}{'Per valid h':>12}")
     print("  " + "-" * 39)
     rates = {}
     for p in ORDER:
@@ -104,9 +103,10 @@ def main():
     back = rates.get("Back", 0)
     others = [rates[p] for p in ORDER if p != "Back" and rates[p] > 0]
     if back > 0 and others and back > max(others):
-        print("  -> Apnea happened MOST on the back. Hypothesis supported.")
+        print("  -> The highest desaturation-event rate was on the back (descriptive only).")
     elif back > 0 and others:
-        print("  -> The back was not the worst position here.")
+        print("  -> The back did not have the highest desaturation-event rate here.")
+    print("  Few hours per position = large uncertainty. Not a sleep-apnea measurement.")
     print("=" * 56 + "\n")
 
     # Bar chart: the back is highlighted, the other positions are muted.
@@ -118,10 +118,11 @@ def main():
     for i, v in enumerate(vals):
         ax.text(i, v + top * 0.03, f"{v:.1f}", ha="center", fontsize=14, fontweight="bold",
                 color=cs.PINK if ps[i] == "Back" else cs.INK)
-    cs.title(ax, "Apnea events per hour, by position", "The most events happened on the back")
+    cs.title(ax, "Desaturation events by position", "Events per hour of valid recording in each position (exploratory)",
+             demo=analyze.is_demo(csv_path))
     ax.set_ylim(0, top * 1.18)
     ax.tick_params(axis="x", labelsize=12.5, colors=cs.INK)
-    ax.set_ylabel("Events per hour")
+    ax.set_ylabel("Events per valid hour")
     fig.tight_layout()
     out = csv_path.rsplit(".", 1)[0] + "_position.png"
     fig.savefig(out, dpi=180)

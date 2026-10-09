@@ -3,13 +3,17 @@
 Night Signal - fake-night generator (advanced)
 ==============================================
 
-Makes a realistic night of data in the same format record.py produces —
-now including body position (accelerometer) — plus a separate "reference
-oximeter" file so you can test the accuracy-validation code too.
+Makes a SIMULATED night of DEMONSTRATION DATA in the same format record.py
+produces (including body position), plus a "reference oximeter" file and an
+event-label file, so the analysis code can be tested before real data exists.
 
-It even bakes in the sleep-position effect: apnea events happen MORE often
-when the sleeper is on their back, so position.py and the analysis have a
-real pattern to find.
+Everything in these files is invented by this program:
+  - the oxygen dips are placed here on purpose (more often while "on the back",
+    an assumption built into the demo, not a finding)
+  - the "reference" readings are the same invented truth plus a little noise,
+    so accuracy numbers from demo files only show that the code runs; they say
+    nothing about how accurate the real device is.
+Output names start with "demo" so every script labels them as demonstration data.
 
 USAGE
 -----
@@ -62,8 +66,8 @@ def main():
     ap.add_argument("--events", type=int, default=18)
     ap.add_argument("--out", default="demo_night.csv")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--profile", choices=["apnea", "heart", "asthma"], default="apnea",
-                    help="apnea (default), or a spin-off night: heart / asthma")
+    ap.add_argument("--profile", choices=["desat", "apnea", "heart", "asthma"], default="desat",
+                    help="desat (default; 'apnea' is an old alias), or an exploratory night: heart / asthma")
     ap.add_argument("--start", default="23:00", help="clock time the night starts")
     args = ap.parse_args()
 
@@ -90,7 +94,7 @@ def main():
     positions = build_position_timeline(total_s)
     is_back = positions == "back"
 
-    # Place apnea events, biased toward times when the sleeper is on their back.
+    # Place simulated desaturation dips, biased toward "back" time (a demo assumption).
     weights = np.where(is_back, 3.0, 1.0)
     weights[:60] = 0            # not in the first minute
     weights[-60:] = 0
@@ -112,7 +116,7 @@ def main():
         event_intervals.append((t, min(t + dur, total_s - 1)))
     event_intervals.sort()
 
-    # ---- spin-off nights (the default apnea night is left untouched) ----
+    # ---- exploratory nights (the default night is left untouched) ----
     cough = np.zeros(total_s)            # extra jolts added to the motion sensor
     if args.profile == "heart":
         # a racing-heart episode (tachycardia), a very slow stretch (bradycardia)
@@ -157,14 +161,14 @@ def main():
     ref_out = args.out.rsplit(".", 1)[0] + "_reference.csv"
     with open(ref_out, "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["timestamp", "ref_spo2"])
+        w.writerow(["timestamp", "ref_spo2", "ref_hr"])
         for i in range(0, total_s, 120):
             ts = (start + dt.timedelta(seconds=i)).isoformat(timespec="seconds")
             ref = int(np.clip(round(true_spo2[i] + random.gauss(0, 0.3)), 70, 100))
-            w.writerow([ts, ref])
+            w.writerow([ts, ref, int(round(hr[i] + random.gauss(0, 1.0)))])
 
-    # Write ground-truth event labels. In a real project this is your
-    # "breath-hold log" — the times you know an event happened.
+    # Write the simulated event labels. In the real project (only if approved) the
+    # closest equivalent is the log of supervised, awake breath-hold times.
     labels_out = args.out.rsplit(".", 1)[0] + "_labels.csv"
     with open(labels_out, "w", newline="") as f:
         w = csv.writer(f)
@@ -175,7 +179,9 @@ def main():
             w.writerow([ts0, ts1])
 
     n_back = int(is_back.sum())
-    print(f"Wrote {total_s} rows and {args.events} events to {args.out}")
+    if not __import__("os").path.basename(args.out).lower().startswith("demo"):
+        print("WARNING: name simulated files demo_*.csv so they are labelled as demonstration data.")
+    print(f"DEMONSTRATION DATA: wrote {total_s} simulated rows and {args.events} simulated dips to {args.out}")
     print(f"  ({100*n_back/total_s:.0f}% of the night on the back)")
     print(f"Wrote reference oximeter spot-readings to {ref_out}")
     print(f"Wrote {len(event_intervals)} ground-truth event labels to {labels_out}")

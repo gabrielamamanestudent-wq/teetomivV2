@@ -5,74 +5,74 @@ Target: 8 min 40 s spoken (limit 7–10 min) + 3 min questions.
 | # | Slide | Time | Running |
 |---|---|---|---|
 | 1 | Title | 15 s | 0:15 |
-| 2 | Purpose & hypothesis | 40 s | 0:55 |
-| 3 | Scientific background | 50 s | 1:45 |
-| 4 | Design | 40 s | 2:25 |
-| 5 | How it works | 35 s | 3:00 |
-| 6 | Protocol | 45 s | 3:45 |
-| 7 | The app | 35 s | 4:20 |
-| 8 | Results summary | 40 s | 5:00 |
-| 9 | Results: detection + accuracy | 35 s | 5:35 |
-| 10 | Results: position + ML | 30 s | 6:05 |
-| 11 | Analysis: interpretation | 45 s | 6:50 |
-| 12 | Analysis: sources of error | 35 s | 7:25 |
-| 13 | Spin-offs | 40 s | 8:05 |
-| 14 | Conclusion | 35 s | 8:40 |
+| 2 | Purpose & hypothesis | 45 s | 1:00 |
+| 3 | Scientific background | 50 s | 1:50 |
+| 4 | Design | 40 s | 2:30 |
+| 5 | How it works | 35 s | 3:05 |
+| 6 | Protocol | 50 s | 3:55 |
+| 7 | The app | 30 s | 4:25 |
+| 8 | Results table | 40 s | 5:05 |
+| 9 | Demonstration charts | 30 s | 5:35 |
+| 10 | Signal quality | 35 s | 6:10 |
+| 11 | Analysis: interpretation | 45 s | 6:55 |
+| 12 | Sources of error | 40 s | 7:35 |
+| 13 | Status | 35 s | 8:10 |
+| 14 | Conclusion | 30 s | 8:40 |
 
 ## 1. Title  (15 s)
 
-Hi, I’m Gabriel. My project is Night Signal: a wearable I designed that watches your blood oxygen while you sleep to catch sleep apnea — and it turns out the same sensor can screen the heart and breathing too.
+Good morning. My name is Gabriel Mamane. My project, Night Signal, asks how accurately a low-cost wearable can measure blood oxygen and heart rate, and whether software can flag drops in oxygen. It is not a test for sleep apnea.
 
-## 2. Purpose & hypothesis  (40 s)
+## 2. Purpose & hypothesis  (45 s)
 
-My question: can a low-cost wearable catch sleep apnea? My hypothesis: if each breathing pause makes oxygen dip, a fingertip sensor reading once per second will see the dips, and software can count them per hour — the AHI doctors use. What I change is breath-hold length and sleeping position; what I measure is events, the AHI, and how closely my device agrees with a real oximeter.
+My question is how closely my wearable's oxygen and heart-rate readings agree with a Health Canada-authorized fingertip oximeter, and whether software can reliably flag oxygen desaturation events. My hypothesis is that, when it is worn properly and only good-quality readings are used, it will agree within about three percentage points, because both devices measure how blood absorbs red and infrared light. What I change is the measuring device and the test condition; what I measure is the difference between the two devices, the events flagged, and how much of the signal is valid.
 
 ## 3. Scientific background  (50 s)
 
-Sleep apnea is when the airway collapses during sleep and breathing stops for ten seconds or more, over and over. About 936 million adults have it, and most don't know. Every pause drops blood oxygen. A pulse oximeter measures that by shining red and infrared light through the fingertip — oxygen-rich blood absorbs the two colours differently. Doctors count the events per hour — the AHI — and grade it from normal to severe. The problem: the standard test is an overnight lab study that costs thousands.
+A pulse oximeter shines red and infrared light through the fingertip; oxygen-rich and oxygen-poor blood absorb them differently, which gives the oxygen saturation, SpO2. A desaturation is a short drop in SpO2, and sleep studies count drops of three percent or more, but only together with other signals. Sleep apnea is diagnosed with a sleep study that measures airflow, breathing effort and sleep itself. My device measures only oxygen and heart rate, so it cannot tell an apnea from other causes of a dip, and it would miss apneas that cause little or no drop. That is why my project is about measurement accuracy and oxygen dips, not about diagnosing sleep apnea.
 
 ## 4. Design  (40 s)
 
-Here's the design. My working prototype, version 1, is built to be simple and reliable: the ESP32 sits in a running armband, each sensor plugs into its own pins with no soldered splices, and a USB cable powers it all night. A velcro finger clip holds the MAX30102 oxygen sensor. The 3D model shows version 2 — a 70 by 45 millimetre sealed case with its own battery on a velcro strap. On the right is the exploded view with every part at its real size; you can spin the interactive version with this QR code.
+This is the design. The first prototype keeps things simple: an ESP32 board in a running armband, a MAX30102 sensor in a velcro finger cuff, and a USB cable for power, with every wire plugged in. It reads oxygen and heart rate once per second. The 3D model shows a possible later version in a sealed case. The prototype has not been built yet; the parts list and build guide are ready.
 
 ## 5. How it works  (35 s)
 
-The data path: the finger sensor's light readings go to the ESP32, which calculates oxygen and pulse and reads body position, then sends one line per second over Bluetooth or USB to my app and analysis code. To make sure it's really working, I built a self-test: every recording starts with a device check that has to say READY — and when I tested with a broken motion sensor, it correctly said NOT READY.
+The finger sensor's light readings go to the ESP32, which calculates oxygen and pulse once per second and sends each reading over Bluetooth or USB to my app and analysis code. Every session will start with a device check that must say READY. So far I have tested this check only on a simulated device, where it also correctly reported a broken sensor; it still has to be tested on the real hardware.
 
-## 6. Protocol  (45 s)
+## 6. Protocol  (50 s)
 
-My key manipulations: one, a device check before every session. Two, an accuracy test — I wear my device and a store-bought oximeter at the same time and compare. Three, a detection test: supervised, awake breath-holds of 10, 15 and 20 seconds — I know exactly when they happened, so I can score my software. Four, a full-night power test — eight hours with no gaps. Five, full recorded nights. Safety first: breath-holds only while awake and supervised, with consent and ethics approval.
+This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher approves the revised scope, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.
 
-## 7. The app  (35 s)
+## 7. The app  (30 s)
 
-This is my companion app. On the Live tab it connects directly to the wearable and shows oxygen, heart rate and position every second, with health checks running the whole time. Saving a session gives the exact CSV my analysis uses, so every number is traceable. Scan the code to try it — there's a demo device built in.
+This is my companion app. The Night tab shows the oxygen chart, the desaturation events it flagged, the event rate per hour of valid recording and how much of the signal was valid. The Live tab connects to the wearable and runs the device checks. Everything you see so far is clearly labelled demonstration data.
 
-## 8. Results summary  (40 s)
+## 8. Results table  (40 s)
 
-Here's the summary. Over a seven-hour night, the software found 19 events — an AHI of 2.7, which is in the normal range. Oxygen averaged 97.5% and dropped to 84% at the lowest. Against a reference oximeter, my device was within about half a percent. The detector caught 63% of known events with zero false alarms. And events were about three times more frequent on the back than on the sides.
+These are the results I will collect. I have not collected any real data yet. The table shows each measure, how it is calculated, and a demonstration value from simulated data, which only proves that my analysis code runs; they are not findings. The event rate is the number of desaturation events divided by the hours of valid signal, not hours in bed, and it is not an apnea-hypopnea index. The last column will be filled in with real results before January eleventh.
 
-## 9. Results: detection + accuracy  (35 s)
+## 9. Demonstration charts  (30 s)
 
-On the left, a whole night of oxygen — every red band is an event my code found on its own. On the right is a Bland–Altman plot, the standard way medical papers compare two devices: the average difference is almost zero, and 95% of my readings fall within about one and a half percent of the reference.
+These two charts show how the results will be presented, using simulated data. On the left, the oxygen line with each flagged desaturation event as a red band. On the right, a Bland-Altman chart, the standard way to compare two measuring devices: each dot is a pair of readings, and the dashed lines show the range that ninety-five percent of differences fall in. With real data, that range is what tests my hypothesis.
 
-## 10. Results: position + ML  (30 s)
+## 10. Signal quality  (35 s)
 
-Two more results. Events happened most on the back — 3.8 per hour versus about 1 on the sides. And I compared my simple rule with a machine-learning model: on new data, both caught the same share of events, but the rule had no false alarms, so for now the simpler method wins.
+Only good readings count. A reading is used only if a finger is on the sensor, the sensor marks it valid, it is in a believable range, and there was no sudden movement within five seconds. The event rate is the number of flagged events divided by the hours of valid signal. It is not per hour of sleep, because my device cannot measure sleep, and every report states how much of the signal was valid.
 
 ## 11. Analysis: interpretation  (45 s)
 
-What does it mean? First, accuracy within about one and a half percent is in the same range as store-bought oximeters, so the dips are real. Second, the detector is cautious — no false alarms but it misses shallow events, so my AHI is probably an underestimate, which is the safer mistake for a screening tool. Third, the back-sleeping result matches what doctors call positional sleep apnea. And fourth, machine learning didn't win yet because it only had one night to learn from — more data matters more than fancier code.
+This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.
 
-## 12. Analysis: sources of error  (35 s)
+## 12. Sources of error  (40 s)
 
-Sources of error: movement, finger pressure and cold hands can distort the light signal; the four-second averaging can blur very short dips; even the reference oximeter is only plus or minus two percent. On the method side, awake breath-holds aren't identical to real apnea, I only measure oxygen — not airflow or brain waves like a sleep lab — and one person isn't enough to generalize. I also caught an engineering problem: Bluetooth draws about 100 milliamps, so a small 500 milliamp-hour battery would last only four to five hours. That's why version 1 runs on USB power all night, and version 2 needs a bigger battery or Bluetooth Low Energy.
+Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is only accurate to about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.
 
-## 13. Spin-offs  (40 s)
+## 13. Status  (35 s)
 
-The same hardware opened two spin-offs. Heart: it flags racing, very slow and irregular-rhythm episodes. Asthma: night-time asthma often gets worse around 4 a.m., and my code tracks breathing rate from the heart's rhythm plus coughs from sudden jolts of the motion sensor — here it caught breathing climbing from 13 to 22 breaths a minute. These are screening ideas, not diagnoses.
+To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. Still pending are my teacher's approval of the revised scope, ethics approval and consent, building the prototype, and all of the real measurements.
 
-## 14. Conclusion  (35 s)
+## 14. Conclusion  (30 s)
 
-Back to my hypothesis: so far it's supported — a low-cost wearable measured oxygen within about half a percent of a reference, found apnea events by itself, scored the night, and showed back-sleeping triples events. Next I'd test more people and nights, add an airflow sensor, fix the battery life, and shrink it into a ring to compare against a real sleep lab. Thank you — I'm happy to take questions.
+I do not have a conclusion yet, because no real data has been collected. After the accuracy sessions, this project will show how closely the wearable agrees with a reference oximeter at rest, how much of a recording gives a valid signal, and, if approved, whether flagged dips match logged ones. It cannot show whether anyone has sleep apnea. Thank you; I am happy to take questions.
 
 ## Appendix slides (A–D) and bibliography are in the deck but not presented.

@@ -6,13 +6,15 @@ Night Signal - signal processing  (upgrade #4)
 Pulls two extra measurements out of the SAME sensor data, without any new
 hardware:
 
-  1. Breathing rate  - the heart speeds up and slows slightly with every
-     breath (respiratory sinus arrhythmia). We find that rhythm in the
-     heart-rate signal with a Fourier transform and turn it into breaths/min.
+  1. Estimated breathing rate - the heart speeds up and slows slightly with
+     every breath (respiratory sinus arrhythmia). We look for that rhythm in
+     the heart-rate signal with a Fourier transform. This is an ESTIMATE that
+     has not been checked against a real breathing measurement.
 
   2. Heart-rate variability (HRV) - how much the time between beats varies.
-     Higher HRV is generally a sign of a relaxed, healthy heart. We report
-     SDNN and RMSSD, the two most common HRV numbers.
+     We report SDNN and RMSSD. Note: they are computed from the sensor's
+     1-per-second heart-rate values, not from true beat-to-beat intervals,
+     so they are rough approximations only.
 
 USAGE
 -----

@@ -40,13 +40,13 @@ from train_model import compare_detectors  # noqa: E402
 from validate import agreement          # noqa: E402
 
 GALLERY = [  # (file in --images, title, caption)
-    ("3d_assembled.png", "3D design — assembled", "Sensor case on the velcro strap, cable to the finger clip"),
-    ("3d_exploded.png", "3D design — exploded", "Every part inside the case, at its real size"),
-    ("oxygen.png", "Oxygen through the night", "Apnea events found automatically (red bands)"),
-    ("validation.png", "Accuracy test", "Bland–Altman: device vs reference oximeter"),
-    ("position.png", "Sleep position result", "Apnea events per hour in each position"),
-    ("heart.png", "Heart spin-off", "Racing, very slow and irregular heart episodes"),
-    ("asthma.png", "Asthma spin-off", "Breathing rate rises toward morning, with coughing"),
+    ("3d_assembled.png", "3D design (v2 concept)", "Planned sealed case on a velcro strap, cable to the finger clip"),
+    ("3d_exploded.png", "3D design — exploded", "Every planned part at its real size"),
+    ("oxygen.png", "Demonstration: oxygen chart", "Simulated data · red bands = flagged desaturation events"),
+    ("validation.png", "Demonstration: agreement chart", "Simulated data · how the reference comparison will be shown"),
+    ("position.png", "Demonstration: position (exploratory)", "Simulated data · events per hour of valid recording"),
+    ("heart.png", "Exploratory idea: heart rate", "Simulated data · not part of the tested project"),
+    ("asthma.png", "Exploratory idea: breathing rate", "Simulated data · not part of the tested project"),
 ]
 
 
@@ -77,8 +77,8 @@ def per_minute(values, times):
 def night_summary(path):
     df = analyze.load(path)
     events = analyze.find_events(df, 3.0, 10.0, 120.0)
+    rate = analyze.event_rate(df, events)
     t0 = df["timestamp"].iloc[0]
-    hours = df["elapsed_s"].iloc[-1] / 3600
     raw = pd.read_csv(path)
     raw["timestamp"] = pd.to_datetime(raw["timestamp"])
     hrv_rows = raw[raw["hr_valid"] == 1]
@@ -91,7 +91,8 @@ def night_summary(path):
     return {
         "date": t0.strftime("%A %d %B %Y").replace(" 0", " "),
         "start": t0.strftime("%H:%M"), "end": df["timestamp"].iloc[-1].strftime("%H:%M"),
-        "hours": round(hours, 2), "ahi": round(len(events) / hours, 2), "events_count": len(events),
+        "hours": round(rate["total_hours"], 2), "valid_hours": round(rate["valid_hours"], 2),
+        "valid_pct": round(rate["valid_pct"], 1), "rate": round(rate["rate"], 2), "events_count": len(events),
         "avg_spo2": round(float(df["spo2"].mean()), 2), "low_spo2": int(df["spo2"].min()),
         "avg_hr": round(float(hr.mean()), 1), "low_hr": int(hr.min()),
         "breathing": round(float(np.median(br)), 1) if br else None,
@@ -112,7 +113,7 @@ def heart_summary(path):
     for kind, label in (("fast", "racing"), ("slow", "slow"), ("irregular", "irregular")):
         for a, b in r[kind]:
             seg = r["hr"][a:b + 1]
-            name = {"racing": "Racing heart", "slow": "Very slow heart", "irregular": "Irregular rhythm"}[label]
+            name = {"racing": "Fast heart rate", "slow": "Very slow heart rate", "irregular": "Unsteady rate"}[label]
             eps.append({"type": label, "a": mins(a), "b": mins(b),
                         "label": f"{name} · {(r['t'][b] - r['t'][a]) / 60:.1f} min · {int(seg.min())}–{int(seg.max())} bpm",
                         "when": d["timestamp"].iloc[a].strftime("%H:%M")})
@@ -137,25 +138,25 @@ def asthma_summary(path):
 
 
 PROGRESS = [
-    {"date": "Sep 2026", "title": "Idea, plan and first code", "detail": "Wearable oxygen + heart-rate monitor; analysis software written and tested on simulated nights.", "status": "done", "label": "Done"},
-    {"date": "Sep 25", "title": "Proposal submitted", "detail": "Experimental project · Health and Medical Sciences.", "status": "done", "label": "Done"},
-    {"date": "Sep–Oct", "title": "Advanced analyses + spin-offs", "detail": "Accuracy test, sleep position, breathing/HRV, machine learning, heart and asthma screening.", "status": "done", "label": "Done"},
-    {"date": "Oct", "title": "3D design, firmware v3 and app", "detail": "Exploded 3D model with real part sizes; device self-test; this app with live connection.", "status": "done", "label": "Done"},
-    {"date": "Oct 13", "title": "Ethics committee forms", "detail": "Human-subject project — submit the pre-questionnaire on the Technoscience site.", "status": "next", "label": "Due"},
-    {"date": "Oct", "title": "Order parts and build the prototype", "detail": "Plug in the wires, flash firmware v3.1, pass check_device.py, photograph each step.", "status": "next", "label": "Next"},
-    {"date": "Oct–Dec", "title": "Validation + recorded nights", "detail": "Reference-oximeter test, full-night power test, supervised breath-hold tests, full nights.", "status": "todo", "label": "To do"},
-    {"date": "Jan 11", "title": "Final slides for correction", "detail": "Replace example data with real results.", "status": "todo", "label": "To do"},
+    {"date": "Sep 2026", "title": "Idea, plan and first code", "detail": "Wearable SpO₂ + heart-rate monitor designed; analysis software written and tested on SIMULATED data only.", "status": "done", "label": "Done"},
+    {"date": "Sep 25", "title": "Original proposal submitted", "detail": "Experimental project · Health and Medical Sciences.", "status": "done", "label": "Done"},
+    {"date": "Oct", "title": "Scope revised after Ms. Ireland's questions", "detail": "Focus on measurement accuracy and oxygen desaturation detection; no sleep-apnea diagnosis. Approval of the revised scope is pending.", "status": "next", "label": "Pending"},
+    {"date": "Oct", "title": "Software, 3D design and app", "detail": "Firmware written (not yet run on hardware); analysis, simulator, app and 3D model done.", "status": "done", "label": "Done"},
+    {"date": "Oct 13", "title": "Ethics committee forms", "detail": "Human-subject project: the student is the participant. No testing before approval and signed consent.", "status": "next", "label": "Due"},
+    {"date": "Oct", "title": "Order parts and build the prototype", "detail": "Not started yet. Then flash the firmware and pass check_device.py.", "status": "todo", "label": "To do"},
+    {"date": "Oct–Dec", "title": "Data collection (after approval)", "detail": "Seated accuracy sessions against the reference oximeter; overnight recordings for signal quality; optional breath-hold test only if approved.", "status": "todo", "label": "To do"},
+    {"date": "Jan 11", "title": "Final slides for correction", "detail": "Replace the demonstration data with real results.", "status": "todo", "label": "To do"},
     {"date": "Jan 18–22", "title": "Class presentation", "detail": "7–10 minutes + 3 minutes of questions.", "status": "todo", "label": "To do"},
 ]
 
 PROTOCOL = [
     ("Device check", "run check_device.py before every session; all checks must pass (data at 1/s, self-test OK, finger on, values believable)."),
-    ("Full-night power test", "on USB power, stream with a finger on the sensor for 8 hours and confirm there are no gaps in the data."),
-    ("Accuracy test", "while seated and awake, read a store-bought fingertip oximeter every 2 minutes for 30 minutes alongside the wearable; analyse with validate.py (Bland–Altman)."),
-    ("Detection test", "supervised, awake breath-holds of 10, 15 and 20 s (5 of each, logged by time) — the known events used to score the rule and the machine-learning detector."),
-    ("Recorded nights", "at least 5 nights; armband on the forearm, cuff on the index finger; log bedtime and sleeping position notes."),
-    ("Analysis", "analyze.py (events, AHI), signals.py, position.py, train_model.py, heart.py and asthma.py on every night."),
-    ("Safety", "never hold breath while asleep; stop if dizzy; parent/guardian consent and ethics approval before testing on anyone."),
+    ("Approvals first", "no testing on anyone (including myself) until Ms. Ireland approves the revised scope, the ethics committee approves, and consent is signed."),
+    ("Accuracy sessions (main test)", "seated and awake; wearable on one index finger, reference oximeter on the other hand; record both SpO₂ and heart rate every 2 minutes for 30 minutes; repeat on several days; analyse with validate.py (bias, 95% limits of agreement)."),
+    ("Signal-quality checks", "finger on sensor, sensor-valid flag, believable range, and movement exclusion; report the % of valid data for every session."),
+    ("Overnight recordings", "if approved: wear the device during normal sleep to measure signal quality and the desaturation-event rate per hour of valid recording. The reference cannot record overnight, so these events cannot be verified."),
+    ("Optional breath-hold test", "only if approved: short supervised awake breath-holds to see whether induced dips are flagged at the logged times. This does not validate sleep-apnea detection."),
+    ("Analysis", "analyze.py (desaturation events per valid hour), validate.py; position, heart and breathing scripts are exploratory only."),
 ]
 
 PARTS = [

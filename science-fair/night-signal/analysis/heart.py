@@ -4,14 +4,15 @@ Night Signal - HEART spin-off
 =============================
 
 The same fingertip sensor that watches oxygen also tracks the heart all night.
-This script screens a recording for heart patterns worth mentioning to a
-doctor:
+EXPLORATORY idea, not part of the tested project: this script looks for heart-rate
+patterns in a recording (shown so far only on simulated demonstration data):
 
   - Resting heart rate (lowest steady 10-minute stretch)
-  - Racing heart (tachycardia): above 100 bpm for at least 1 minute
-  - Very slow heart (bradycardia): below 40 bpm for at least 1 minute
-  - Irregular rhythm: minutes where the beat rate jumps around much more
-    than normal from second to second
+  - Fast heart-rate stretches: above 100 bpm for at least 1 minute
+  - Very slow heart-rate stretches: below 40 bpm for at least 1 minute
+  - Unsteady heart-rate stretches: minutes where the 1-per-second rate jumps
+    around much more than usual (often movement noise; this cannot identify an
+    arrhythmia)
   - Heart-rate variability (SDNN, RMSSD)
 
 USAGE
@@ -19,7 +20,7 @@ USAGE
     python simulate.py --profile heart --out heart_night.csv
     python heart.py heart_night.csv
 
-Screening concept only — real arrhythmia diagnosis (for example atrial
+Exploratory concept only — real arrhythmia diagnosis (for example atrial
 fibrillation) needs beat-by-beat ECG. Not a medical device.
 """
 
@@ -34,6 +35,7 @@ import matplotlib.dates as mdates
 from matplotlib.patches import Patch
 
 from signals import hrv
+from analyze import is_demo as analyze_demo
 import chart_style as cs
 cs.apply()
 
@@ -92,18 +94,19 @@ def plot(r, out_png):
     ax.axhline(FAST, color=cs.RED, ls=(0, (4, 4)), lw=1.1)
     ax.axhline(SLOW, color=cs.BLUE, ls=(0, (4, 4)), lw=1.1)
     ax.axhline(r["resting"], color=cs.GRAY, ls=":", lw=1.2)
-    cs.end_label(ax, FAST, "100 racing", cs.RED)
+    cs.end_label(ax, FAST, "100 fast", cs.RED)
     cs.end_label(ax, SLOW, "40 very slow", cs.BLUE)
     cs.end_label(ax, r["resting"], f"{r['resting']:.0f} resting", cs.GRAY)
     ax.set_ylim(25, 135)
     ax.set_ylabel("Heart rate (bpm)")
     ax.margins(x=0)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.legend(handles=[Patch(color=cs.RED, alpha=.3, label="Racing"),
+    ax.legend(handles=[Patch(color=cs.RED, alpha=.3, label="Fast (>100)"),
                        Patch(color=cs.BLUE, alpha=.3, label="Very slow"),
-                       Patch(color=cs.ORANGE, alpha=.35, label="Irregular")],
+                       Patch(color=cs.ORANGE, alpha=.35, label="Unsteady rate")],
               loc="upper left", ncol=3, handlelength=1.2, columnspacing=1.4)
-    cs.title(ax, "Heart rate through the night", "Heart spin-off: the same sensor flags unusual episodes")
+    cs.title(ax, "Heart rate through the night", "Exploratory idea: heart-rate patterns from the same sensor",
+             demo=analyze_demo(out_png))
     fig.tight_layout()
     fig.savefig(out_png, dpi=180)
     print(f"Saved chart -> {out_png}")
@@ -117,16 +120,19 @@ def main():
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     r = analyze_heart(df)
     print("\n" + "=" * 56)
-    print("  NIGHT SIGNAL - HEART SPIN-OFF")
+    print("  NIGHT SIGNAL - HEART-RATE PATTERNS (exploratory)")
+    if analyze_demo(path):
+        print("  *** DEMONSTRATION DATA (simulated) ***")
     print("=" * 56)
     print(f"  Resting heart rate    : {r['resting']:.0f} bpm")
     print(f"  Range (smoothed)      : {r['smooth'].min():.0f}-{r['smooth'].max():.0f} bpm")
     print(f"  HRV  SDNN / RMSSD     : {r['sdnn']:.0f} / {r['rmssd']:.0f} ms")
-    print(f"  Racing-heart episodes : {len(r['fast'])}");     describe(r, r["fast"], "racing")
+    print(f"  Fast-rate stretches   : {len(r['fast'])}");     describe(r, r["fast"], "fast")
     print(f"  Very-slow episodes    : {len(r['slow'])}");     describe(r, r["slow"], "slow")
-    print(f"  Irregular-rhythm      : {len(r['irregular'])}"); describe(r, r["irregular"], "irregular")
+    print(f"  Unsteady-rate stretches: {len(r['irregular'])}"); describe(r, r["irregular"], "unsteady")
     print("=" * 56)
-    print("  Screening only — see a doctor about any repeated pattern.")
+    print("  Exploratory only. Per-second optical heart rate cannot identify arrhythmias;")
+    print("  HRV values are approximate. Not a diagnosis.")
     print("=" * 56 + "\n")
     plot(r, path.rsplit(".", 1)[0] + "_heart.png")
 

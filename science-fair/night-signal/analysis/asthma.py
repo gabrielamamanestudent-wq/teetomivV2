@@ -3,14 +3,14 @@
 Night Signal - ASTHMA spin-off
 ==============================
 
-Night-time asthma often gets worse in the early morning (around 4 a.m.):
-breathing speeds up, oxygen dips a little, and people cough. The wearable
-already measures the signals needed to watch for that:
+EXPLORATORY idea, not part of the tested project (shown so far only on
+simulated demonstration data). Night-time asthma often gets worse in the early
+morning; this script estimates signals that might be related:
 
   - Breathing rate, every 5 minutes (from the heart-rate rhythm, see signals.py)
   - Fast-breathing periods: above 20 breaths/min, or 25% above the person's
     own baseline
-  - Oxygen dips per hour (ODI): drops of 3% or more
+  - Oxygen desaturation events per hour of valid recording (3-point drops)
   - Cough-like jolts picked up by the motion sensor
   - Early-morning check: is the last part of the night worse than the start?
 
@@ -19,7 +19,7 @@ USAGE
     python simulate.py --profile asthma --out asthma_night.csv
     python asthma.py asthma_night.csv
 
-Screening concept only. Real asthma monitoring would add a microphone for
+Exploratory concept only. Real asthma monitoring would add a microphone for
 wheeze and cough sounds. Not a medical device.
 """
 
@@ -64,10 +64,10 @@ def analyze_asthma(path):
     q = int(len(rates) * 0.75)
     late, early = float(np.median(rates[q:])), float(np.median(rates[:q]))
 
-    # oxygen dips per hour (ODI)
+    # oxygen desaturation events per hour of VALID recording
     df = analyze.load(path)
     dips = analyze.find_events(df, drop=3.0, min_seconds=10.0, baseline_seconds=120.0)
-    hours = df["elapsed_s"].iloc[-1] / 3600
+    hours = df.attrs["valid_s"] / 3600
     odi = len(dips) / hours
 
     # cough-like jolts from the motion sensor (merge jolts within 5 s)
@@ -99,7 +99,8 @@ def plot(r, out_png):
     ax.set_ylabel("Breaths per minute")
     ax.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    cs.title(ax, "Breathing rate through the night", "Asthma spin-off: breathing speeds up in the early morning")
+    cs.title(ax, "Estimated breathing rate", "Exploratory idea: breathing rate estimated from heart-rate rhythm",
+             demo=analyze.is_demo(out_png))
     fig.tight_layout()
     fig.savefig(out_png, dpi=180)
     print(f"Saved chart -> {out_png}")
@@ -112,18 +113,20 @@ def main():
     r = analyze_asthma(path)
     fast_min = int(r["fast"].sum() * WIN / 60)
     print("\n" + "=" * 56)
-    print("  NIGHT SIGNAL - ASTHMA SPIN-OFF")
+    print("  NIGHT SIGNAL - BREATHING-RATE ESTIMATE (exploratory)")
+    if analyze.is_demo(path):
+        print("  *** DEMONSTRATION DATA (simulated) ***")
     print("=" * 56)
-    print(f"  Normal breathing rate    : {r['baseline']:.1f} /min")
+    print(f"  Baseline (estimated)     : {r['baseline']:.1f} breaths/min")
     print(f"  Fast-breathing time      : {fast_min} min  (> {r['limit']:.0f}/min)")
     print(f"  Early-morning breathing  : {r['late']:.1f} /min  vs {r['early']:.1f} earlier")
-    print(f"  Oxygen dips per hour     : {r['odi']:.1f}  ({r['dips']} dips of 3%+)")
+    print(f"  Desaturation events      : {r['dips']}  ({r['odi']:.1f} per valid hour)")
     print(f"  Cough-like jolts         : {len(r['coughs'])}  ({len(r['coughs']) / r['hours']:.1f}/h)")
     worse = r["late"] > r["early"] * 1.2
-    print("  -> Breathing got WORSE toward morning (classic night-time asthma pattern)."
-          if worse else "  -> No early-morning worsening found.")
+    print("  -> Estimated breathing rate was higher late in the recording (descriptive only)."
+          if worse else "  -> No late-recording rise in estimated breathing rate.")
     print("=" * 56)
-    print("  Screening only — not a diagnosis.")
+    print("  Exploratory only: breathing rate is estimated, not measured; this cannot detect asthma.")
     print("=" * 56 + "\n")
     plot(r, path.rsplit(".", 1)[0] + "_asthma.png")
 

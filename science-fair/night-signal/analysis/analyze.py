@@ -1,27 +1,43 @@
 #!/usr/bin/env python3
 """
-Night Signal - apnea-event detector and night report
-=====================================================
+Night Signal - oxygen desaturation detector and recording report
+================================================================
 
-Reads a CSV recorded by record.py, finds oxygen-desaturation events (the
-signature of sleep apnea), estimates an AHI-style score, classifies the
-night, and draws the headline graph for your poster.
+Reads a CSV recorded by record.py, checks signal quality, finds oxygen
+DESATURATION EVENTS (short dips in SpO2) and reports how often they happened
+per hour of VALID recording.
 
-WHAT COUNTS AS AN EVENT (adjustable with the options below)
------------------------------------------------------------
-A "desaturation event" is when blood oxygen drops at least DROP percent
-below a slowly-moving baseline for at least MIN_SECONDS in a row. This is a
-simplified version of what a real sleep study looks for.
+WHAT THIS DOES NOT DO
+---------------------
+It does not detect or diagnose sleep apnea and it does not calculate an
+apnea-hypopnea index (AHI). An AHI needs airflow and breathing-effort sensors
+and scored sleep time from a sleep study. Not every oxygen drop is an apnea,
+and not every apnea causes a large oxygen drop. This project measures SpO2
+and heart rate only, so it can only describe oxygen dips.
+
+WHAT COUNTS AS A DESATURATION EVENT (adjustable with the options below)
+------------------------------------------------------------------------
+SpO2 at least DROP percentage points below a moving baseline (median of the
+previous BASELINE seconds) for at least MIN_SECONDS in a row, using valid
+samples only. An event is never allowed to span a gap in the valid data.
+
+SIGNAL QUALITY (a sample is "valid" only if all are true)
+---------------------------------------------------------
+  - a finger is on the sensor (finger = 1)
+  - the sensor marked the SpO2 reading as valid (spo2_valid = 1)
+  - SpO2 is in a believable range (70-100 %)
+  - not within 5 s of a sudden movement (acceleration change > 0.25 g)
+
+Event rate = events / hours of valid recording (not hours in bed, not sleep time).
 
 USAGE
 -----
     pip install -r requirements.txt
-    python analyze.py night_2026-09-10_2230.csv
-
-    # tune the sensitivity if you like:
+    python analyze.py night_2026-10-20_2230.csv
     python analyze.py night.csv --drop 4 --min-seconds 10 --baseline-seconds 120
 
-It prints a report and saves a PNG next to the CSV.
+It prints a report and saves a PNG next to the CSV. Files whose name starts with
+"demo" (made by simulate.py) are labelled DEMONSTRATION DATA everywhere.
 
 Educational prototype only. Not a medical device / not for diagnosis.
 """
@@ -42,28 +58,63 @@ except ImportError:
     sys.exit("Missing dependencies. Run:  pip install -r requirements.txt")
 
 
-# Severity bands, matching the plan (events per hour).
-def severity_band(ahi: float) -> str:
-    if ahi < 5:
-        return "Normal"
-    if ahi < 15:
-        return "Mild"
-    if ahi < 30:
-        return "Moderate"
-    return "Severe"
+MOTION_JOLT_G = 0.25      # change in acceleration magnitude between samples that marks movement
+MOTION_PAD_S = 5          # seconds excluded on each side of a movement
+GAP_S = 3.0               # a jump in time bigger than this splits events
+
+
+def quality_mask(raw: pd.DataFrame) -> pd.Series:
+    """True for samples that pass every signal-quality check (see module docstring)."""
+    ok = (raw["spo2_valid"] == 1) & raw["spo2"].between(70, 100)
+    if "finger" in raw.columns:
+        ok &= raw["finger"] == 1
+    if {"ax", "ay", "az"} <= set(raw.columns):
+        mag = np.sqrt(raw["ax"] ** 2 + raw["ay"] ** 2 + raw["az"] ** 2)
+        jolt = mag.diff().abs() > MOTION_JOLT_G
+        moving = jolt.rolling(2 * MOTION_PAD_S + 1, center=True, min_periods=1).max().astype(bool)
+        ok &= ~moving
+    return ok
 
 
 def load(csv_path: str) -> pd.DataFrame:
-    df = pd.read_csv(csv_path)
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
-    # Keep only samples the sensor was confident about, in a sane range.
-    df = df[(df["spo2_valid"] == 1) & (df["spo2"].between(70, 100))].copy()
-    df = df.sort_values("timestamp").reset_index(drop=True)
+    """Valid samples only. df.attrs holds total/valid seconds and a quality summary."""
+    raw = pd.read_csv(csv_path)
+    raw["timestamp"] = pd.to_datetime(raw["timestamp"])
+    raw = raw.sort_values("timestamp").reset_index(drop=True)
+    ok = quality_mask(raw)
+    df = raw[ok].copy().reset_index(drop=True)
     if len(df) < 30:
         sys.exit("Not enough valid data to analyze. Check the sensor contact.")
     # Seconds since the recording started - used for durations.
-    df["elapsed_s"] = (df["timestamp"] - df["timestamp"].iloc[0]).dt.total_seconds()
+    df["elapsed_s"] = (df["timestamp"] - raw["timestamp"].iloc[0]).dt.total_seconds()
+    total_s = (raw["timestamp"].iloc[-1] - raw["timestamp"].iloc[0]).total_seconds() + 1
+    df.attrs.update({
+        "total_s": float(total_s),
+        "valid_s": float(len(df)),                      # ~1 sample per second
+        "valid_pct": 100.0 * len(df) / max(1, len(raw)),
+        "excluded": {
+            "no_finger": int((raw.get("finger", pd.Series(1, index=raw.index)) != 1).sum()),
+            "sensor_invalid": int((raw["spo2_valid"] != 1).sum()),
+            "out_of_range": int((~raw["spo2"].between(70, 100)).sum()),
+        },
+        "demo": is_demo(csv_path),
+    })
     return df
+
+
+def is_demo(path: str) -> bool:
+    """Simulated files are named demo_*.csv by simulate.py (or set NS_DEMO=1)."""
+    import os
+    return os.path.basename(path).lower().startswith("demo") or os.environ.get("NS_DEMO") == "1"
+
+
+def event_rate(df: pd.DataFrame, events) -> dict:
+    """Events per hour of VALID recording, with the denominator spelled out."""
+    valid_h = df.attrs["valid_s"] / 3600.0
+    total_h = df.attrs["total_s"] / 3600.0
+    return {"events": len(events), "valid_hours": valid_h, "total_hours": total_h,
+            "valid_pct": df.attrs["valid_pct"],
+            "rate": len(events) / valid_h if valid_h > 0 else float("nan")}
 
 
 def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
@@ -83,6 +134,8 @@ def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
 
     # A sample is "below" when it dips at least `drop` % under baseline.
     below = spo2 <= (baseline - drop)
+    # Never let an event run across a gap in the valid data (excluded or missing samples).
+    gap_after = df["elapsed_s"].diff().shift(-1).fillna(1.0) > GAP_S
 
     events = []
     in_event = False
@@ -94,6 +147,9 @@ def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
         elif not flag and in_event:
             in_event = False
             events.append((start_i, i - 1))
+        if in_event and gap_after.iloc[i]:          # data stops here: close the event
+            in_event = False
+            events.append((start_i, i))
     if in_event:
         events.append((start_i, len(below) - 1))
 
@@ -116,8 +172,8 @@ def find_events(df: pd.DataFrame, drop: float, min_seconds: float,
 
 
 def make_plot(df, events, out_png, title):
-    """One simple chart built for a general audience: a single blood-oxygen
-    line over the night, with each apnea event shown as a red band."""
+    """One simple chart: the blood-oxygen line over the recording, with each
+    flagged desaturation event shown as a red band."""
     fig, ax = plt.subplots(figsize=(7.6, 3.9))
     for ev in events:                                   # event bands, behind the line
         ax.axvspan(ev["start_time"], ev["end_time"], color=cs.RED, alpha=0.3, lw=0, zorder=0)
@@ -126,7 +182,7 @@ def make_plot(df, events, out_png, title):
     cs.end_label(ax, 90, "90% low", cs.GRAY)
     cs.end_label(ax, float(df["spo2_smooth"].iloc[-60:].mean()), "SpO₂", cs.BLUE)
     cs.title(ax, "Blood oxygen through the night",
-             f"{title}  ·  {len(events)} events (red bands)")
+             title, demo=df.attrs.get("demo", False))
     ax.set_ylabel("SpO₂ %")
     ax.set_ylim(min(84, df["spo2"].min() - 2), 100.5)
     ax.margins(x=0)
@@ -138,10 +194,10 @@ def make_plot(df, events, out_png, title):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Detect apnea events in a Night Signal log.")
+    ap = argparse.ArgumentParser(description="Find oxygen desaturation events in a Night Signal log.")
     ap.add_argument("csv", help="CSV file recorded by record.py")
     ap.add_argument("--drop", type=float, default=3.0,
-                    help="How many %% below baseline counts as a dip (default 3)")
+                    help="How many percentage points below baseline counts as a dip (default 3)")
     ap.add_argument("--min-seconds", type=float, default=10.0,
                     help="How long a dip must last to count (default 10 s)")
     ap.add_argument("--baseline-seconds", type=float, default=120.0,
@@ -150,36 +206,41 @@ def main():
 
     df = load(args.csv)
     events = find_events(df, args.drop, args.min_seconds, args.baseline_seconds)
-
-    total_seconds = df["elapsed_s"].iloc[-1]
-    hours = total_seconds / 3600.0
-    ahi = len(events) / hours if hours > 0 else 0.0
-    band = severity_band(ahi)
+    r = event_rate(df, events)
+    q = df.attrs
 
     # --- text report ---
-    print("\n" + "=" * 52)
-    print("  NIGHT SIGNAL - REPORT")
-    print("=" * 52)
-    print(f"  Recording length : {hours:5.2f} hours")
-    print(f"  Valid samples    : {len(df)}")
-    print(f"  Average SpO₂      : {df['spo2'].mean():5.1f} %")
-    print(f"  Lowest SpO₂       : {int(df['spo2'].min())} %")
-    print(f"  Events detected   : {len(events)}")
-    print(f"  Estimated AHI     : {ahi:5.1f} events/hour")
-    print(f"  Severity band     : {band}")
-    print("=" * 52)
+    print("\n" + "=" * 60)
+    print("  NIGHT SIGNAL - RECORDING REPORT")
+    if q["demo"]:
+        print("  *** DEMONSTRATION DATA (simulated) - not a real recording ***")
+    print("=" * 60)
+    print(f"  Recording length          : {r['total_hours']:5.2f} h")
+    print(f"  Valid signal              : {r['valid_hours']:5.2f} h  ({r['valid_pct']:.0f}% of samples)")
+    ex = q["excluded"]
+    print(f"  Excluded samples          : no finger {ex['no_finger']}, sensor-invalid {ex['sensor_invalid']}, "
+          f"out of range {ex['out_of_range']} (+ movement)")
+    print(f"  Average / lowest SpO₂      : {df['spo2'].mean():5.1f} % / {int(df['spo2'].min())} %")
+    print(f"  Desaturation events       : {r['events']}  "
+          f"(≥ {args.drop:g} points below baseline for ≥ {args.min_seconds:g} s)")
+    print(f"  Desaturation event rate   : {r['rate']:5.1f} per hour of valid recording "
+          f"({r['events']} events / {r['valid_hours']:.2f} valid h)")
+    if r["valid_pct"] < 70:
+        print("  WARNING: less than 70% valid signal - treat these numbers as unreliable.")
+    print("  Note: this is NOT an apnea-hypopnea index (AHI) and cannot confirm sleep apnea.")
+    print("=" * 60)
     if events:
         print("  Event details:")
         for i, ev in enumerate(events, 1):
             t = ev["start_time"].strftime("%H:%M:%S")
             print(f"   {i:2d}. {t}  lasted {ev['duration_s']:4.0f}s  "
                   f"low SpO₂ {ev['min_spo2']}%")
-    print("=" * 52)
+    print("=" * 60)
     print("  Educational prototype only. Not a medical diagnosis.\n")
 
     out_png = args.csv.rsplit(".", 1)[0] + "_report.png"
     d0 = df["timestamp"].iloc[0]
-    title = f"{d0:%B} {d0.day}, {d0.year}  ·  AHI {ahi:.1f} ({band})"
+    title = f"{d0:%b} {d0.day}, {d0.year}  ·  {r['events']} flagged events / {r['valid_hours']:.1f} valid h"
     make_plot(df, events, out_png, title)
 
 

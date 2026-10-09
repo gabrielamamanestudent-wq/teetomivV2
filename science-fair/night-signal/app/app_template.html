@@ -1,5 +1,5 @@
 <title>Night Signal App</title>
-<meta name="description" content="The Night Signal companion app — sleep report, live device connection with self-check, heart and asthma spin-offs, and the project progress log.">
+<meta name="description" content="The Night Signal companion app: night report of blood oxygen and desaturation events, live device connection with self-check, exploratory heart and breathing views, and the project progress log. Not a diagnostic tool.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -110,10 +110,10 @@
       <span class="conn" id="connPill">Device not connected</span>
     </div>
     <nav class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="sleep" aria-selected="true">Sleep</button>
+      <button class="tab" role="tab" data-tab="sleep" aria-selected="true">Night</button>
       <button class="tab" role="tab" data-tab="live" aria-selected="false">Live</button>
       <button class="tab" role="tab" data-tab="heart" aria-selected="false">Heart</button>
-      <button class="tab" role="tab" data-tab="asthma" aria-selected="false">Asthma</button>
+      <button class="tab" role="tab" data-tab="asthma" aria-selected="false">Breathing</button>
       <button class="tab" role="tab" data-tab="progress" aria-selected="false">Progress</button>
     </nav>
   </div>
@@ -122,33 +122,34 @@
   <section class="view on" id="v-sleep">
     <span class="example" id="sleepSource"></span>
     <div class="hero">
-      <svg width="116" height="116" viewBox="0 0 116 116" aria-label="Sleep score">
+      <svg width="116" height="116" viewBox="0 0 116 116" aria-label="Valid signal percentage">
         <circle cx="58" cy="58" r="47" fill="none" stroke="#1c2a44" stroke-width="12"/>
         <circle id="ring" cx="58" cy="58" r="47" fill="none" stroke="#3fb8cc" stroke-width="12" stroke-linecap="round"
           transform="rotate(-90 58 58)" stroke-dasharray="295.3" stroke-dashoffset="295.3"/>
-        <text id="score" x="58" y="62" text-anchor="middle" font-family="Sora,sans-serif" font-size="32" font-weight="800" fill="#edf2fb">–</text>
-        <text x="58" y="81" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="#9fb0cc">SLEEP SCORE</text>
+        <text id="score" x="58" y="62" text-anchor="middle" font-family="Sora,sans-serif" font-size="27" font-weight="800" fill="#edf2fb">–</text>
+        <text x="58" y="81" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="#9fb0cc">VALID SIGNAL</text>
       </svg>
       <div>
         <div class="eyebrow" id="nightDate"></div>
         <div class="big" id="verdict">–</div>
-        <div class="kv">Apnea events: <b id="ahi">–</b> per hour &nbsp;<span class="badge" id="sev">–</span></div>
+        <div class="kv">Desaturation event rate: <b id="evRate">–</b> per hour of valid recording</div>
         <div class="kv" id="nightLen"></div>
+        <div class="kv faint" style="font-size:.8rem">Not an apnea–hypopnea index (AHI). Oxygen alone cannot confirm or rule out sleep apnea.</div>
       </div>
     </div>
 
     <div class="card chart">
       <h3>Blood oxygen through the night</h3>
       <div id="oxChart"></div>
-      <div class="legend"><span><i style="background:#3fb8cc"></i>Blood oxygen (SpO₂)</span><span><i style="background:rgba(236,107,107,.55)"></i>Apnea event</span><span><i style="background:#6c7d99"></i>90% low-oxygen line</span></div>
+      <div class="legend"><span><i style="background:#3fb8cc"></i>Blood oxygen (SpO₂)</span><span><i style="background:rgba(236,107,107,.55)"></i>Flagged desaturation (≥3 points, ≥10 s)</span><span><i style="background:#6c7d99"></i>90% low-oxygen line</span></div>
     </div>
 
     <div class="sect">The numbers</div>
     <div class="grid g3" id="sleepTiles"></div>
 
     <div class="grid g2 split" style="margin-top:12px">
-      <div class="card"><h3>Where you slept</h3><div id="posBars"></div><p class="faint" id="posNote"></p></div>
-      <div class="card"><h3>Can you trust these numbers?</h3><div id="trust"></div></div>
+      <div class="card"><h3>Body position (exploratory)</h3><div id="posBars"></div><p class="faint" id="posNote"></p></div>
+      <div class="card"><h3>Agreement with the reference oximeter</h3><div id="trust"></div></div>
     </div>
 
     <div class="card" style="margin-top:12px">
@@ -196,24 +197,24 @@
 
   <!-- ================= HEART ================= -->
   <section class="view" id="v-heart">
-    <span class="example">Example night · heart spin-off (simulated)</span>
+    <span class="example">Exploratory idea · DEMONSTRATION DATA (simulated) · not part of the tested project</span>
     <div class="card chart"><h3>Heart rate through the night</h3><div id="hrChart"></div>
-      <div class="legend"><span><i style="background:rgba(236,107,107,.55)"></i>Racing heart (&gt;100 bpm)</span><span><i style="background:rgba(111,149,255,.55)"></i>Very slow (&lt;40 bpm)</span><span><i style="background:rgba(224,169,73,.6)"></i>Irregular rhythm</span></div></div>
+      <div class="legend"><span><i style="background:rgba(236,107,107,.55)"></i>Fast (&gt;100 bpm)</span><span><i style="background:rgba(111,149,255,.55)"></i>Very slow (&lt;40 bpm)</span><span><i style="background:rgba(224,169,73,.6)"></i>Unsteady rate</span></div></div>
     <div class="sect">Heart summary</div>
     <div class="grid g3" id="heartTiles"></div>
     <div class="card" style="margin-top:12px"><h3>Flagged moments</h3><div id="heartEps"></div>
-      <p class="faint" style="margin:10px 0 0">Why it matters: the same fingertip light that measures oxygen also sees every heartbeat, so one wearable can screen for heart patterns too. Screening only — confirming an arrhythmia needs an ECG and a doctor.</p></div>
+      <p class="faint" style="margin:10px 0 0">Exploratory idea only: the per-second optical heart rate can show fast or slow stretches, but it cannot identify an arrhythmia (that needs an ECG), and “unsteady” stretches are often movement noise. HRV here is approximate.</p></div>
   </section>
 
   <!-- ================= ASTHMA ================= -->
   <section class="view" id="v-asthma">
-    <span class="example">Example night · asthma spin-off (simulated)</span>
-    <div class="card chart"><h3>Breathing rate, every 5 minutes</h3><div id="brChart"></div>
+    <span class="example">Exploratory idea · DEMONSTRATION DATA (simulated) · not part of the tested project</span>
+    <div class="card chart"><h3>Estimated breathing rate, every 5 minutes</h3><div id="brChart"></div>
       <div class="legend"><span><i style="background:#3fb8cc"></i>Breaths per minute</span><span><i style="background:rgba(236,107,107,.45)"></i>Fast breathing</span><span><i style="background:#e0a949"></i>Cough-like jolt</span></div></div>
-    <div class="sect">Asthma summary</div>
+    <div class="sect">Summary (exploratory)</div>
     <div class="grid g3" id="asthmaTiles"></div>
     <div class="card" style="margin-top:12px"><h3>What this shows</h3><p class="muted" id="asthmaVerdict" style="margin:0"></p>
-      <p class="faint" style="margin:10px 0 0">Night-time asthma often gets worse around 4 a.m. Breathing rate comes from the heart-rate rhythm, and coughs from sudden jolts of the motion sensor — no extra hardware. Screening only.</p></div>
+      <p class="faint" style="margin:10px 0 0">Exploratory idea: the breathing rate is estimated from small rhythmic changes in heart rate, and “cough-like jolts” are sudden movements of the motion sensor. Neither has been checked against a real measurement, and this cannot detect or monitor asthma.</p></div>
   </section>
 
   <!-- ================= PROGRESS ================= -->
@@ -283,18 +284,16 @@
   function tile(icon,v,u,k){ return '<div class="card tile"><div class="k">'+icon+' '+k+'</div><div class="v">'+v+(u?'<small>'+u+'</small>':'')+'</div></div>'; }
 
   // ---------- SLEEP ----------
-  function severity(ahi){ return ahi<5?["Normal","b-ok"]:ahi<15?["Mild","b-warn"]:ahi<30?["Moderate","b-warn"]:["Severe","b-crit"]; }
   var CUR={N:null,label:""};
   function renderSleep(N, sourceLabel){
     CUR.N=N; CUR.label=sourceLabel;
     $("sleepSource").textContent=sourceLabel;
-    var sev=severity(N.ahi); $("sev").textContent=sev[0]; $("sev").className="badge "+sev[1];
-    $("ahi").textContent=N.ahi.toFixed(1);
-    $("verdict").textContent = N.ahi<5?"Breathing looked healthy":N.ahi<15?"Mild signs of apnea":"Clear signs of apnea";
+    $("evRate").textContent=N.rate.toFixed(1);
+    $("verdict").textContent = N.events_count+" flagged desaturation event"+(N.events_count===1?"":"s");
     $("nightDate").textContent=N.date+" · "+N.start+" – "+N.end;
-    $("nightLen").textContent=N.hours.toFixed(1)+" hours recorded · "+N.events_count+" events";
-    var score=Math.max(40,Math.min(99,Math.round(95-N.ahi*2.5-Math.max(0,97.5-N.avg_spo2)*3)));
-    $("score").textContent=score; $("ring").setAttribute("stroke-dashoffset",(295.3*(1-score/100)).toFixed(1));
+    $("nightLen").textContent=N.events_count+" events ÷ "+N.valid_hours.toFixed(2)+" h of valid signal (of "+N.hours.toFixed(1)+" h recorded)";
+    var score=Math.round(N.valid_pct);
+    $("score").textContent=score+"%"; $("ring").setAttribute("stroke-dashoffset",(295.3*(1-score/100)).toFixed(1));
     var n=N.spo2.length, st=clockMin(N.start);
     $("oxChart").innerHTML=chart({label:"Blood oxygen chart",n:n,yMin:84,yMax:100,yStep:4,h:300,
       series:[{values:N.spo2,color:"#3fb8cc",width:2.4}],
@@ -305,8 +304,8 @@
       tile("⬇️",N.low_spo2,"%","Lowest oxygen"),
       tile("❤️",Math.round(N.avg_hr)," bpm","Average heart rate"),
       tile("🫀",N.low_hr," bpm","Lowest heart rate"),
-      tile("🌬️",N.breathing==null?"—":N.breathing.toFixed(1),N.breathing==null?"":" /min","Breathing rate"),
-      tile("📈",N.sdnn==null?"—":Math.round(N.sdnn),N.sdnn==null?"":" ms","Heart-rate variability")].join("");
+      tile("🌬️",N.breathing==null?"—":N.breathing.toFixed(1),N.breathing==null?"":" /min","Breathing (estimated)"),
+      tile("📈",N.sdnn==null?"—":Math.round(N.sdnn),N.sdnn==null?"":" ms","HRV (approximate)")].join("");
     var cols={Back:"#ec6b6b",Left:"#3fb8cc",Right:"#4bbd80",Stomach:"#e0a949"};
     if(N.positions && N.positions.length){
       var maxRate=Math.max.apply(null,N.positions.map(function(p){return p.rate;}).concat([1]));
@@ -314,37 +313,39 @@
         '<span class="track"><span class="fill" style="display:block;width:'+(100*p.rate/maxRate).toFixed(0)+'%;background:'+cols[p.name]+'"></span></span>'+
         '<span class="mono" style="text-align:right">'+p.rate.toFixed(1)+'/h · '+p.hours.toFixed(1)+'h</span></div>'; }).join("");
       var worst=N.positions.slice().sort(function(a,b){return b.rate-a.rate;})[0];
-      $("posNote").textContent="Apnea events per hour in each position. Most events: "+worst.name.toLowerCase()+".";
+      $("posNote").textContent="Desaturation events per hour of valid recording in each position. Exploratory: only meaningful with the motion sensor on the chest, and few hours per position means large uncertainty.";
     } else { $("posBars").innerHTML='<p class="faint">No motion-sensor data in this file.</p>'; $("posNote").textContent=""; }
   }
   function renderTrust(){
     var V=D.validation, M=D.ml;
     $("trust").innerHTML='<ul class="checks">'+
-      '<li><span class="dot ok"></span><span>Matches a reference oximeter</span><span class="mono">±'+V.mae.toFixed(2)+'%</span></li>'+
-      '<li><span class="dot ok"></span><span>Agreement (correlation)</span><span class="mono">r = '+V.r.toFixed(2)+'</span></li>'+
-      '<li><span class="dot ok"></span><span>95% of readings within</span><span class="mono">'+V.loa_low.toFixed(1)+' to +'+V.loa_high.toFixed(1)+'%</span></li>'+
-      '<li><span class="dot ok"></span><span>Events caught · rule / ML</span><span class="mono">'+Math.round(M.rule.r*100)+'% / '+Math.round(M.ml.r*100)+'%</span></li></ul>'+
-      '<p class="faint" style="margin:8px 0 0">From '+V.n+' paired readings (Bland–Altman method). '+(D.example?"Example data — replace with your own test.":"")+'</p>';
+      '<li><span class="dot"></span><span>Mean absolute difference</span><span class="mono">'+V.mae.toFixed(2)+' points</span></li>'+
+      '<li><span class="dot"></span><span>Bias (device − reference)</span><span class="mono">'+(V.bias>=0?"+":"")+V.bias.toFixed(2)+'</span></li>'+
+      '<li><span class="dot"></span><span>95% limits of agreement</span><span class="mono">'+V.loa_low.toFixed(1)+' to +'+V.loa_high.toFixed(1)+'</span></li></ul>'+
+      '<p class="faint" style="margin:8px 0 0">'+V.n+' paired readings (Bland–Altman method). '+(D.example?"<b>Demonstration data only: the real comparison has not been done yet.</b> The simulated reference was made from the same invented data, so these numbers say nothing about the real device.":"The reference oximeter itself is accurate to about ±2 points.")+'</p>';
   }
 
   // ---------- CSV loading (same method as analyze.py) ----------
   function parseCSV(text){
     var lines=text.trim().split(/\r?\n/), h=lines[0].split(",").map(function(s){return s.trim();});
-    var ci=function(n){ return h.indexOf(n); }, iT=ci("timestamp"), iS=ci("spo2"), iV=ci("spo2_valid"), iH=ci("heart_rate"), iHV=ci("hr_valid"), iX=ci("ax"), iY=ci("ay"), iZ=ci("az");
+    var nRows=0, ci=function(n){ return h.indexOf(n); }, iF=ci("finger"), iT=ci("timestamp"), iS=ci("spo2"), iV=ci("spo2_valid"), iH=ci("heart_rate"), iHV=ci("hr_valid"), iX=ci("ax"), iY=ci("ay"), iZ=ci("az");
     if(iS<0||iT<0) throw new Error("this file has no timestamp/spo2 columns");
     var T=[],S=[],HR=[],ACC=[];
     for(var i=1;i<lines.length;i++){ var p=lines[i].split(","); var s=+p[iS], v=iV<0?1:+p[iV];
       var t=Date.parse(p[iT]); if(isNaN(t)) continue;
       if(iX>=0) ACC.push([t,+p[iX],+p[iY],+p[iZ]]);
       if(iH>=0 && (iHV<0||+p[iHV]===1) && +p[iH]>=30 && +p[iH]<=200) HR.push(+p[iH]);
-      if(v!==1||!(s>=70&&s<=100)) continue; T.push(t); S.push(s); }
+      nRows++;
+      if(v!==1||!(s>=70&&s<=100)||(iF>=0&&+p[iF]!==1)) continue; T.push(t); S.push(s); }
     if(S.length<60) throw new Error("not enough valid readings");
+    var totalRows=nRows;
     var med=function(a){ var b=a.slice().sort(function(x,y){return x-y;}); return b[b.length>>1]; };
     var sm=S.map(function(_,i){ return med(S.slice(Math.max(0,i-2),i+3)); });
     var base=sm.map(function(_,i){ return i<60?null:med(sm.slice(Math.max(0,i-119),i+1)); });
     var first=base.find(function(b){return b!=null;}); base=base.map(function(b){return b==null?first:b;});
     var ev=[],inE=false,a=0;
     for(var j=0;j<sm.length;j++){ var lo=sm[j]<=base[j]-3;
+      if(inE && j>0 && T[j]-T[j-1]>3000){ inE=false; if((T[j-1]-T[a])/1000>=10) ev.push([a,j-1]); }   // never span a gap
       if(lo&&!inE){inE=true;a=j;} else if(!lo&&inE){ inE=false; if((T[j-1]-T[a])/1000>=10) ev.push([a,j-1]); } }
     if(inE && (T[T.length-1]-T[a])/1000>=10) ev.push([a,T.length-1]);
     var hours=(T[T.length-1]-T[0])/3.6e6, mins=Math.max(1,Math.round(hours*60));
@@ -364,12 +365,12 @@
       positions=Object.keys(secs).filter(function(k){return secs[k]>180;}).map(function(k){ var hh=secs[k]/3600; return {name:k,hours:hh,events:evc[k],rate:evc[k]/hh}; }); }
     var d0=new Date(T[0]), d1=new Date(T[T.length-1]); var two=function(x){return (x<10?"0":"")+x;};
     return { date:d0.toDateString(), start:two(d0.getHours())+":"+two(d0.getMinutes()), end:two(d1.getHours())+":"+two(d1.getMinutes()),
-      hours:hours, ahi:ev.length/hours, events_count:ev.length, avg_spo2:S.reduce(function(s,x){return s+x;},0)/S.length,
+      hours:hours, valid_hours:S.length/3600, valid_pct:100*S.length/Math.max(1,totalRows), rate:ev.length/(S.length/3600), events_count:ev.length, avg_spo2:S.reduce(function(s,x){return s+x;},0)/S.length,
       low_spo2:Math.min.apply(null,S), avg_hr:HR.length?HR.reduce(function(s,x){return s+x;},0)/HR.length:0, low_hr:HR.length?Math.min.apply(null,HR):0,
       breathing:null, sdnn:sdnn, spo2:perMin, events:ev.map(function(e){return [toMin(e[0]),toMin(e[1])];}), positions:positions };
   }
   $("file").addEventListener("change",function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader();
-    r.onload=function(){ try{ var N=parseCSV(r.result); renderSleep(N,"Your night · "+f.name); $("loadMsg").textContent="Loaded "+f.name+": "+N.events_count+" events over "+N.hours.toFixed(1)+" h. (Breathing rate: run signals.py.)"; }
+    r.onload=function(){ try{ var N=parseCSV(r.result); renderSleep(N,"Your recording · "+f.name); $("loadMsg").textContent="Loaded "+f.name+": "+N.events_count+" flagged desaturation events in "+N.valid_hours.toFixed(2)+" h of valid signal ("+N.hours.toFixed(1)+" h recorded). Movement is not excluded here; analyze.py also removes movement. (Breathing estimate: run signals.py.)"; }
       catch(err){ $("loadMsg").textContent="Couldn’t read that file — "+err.message+"."; } };
     r.onerror=function(){ $("loadMsg").textContent="Couldn’t open that file."; }; r.readAsText(f); });
 
@@ -381,7 +382,7 @@
       hlines:[{y:100,color:"#ec6b6b",label:"100 bpm"},{y:40,color:"#6f95ff",label:"40 bpm"},{y:Math.round(Hh.resting),color:"#6c7d99",dash:"2 5",label:"resting "+Math.round(Hh.resting)}],
       ticks:hourTicks(n,st,1)});
     $("heartTiles").innerHTML=[tile("💤",Math.round(Hh.resting)," bpm","Resting heart rate"),tile("↕️",Hh.min+"–"+Hh.max," bpm","Range"),
-      tile("📈",Math.round(Hh.sdnn)," ms","HRV (SDNN)"),tile("🔺",Hh.counts.racing,"","Racing episodes"),tile("🔻",Hh.counts.slow,"","Very slow episodes"),tile("〰️",Hh.counts.irregular,"","Irregular-rhythm episodes")].join("");
+      tile("📈",Math.round(Hh.sdnn)," ms","HRV (approx.)"),tile("🔺",Hh.counts.racing,"","Fast stretches (>100)"),tile("🔻",Hh.counts.slow,"","Very slow episodes"),tile("〰️",Hh.counts.irregular,"","Unsteady-rate stretches")].join("");
     $("heartEps").innerHTML='<ul class="checks">'+Hh.episodes.map(function(e){ var c=e.type==="racing"?"crit":e.type==="slow"?"warn":"warn";
       return '<li><span class="dot '+c+'"></span><span>'+esc(e.label)+'</span><span class="mono">'+esc(e.when)+'</span></li>'; }).join("")+'</ul>';
   }
@@ -391,10 +392,10 @@
       series:[{values:A.rates,color:"#3fb8cc",width:2.6}], bands:A.fast.map(function(f,i){return f?{a:Math.max(0,i-.5),b:Math.min(n-1,i+.5),color:"rgba(236,107,107,.28)"}:null;}).filter(Boolean),
       hlines:[{y:Math.round(A.limit),color:"#ec6b6b",label:"fast breathing (> "+Math.round(A.limit)+"/min)"}],
       marks:A.cough_idx.map(function(x){return {x:x,color:"#e0a949"};}), ticks:hourTicks(n,clockMin(A.start)+2.5,5)});
-    $("asthmaTiles").innerHTML=[tile("🌬️",A.baseline.toFixed(1)," /min","Normal breathing"),tile("🌅",A.late.toFixed(1)," /min","Early-morning breathing"),
-      tile("⏱️",A.fast_min," min","Fast-breathing time"),tile("🩸",A.odi.toFixed(1)," /h","Oxygen dips (3%+)"),tile("🤧",A.coughs,"","Cough-like jolts"),tile("📊",A.coughs_per_h.toFixed(1)," /h","Coughs per hour")].join("");
-    $("asthmaVerdict").textContent = A.worse ? "Breathing climbed from about "+A.early.toFixed(0)+" to "+A.late.toFixed(0)+" breaths per minute in the early morning, with coughing and small oxygen dips — the classic night-time asthma pattern."
-      : "No early-morning worsening was found on this night.";
+    $("asthmaTiles").innerHTML=[tile("🌬️",A.baseline.toFixed(1)," /min","Baseline (estimated)"),tile("🌅",A.late.toFixed(1)," /min","Late in recording (estimated)"),
+      tile("⏱️",A.fast_min," min","Fast-breathing time"),tile("🩸",A.odi.toFixed(1)," /valid h","Desaturation events"),tile("🤧",A.coughs,"","Cough-like jolts"),tile("📊",A.coughs_per_h.toFixed(1)," /h","Coughs per hour")].join("");
+    $("asthmaVerdict").textContent = (A.worse ? "In this simulated example, the estimated breathing rate rose from about "+A.early.toFixed(0)+" to "+A.late.toFixed(0)+" per minute late in the recording."
+      : "No late-recording rise in the estimated breathing rate.")+" This is an exploratory idea only: breathing rate is estimated from heart-rate rhythm, not measured, and it cannot detect asthma.";
   }
 
   // ---------- PROGRESS ----------
@@ -495,7 +496,7 @@
     document.body.appendChild(a); a.click(); a.remove(); $("liveMsg").textContent="Saved "+n+" readings as "+name+"."; };
 
   // ---------- boot ----------
-  renderSleep(D.night, D.example?"Example night (simulated) — load your own below":"Recorded night");
+  renderSleep(D.night, D.example?"DEMONSTRATION DATA (simulated) · not a real recording · load a real file below":"Recorded night");
   renderTrust(); renderHeart(); renderAsthma(); renderProgress(); renderLive();
   var rz=null; window.addEventListener("resize",function(){ clearTimeout(rz); rz=setTimeout(function(){ renderSleep(CUR.N,CUR.label); renderHeart(); renderAsthma(); renderLive(); },200); });
   try{ var t=localStorage.getItem("ns-tab"); if(t) show(t); }catch(e){}

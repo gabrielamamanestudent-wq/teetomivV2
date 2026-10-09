@@ -3,10 +3,15 @@
 Night Signal - machine learning detector  (upgrade #2)
 ======================================================
 
-Trains a machine-learning model to spot apnea events, then compares it head to
-head with the simple rule-based detector — both scored against ground-truth
-labels (in a real project, your breath-hold log; in the demo, the simulator's
-known events).
+EXPLORATORY. Trains a machine-learning model to spot oxygen DESATURATION
+events and compares it with the simple rule-based detector, both scored
+against labels of when dips are known to have happened.
+
+Where the labels come from matters:
+  - demo: the simulator's own events (synthetic, so scores are optimistic)
+  - real (only if approved): the logged times of supervised, AWAKE
+    breath-holds. That tests whether induced dips are flagged; it does NOT
+    validate detecting sleep apnea during sleep.
 
 For each 15-second window it builds simple features (how low the oxygen went,
 how far it dropped, how much the heart rate swung) and learns which windows
@@ -144,7 +149,9 @@ def main():
     truth_n, truth_ev = res["n"], res["events"]
 
     print("\n" + "=" * 56)
-    print("  APNEA DETECTION:  MACHINE LEARNING vs RULE-BASED")
+    print("  DESATURATION DETECTION:  MACHINE LEARNING vs RULE-BASED (exploratory)")
+    if analyze.is_demo(sys.argv[1]):
+        print("  *** DEMONSTRATION DATA (simulated labels) - not a real result ***")
     print("=" * 56)
     print(f"  Windows tested: {truth_n}   (events: {truth_ev})")
     print("  " + "-" * 46)
@@ -157,8 +164,8 @@ def main():
     for n, v in imp[:3]:
         print(f"    - {n} ({v:.0%})")
     print("=" * 56)
-    print("  (Precision = of flagged windows, how many were real events.)")
-    print("  (Recall    = of real events, how many were caught.)")
+    print("  (Precision = of flagged windows, how many matched a labelled dip.)")
+    print("  (Recall    = of labelled dips, how many were flagged.)")
     print("=" * 56 + "\n")
 
 

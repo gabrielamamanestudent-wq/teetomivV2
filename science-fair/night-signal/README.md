@@ -1,12 +1,22 @@
 # Night Signal 🌙
 
-A low-cost wearable that records blood oxygen (SpO₂), heart rate and sleeping
-position all night, streams it over **Bluetooth**, and automatically detects
-**sleep-apnea events** — plus two spin-offs that screen the **heart** and
-**night-time asthma** with the same hardware.
+A low-cost wearable (MAX30102 fingertip sensor + ESP32) that records blood
+oxygen (SpO₂) and heart rate once per second and streams it over **Bluetooth**.
 
-> ⚠️ **Educational prototype only. Not a medical device. Never use it to
-> diagnose or treat anyone.**
+**Revised research question (approval from Ms. Ireland pending):** how closely do
+the wearable's SpO₂ and heart-rate readings agree with a Health Canada-authorized
+fingertip pulse oximeter, and can software reliably flag **oxygen desaturation
+events** (≥ 3 points below a moving baseline for ≥ 10 s)?
+
+> ⚠️ **This project does not detect, confirm or diagnose sleep apnea.** Oxygen and
+> heart rate alone cannot tell an apnea from other causes of an oxygen dip, and
+> not every apnea causes a large dip. The software reports **desaturation events per
+> hour of valid recording**, which is *not* an apnea–hypopnea index (AHI).
+> Educational prototype only, not a medical device.
+
+> 📊 **Status:** no real data has been collected yet. Every chart and number in the
+> app and slides so far comes from **simulated demonstration data** (`demo_*.csv`).
+> See `REVIEW_AND_STATUS.md` for what is done, what is planned and what is pending.
 
 ---
 
@@ -15,7 +25,10 @@ position all night, streams it over **Bluetooth**, and automatically detects
 ```
 night-signal/
 ├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
-├── Night_Signal_Ethics.docx         # ethics package: protocol, risk assessment, consent, data sheets
+├── REVIEW_AND_STATUS.md (+ .pdf)    # scientific review for Ms. Ireland: claims corrected, planned vs done, open items
+├── Night_Signal_Ethics.docx         # ethics package (revised scope, DRAFT): protocol, risk assessment, consent, data sheets
+├── Night_Signal_Proposal_ORIGINAL_superseded.docx  # original Sep 25 proposal, kept as a record only (superseded)
+├── forms/                           # REVISED proposal form (filled PDF + Word) and the scripts that build them
 ├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting
 ├── firmware/
 │   └── night_signal_esp32.ino        # v3.1: sensors + self-test + finger, 1 reading/s
@@ -23,14 +36,14 @@ night-signal/
 │   ├── protocol.py        # the device's line format (shared by every script)
 │   ├── check_device.py    # ✅ run before every recording: proves the device works
 │   ├── record.py          # logs a night from the device (USB or Bluetooth)
-│   ├── analyze.py         # apnea events, AHI, the night chart
+│   ├── analyze.py         # signal quality + desaturation events per valid hour, the night chart
 │   ├── validate.py        # #1 accuracy vs a reference oximeter (Bland–Altman)
-│   ├── signals.py         # #4 breathing rate + heart-rate variability
-│   ├── position.py        # #3 apnea rate by sleeping position
-│   ├── train_model.py     # #2 machine learning vs the rule-based detector
-│   ├── heart.py           # spin-off: racing / slow / irregular heart episodes
-│   ├── asthma.py          # spin-off: breathing rate, coughs, early-morning worsening
-│   ├── simulate.py        # fake nights for testing (--profile apnea | heart | asthma)
+│   ├── signals.py         # exploratory: estimated breathing rate + approximate HRV
+│   ├── position.py        # exploratory: desaturation events per valid hour by position
+│   ├── train_model.py     # exploratory: machine learning vs the rule-based desaturation flagger
+│   ├── heart.py           # exploratory: fast / slow / unsteady heart-rate stretches (no arrhythmia detection)
+│   ├── asthma.py          # exploratory: estimated breathing rate + movement jolts (cannot detect asthma)
+│   ├── simulate.py        # DEMONSTRATION data generator (writes demo_*.csv; --profile desat | heart | asthma)
 │   └── fake_device.py     # fake wearable on a virtual serial port (Mac/Linux)
 ├── app/
 │   ├── index.html         # the companion app (built — open with start_app.py)
@@ -67,18 +80,22 @@ Regenerate the QR images with `python slides/make_qr.py`.
 ```bash
 cd analysis
 pip install -r requirements.txt
-python simulate.py --hours 7 --events 22 --out night.csv          # apnea night (+ reference + labels)
-python simulate.py --hours 7 --events 6 --profile heart  --out heart_night.csv
-python simulate.py --hours 7 --events 6 --profile asthma --out asthma_night.csv
+python simulate.py --hours 7 --events 22 --out demo_night.csv     # simulated night (+ reference + labels)
+python simulate.py --hours 7 --events 6 --profile heart  --out demo_heart_night.csv
+python simulate.py --hours 7 --events 6 --profile asthma --out demo_asthma_night.csv
 
-python analyze.py night.csv
-python validate.py night.csv night_reference.csv
-python position.py night.csv
-python signals.py night.csv
-python train_model.py night.csv night_labels.csv
-python heart.py heart_night.csv
-python asthma.py asthma_night.csv
+python analyze.py demo_night.csv                       # main: desaturation events per valid hour
+python validate.py demo_night.csv demo_night_reference.csv   # main: agreement with the reference
+python position.py demo_night.csv                      # exploratory
+python signals.py demo_night.csv                       # exploratory
+python train_model.py demo_night.csv demo_night_labels.csv   # exploratory
+python heart.py demo_heart_night.csv                   # exploratory
+python asthma.py demo_asthma_night.csv                 # exploratory
 ```
+
+Files named `demo_*` are labelled **DEMONSTRATION DATA (simulated)** in every report
+and chart. Accuracy numbers from demo files only show that the code runs: the simulated
+"reference" is made from the same invented data, so it says nothing about the real device.
 
 Test the device pipeline with the fake wearable (Mac/Linux):
 
@@ -131,7 +148,7 @@ which lasts all night. The 3D model shows the planned v2: a sealed case with its
 1. Flash `firmware/night_signal_esp32.ino` (see `BUILD_GUIDE.md`, Phase A).
 2. Pair **NightSignal** over Bluetooth (or use the USB cable). On a Mac the port is `/dev/cu.NightSignal`; on Windows a COM port such as `COM5`.
 3. `python check_device.py --port COM5` → must say **READY**.
-4. `python record.py --port COM5` all night, Ctrl+C in the morning (Mac: `caffeinate -i python3 record.py --port /dev/cu.NightSignal`).
+4. Only after approval and consent: `python record.py --port COM5` all night, Ctrl+C in the morning (Mac: `caffeinate -i python3 record.py --port /dev/cu.NightSignal`).
 5. Run the analysis scripts, then rebuild the app and slides with your real data:
 
 ```bash
@@ -149,7 +166,9 @@ rebuild the presentation.
 
 ## Safety & testing
 
-- Never hold your breath while asleep. Test events only with short, voluntary
-  breath-holds **while awake and supervised**.
-- Get parent/guardian consent and ethics-committee approval (human subject)
-  before testing on anyone.
+- **No testing on anyone, including myself, until** Ms. Ireland approves the revised
+  scope, the Technoscience ethics committee issues its approval, and consent is signed.
+- The optional breath-hold test (only if approved) uses short, voluntary breath-holds
+  **while awake, seated and supervised**. It checks whether induced oxygen dips are
+  flagged at the logged times; it does **not** validate detecting sleep apnea during sleep.
+- Never hold your breath while asleep.
