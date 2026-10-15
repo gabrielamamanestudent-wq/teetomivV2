@@ -26,7 +26,7 @@ events** (≥ 3 points below a moving baseline for ≥ 10 s)?
 night-signal/
 ├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
 ├── REVIEW_AND_STATUS.md (+ .pdf)    # scientific review for Ms. Ireland: claims corrected, planned vs done, open items
-├── Night_Signal_Ethics.docx         # ethics package (revised scope, DRAFT): protocol, risk assessment, consent, data sheets
+├── Night_Signal_Ethics.docx (+ .pdf) # ethics package (revised scope, DRAFT): protocol, risk assessment, consent, data sheets
 ├── Night_Signal_Proposal_ORIGINAL_superseded.docx  # original Sep 25 proposal, kept as a record only (superseded)
 ├── forms/                           # REVISED proposal form (filled PDF + Word) and the scripts that build them
 ├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting

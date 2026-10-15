@@ -157,7 +157,10 @@ kids.push(H2("3.5 If a reading looks unusual"));
 kids.push(P("The wearable is an educational prototype and I do not interpret anyone's health. If the reference oximeter shows a resting value below 92%, the session stops and the participant (and parent/guardian for a minor) is advised to speak to a doctor. If my own night recordings show many oxygen dips, I will tell my parents. The device cannot say whether anyone has sleep apnea; at most, such a result is a reason to ask a doctor."));
 
 // 4. Risk assessment
+kids.push(pageBreak());
 kids.push(H1("4. Risk assessment"));
+kids.push(box([P([run("Overall: low risk. ", { bold: true }), run("The main test is sitting still with two fingertip sensors, which is what a pharmacy pulse oximeter does. The optional breath-hold test is limited to 20 seconds, seated and supervised, and happens only if approved.")])]));
+kids.push(P(""));
 kids.push(table([2300, 1000, 1150, 1150, 4480], ["Possible risk", "Who", "Likelihood", "Severity", "How it is prevented"], [
   ["Light-headedness during breath-holds (optional test)", "P1", "Low", "Minor", "Only if approved. Holds of 20 s or less, seated, 2 min rest between holds, adult present, stop at any discomfort, stop the session below 90% on the reference oximeter. Never while asleep."],
   ["Skin irritation or pressure from the finger cuff", "All", "Low", "Minor", "Cuff snug, not tight. Remove it at any numbness or tingling, and check the skin after each session."],
@@ -168,8 +171,6 @@ kids.push(table([2300, 1000, 1150, 1150, 4480], ["Possible risk", "Who", "Likeli
   ["Privacy of health data", "All", "Low", "Minor", "Coded IDs, data kept only on my laptop, anonymous results, deletion after the fair."],
   ["Worry or false reassurance about a result", "All", "Low", "Minor", "It is explained beforehand that this is not a medical test and cannot detect or rule out sleep apnea. Unusual readings mean seeing a doctor, not a diagnosis."],
 ], { size: 18 }));
-kids.push(P(""));
-kids.push(box([P([run("Overall: low risk. ", { bold: true }), run("The main test is sitting still with two fingertip sensors, which is what a pharmacy pulse oximeter does. The optional breath-hold test is limited to 20 seconds, seated and supervised, and happens only if approved.")])]));
 
 // 5. Information and consent
 kids.push(pageBreak());
@@ -205,6 +206,7 @@ kids.push(table([700, 1100, 1500, 1500, 1500, 1680, 2100], ["#", "Target (s)", "
 kids.push(P(""));
 kids.push(P([run("Stop rules: stop immediately at any dizziness, discomfort or tingling. Stop the session if the reference oximeter reads below 90%. Hold for 20 seconds at most. Always seated. This test checks dip flagging only; it is not a test of sleep apnea.", { italics: true, color: GREY, size: 19 })]));
 
+kids.push(pageBreak());
 kids.push(H2("Sheet C: Night log (optional; P1 only; only if approved)"));
 kids.push(table([900, 1300, 1200, 1200, 1500, 1500, 1100, 1380], ["Night", "Date", "Bedtime", "Wake time", "Device READY? (Y/N)", "Removed during night?", "Comfort 1–5", "Notes"],
   blankRows(5, 8), { size: 18, rowH: 420 }));
