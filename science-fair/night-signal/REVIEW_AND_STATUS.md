@@ -2,8 +2,8 @@
 
 **Prepared for:** Ms. Ireland (supervising teacher)
 **Student:** Gabriel Mamane
-**Date:** October 9, 2026
-**Status:** Revised scope proposed. **Ms. Ireland's approval of the revised scope is pending.** No approval, consent or signature has been obtained, and no real data has been collected.
+**Date:** October 9, 2026 (updated October 15, 2026)
+**Status:** On October 9, Ms. Ireland agreed to the revised scope and asked for a revised proposal. **The project is accepted only after she reviews that revised proposal.** No ethics approval, consent or signature has been obtained, and no real data has been collected.
 
 ---
 
@@ -13,7 +13,7 @@ Ms. Ireland asked two questions about the original proposal: where the blood-oxy
 
 The second question exposed a real weakness. The original proposal claimed that oxygen dips detected by a fingertip sensor could be counted as apnea events, converted into an apnea–hypopnea index (AHI) and sorted into clinical severity bands. That claim is not supported. A fingertip sensor measures only oxygen saturation (SpO₂) and pulse. It cannot measure airflow, breathing effort or sleep, so it cannot identify apneas or calculate an AHI.
 
-The project has therefore been narrowed, as proposed in the reply to Ms. Ireland:
+The project has therefore been narrowed, as proposed in the reply to Ms. Ireland (October 8) and agreed by her (October 9):
 
 - **Revised question:** How closely do SpO₂ and heart-rate readings from a low-cost wearable (MAX30102 + ESP32) agree with a Health Canada-licensed fingertip pulse oximeter, and can software reliably flag oxygen desaturation events (a drop of at least 3 percentage points lasting at least 10 s) in the wearable's recordings?
 - **Revised hypothesis:** If the wearable is worn correctly and only good-quality readings are used, then its SpO₂ will agree with the reference oximeter within about ±3 percentage points (95% limits of agreement), because both measure red/infrared light absorption, and the software will flag the dips that the reference also shows.
@@ -83,42 +83,50 @@ A desaturation event is SpO₂ at least 3 percentage points below a 120-second t
 
 | Completed | Planned / pending |
 |---|---|
-| Design, parts list, build guide | Ms. Ireland's approval of the revised scope |
+| Design, parts list, build guide | Ms. Ireland's review and acceptance of the revised proposal |
 | Firmware written (not yet run on real hardware) | Ethics approval and signed consent |
 | Analysis software and simulator, tested **only on simulated data** | Building and checking the prototype |
 | Companion app and 3D model (show demonstration data only) | Accuracy sessions against the reference |
-| Original proposal submitted (Sep 25) | Optional overnight recordings and breath-hold test, if approved |
+| Original proposal submitted (Sep 25); revised scope agreed with Ms. Ireland (Oct 9) | Optional overnight recordings and breath-hold test, if approved |
 | Revised proposal form, ethics package and presentation drafted (this review) | Real results, analysis and conclusion (before January 11) |
 
 All numbers that currently appear in the app, charts and slides come from simulated **demonstration data** and only show that the analysis code works. The simulated "reference" readings were generated from the same invented data, so they cannot say anything about the real device's accuracy.
 
 ## 6. Items requiring the student's information or Ms. Ireland's approval
 
-- [ ] **Ms. Ireland's approval of the revised scope** (pending).
-- [ ] Whether a revised proposal form must be resubmitted, and in what format (PDF overlay or Word version).
+- [x] Ms. Ireland's agreement to the revised scope (October 9: "Yes, please revise the proposal and send it back to me").
+- [x] Supervising teacher's details added to the ethics package: Ms. Jessica Ireland, Science Department, Les écoles Azrieli Herzliah, Campus Sylvan Adams (from her email signature).
+- [ ] **Send the revised proposal to Ms. Ireland** (a draft cover email is in section 7). She accepts the project only after reviewing it.
 - [ ] **Grade level** (left blank on the form, title slide and ethics package).
-- [ ] Scientific supervisor's name, role, institution and contact details for the ethics package (yellow fields).
-- [ ] Ethics committee / Technoscience approval (not obtained). Check the pre-questionnaire answers against the real platform.
+- [ ] Ms. Ireland's email address for the ethics package (one yellow field).
+- [ ] **Technoscience pre-questionnaire and ethics form**: create an account at https://approbation.technoscience.ca/pre-questionnaire, answer the pre-questionnaire, then complete the form that follows. Ms. Ireland asked for this now because of time constraints. Check the drafted answers against the real platform.
+- [ ] Ethics approval (not obtained). Ask Ms. Ireland whether any testing may begin before the Technoscience approval arrives; until then, the protocol assumes it may not.
 - [ ] Signatures and consent: participant, parent/guardian and student. **None have been filled in.**
-- [ ] Whether up to four adult volunteers may take part, or the study should be limited to the student.
-- [ ] Whether the optional breath-hold test and overnight recordings should be kept in the protocol.
+- [ ] Volunteers, overnight recordings and the optional breath-hold test: these match what was described to Ms. Ireland on October 8. Keep them unless she asks for changes when she reviews the revised proposal.
 - [ ] Model and Health Canada licence number of the reference pulse oximeter.
 - [ ] Whether parts have been bought or built. The slides currently say "Not built yet".
-- [ ] Confirmation that building the device and checking the electronics, without wearing it, is acceptable before approval.
+- [ ] Confirmation that building the device and checking the electronics, without wearing it, is acceptable before approval (asked in the cover email).
 - [ ] Enabling GitHub Pages so the QR codes in the slides open the app and 3D model.
 - [ ] Submission of the form and ethics package: **left for the student.**
 
-## 7. Draft note to Ms. Ireland (not sent)
+## 7. Draft cover email for the revised proposal (not sent)
 
+> **Subject:** Revised science fair proposal – Night Signal
+>
 > Dear Ms. Ireland,
 >
-> Thank you for your questions about my project. In line with my earlier reply, I have revised the project to focus on how accurately a low-cost wearable measures blood oxygen and heart rate compared with a Health Canada-licensed pulse oximeter, and on whether software can flag oxygen desaturation events. I have removed all claims that the device detects sleep apnea or calculates an apnea–hypopnea index, since oxygen and heart rate alone cannot confirm apnea. Simulated data is now clearly labelled as demonstration data only.
+> Thank you for agreeing to the revised focus of my project. As requested, I have attached my revised proposal form.
 >
-> I have attached the revised proposal form and a summary of the changes. No testing will take place until you have approved the revised scope and the ethics approval and consent are in place. Could you please let me know whether the revised scope is acceptable, and whether I should resubmit the proposal form?
+> The project now asks how closely the blood-oxygen (SpO₂) and heart-rate readings from my low-cost wearable agree with a Health Canada-licensed fingertip pulse oximeter, and whether software can reliably flag oxygen desaturation events. I have removed every claim that the device detects or diagnoses sleep apnea, and it no longer calculates an apnea–hypopnea index. Any event rate is reported per hour of valid recording, and all simulated data is clearly labelled as demonstration data only. I have also attached a short summary of the changes.
+>
+> I am now completing the pre-questionnaire and form on the Technoscience approval website. No testing will take place on anyone, including myself, until you have accepted the revised proposal and the ethics approval and consent are in place. May I build the device and check that the electronics work, without collecting any data, before then?
 >
 > Thank you for your guidance.
 >
+> Kind regards,
 > Gabriel Mamane
+>
+> *Attachments: Revised proposal form (PDF); Review and status summary (PDF)*
 
 ## References
 

@@ -62,37 +62,37 @@ const kids = [];
 // Title
 kids.push(new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "Night Signal: ethics submission package (revised scope)", bold: true, size: 40, color: NAVY })] }));
 kids.push(new Paragraph({ spacing: { after: 200 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: NAVY, space: 6 } },
-  children: [run("Gabriel Mamane · Science Fair 2027 · Human participants · Due ", { color: GREY }), run("October 13", { bold: true, color: GREY })] }));
+  children: [run("Gabriel Mamane · Science Fair 2027 · Human participants · Requested by Ms. Ireland on Oct 9 (original due date: October 13)", { color: GREY })] }));
 
 kids.push(box([
   P([run("Status of this draft", { bold: true, color: "8A5A00", size: 23 })]),
-  P([run("This package reflects the revised scope proposed to Ms. Ireland (wearable measurement accuracy and oxygen desaturation detection). "),
-    run("Her approval of that scope is still pending. ", { bold: true }),
-    run("No approval, certificate, consent or signature has been obtained yet, and no data has been collected from anyone. Nothing in this package should be submitted until the student has checked it and confirmed with Ms. Ireland.")]),
+  P([run("On October 9, Ms. Ireland agreed that the project should focus on wearable measurement accuracy and oxygen desaturation detection, and asked for a revised proposal. "),
+    run("She accepts the project only after reviewing that revised proposal. ", { bold: true }),
+    run("No ethics approval, certificate, consent or signature has been obtained yet, and no data has been collected from anyone. The student checks and submits this package; nothing here has been submitted.")]),
 ], WARN));
 kids.push(P(""));
 
 kids.push(box([
   P([run("How to use this package", { bold: true, color: NAVY, size: 23 })]),
-  num("use", "Confirm with Ms. Ireland that the revised scope is accepted (or ask whether the ethics submission should go ahead in parallel)."),
-  num("use", [run("Fill in every "), fill("yellow"), run(" box: grade, supervisor's name, school and contact details.")]),
-  num("use", [run("Go to "), run("approbation.technoscience.ca", { bold: true }), run(" and answer the pre-questionnaire. Section 1 lists the questions it will most likely ask; check them against the real platform.")]),
-  num("use", "When the platform asks for the ethics form, use sections 2 to 4 (summary, protocol, risk assessment), and attach the blank data sheets in section 6."),
+  num("use", "Send the revised proposal to Ms. Ireland (she asked for it on October 9)."),
+  num("use", [run("Fill in every "), fill("yellow"), run(" box: your grade and Ms. Ireland's email address.")]),
+  num("use", [run("Create an account and answer the pre-questionnaire at "), run("approbation.technoscience.ca/pre-questionnaire", { bold: true }), run(". Ms. Ireland asked for this now because of time constraints, even though it is formally required only for projects accepted to the regional fair. Section 1 lists the questions it will most likely ask; check them against the real platform.")]),
+  num("use", "The ethics form comes after the pre-questionnaire. Use sections 2 to 4 (summary, protocol, risk assessment), and attach the blank data sheets in section 6."),
   num("use", [run("Wait for the Certificate of Approval and signed consent", { bold: true }), run(" before any recorded test, even on yourself. Building the device and checking the electronics without wearing it can happen before then, if Ms. Ireland agrees.")]),
 ]));
 kids.push(P(""));
-kids.push(P([run("Note: ", { bold: true }), run("the approval website could not be opened while preparing this draft, so section 1 is a best guess at its questions. The rest follows what Technoscience asks for: protocol, risk assessment, data collection tools, supervisor details and consent.", { color: GREY })]));
+kids.push(P([run("Note: ", { bold: true }), run("the approval website could not be opened while preparing this draft, so section 1 is a best guess at its questions. Per Ms. Ireland, the form appears after the pre-questionnaire and requires an account. The rest follows what Technoscience asks for: protocol, risk assessment, data collection tools, supervisor details and consent.", { color: GREY })]));
 
 // 0. To fill in
 kids.push(H1("0. Fill in before you submit"));
 kids.push(table([3600, 6480], ["Item", "Your answer"], [
   ["Exhibitor", "Gabriel Mamane"],
-  ["Grade / school", [P([fill("Grade __ · school name")], { spacing: { after: 0 } })]],
-  ["Scientific supervisor (adult)", [P([fill("Name and role (confirm who this is)")], { spacing: { after: 0 } })]],
-  ["Supervisor's institution and contact", [P([fill("School name, address, email, phone")], { spacing: { after: 0 } })]],
+  ["Grade / school", [P([fill("Grade __"), run(" · Les écoles Azrieli Herzliah, Campus Sylvan Adams")], { spacing: { after: 0 } })]],
+  ["Supervising teacher (adult)", "Ms. Jessica Ireland, Science Department; Head teacher for Secondary 5"],
+  ["Supervisor's institution and contact", [P([run("Les écoles Azrieli Herzliah, Campus Sylvan Adams, 5475 avenue Mountain Sights, Montréal, QC H3W 2Y8 · 514-739-2291, ext. 255 · "), fill("email")], { spacing: { after: 0 } })]],
   ["Project title", "Night Signal: SpO2 Accuracy (revised; original title was “Night Signal: Apnea Detector”)"],
   ["Category", "Health and Medical Sciences · Experimental project"],
-  ["Planned test dates", "Only after scope approval, ethics approval and signed consent; target October to December (before the January 11 final slides)"],
+  ["Planned test dates", "Only after Ms. Ireland accepts the revised proposal, ethics approval is issued and consent is signed; target October to December (before the January 11 final slides)"],
 ], { size: 20 }));
 
 // 1. Pre-questionnaire
@@ -184,7 +184,7 @@ kids.push(P([run("Benefits: ", { bold: true }), run("none directly for you. You 
 kids.push(P([run("Your rights: ", { bold: true }), run("taking part is voluntary. You can stop at any time, without giving a reason. You can ask for your data to be deleted.")]));
 kids.push(P([run("Privacy: ", { bold: true }), run("your readings are stored under a code (for example P3), never with your name. Results are shown only as anonymous averages and graphs, and your data is deleted after the science fair.")]));
 kids.push(P([run("Not a medical test: ", { bold: true }), run("this is a student prototype. It cannot tell you anything about your health and cannot detect or rule out sleep apnea. If the store-bought oximeter shows an unusual value, you will be advised to talk to a doctor.")]));
-kids.push(P([run("Questions: ", { bold: true }), run("Gabriel Mamane, or the supervisor: "), fill("name, email")]));
+kids.push(P([run("Questions: ", { bold: true }), run("Gabriel Mamane, or the supervising teacher, Ms. Jessica Ireland (Les écoles Azrieli Herzliah, 514-739-2291, ext. 255)")]));
 kids.push(P(""));
 kids.push(P([run("I have read this information, my questions have been answered, and I agree to take part.", { bold: true })]));
 for (const l of ["Participant name and code", "Participant signature                                                      Date", "Parent/guardian name (if the participant is under 18)", "Parent/guardian signature                                                Date", "Student (Gabriel Mamane) signature                                  Date"]) kids.push(field(l));

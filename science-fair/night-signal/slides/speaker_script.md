@@ -41,7 +41,7 @@ The finger sensor's light readings go to the ESP32, which calculates oxygen and 
 
 ## 6. Protocol  (50 s)
 
-This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher approves the revised scope, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.
+This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher accepts this revised proposal, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.
 
 ## 7. The app  (30 s)
 
@@ -69,7 +69,7 @@ Sources of error in measurement: movement, finger pressure, cold hands and room 
 
 ## 13. Status  (35 s)
 
-To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. Still pending are my teacher's approval of the revised scope, ethics approval and consent, building the prototype, and all of the real measurements.
+To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. My teacher agreed to this revised scope on October ninth. Still pending are her review of the revised proposal, ethics approval and consent, building the prototype, and all of the real measurements.
 
 ## 14. Conclusion  (30 s)
 

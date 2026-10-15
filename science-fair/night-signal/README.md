@@ -3,7 +3,7 @@
 A low-cost wearable (MAX30102 fingertip sensor + ESP32) that records blood
 oxygen (SpO₂) and heart rate once per second and streams it over **Bluetooth**.
 
-**Revised research question (approval from Ms. Ireland pending):** how closely do
+**Revised research question (scope agreed with Ms. Ireland on Oct 9; revised proposal to be sent for her review):** how closely do
 the wearable's SpO₂ and heart-rate readings agree with a Health Canada-authorized
 fingertip pulse oximeter, and can software reliably flag **oxygen desaturation
 events** (≥ 3 points below a moving baseline for ≥ 10 s)?
@@ -166,8 +166,8 @@ rebuild the presentation.
 
 ## Safety & testing
 
-- **No testing on anyone, including myself, until** Ms. Ireland approves the revised
-  scope, the Technoscience ethics committee issues its approval, and consent is signed.
+- **No testing on anyone, including myself, until** Ms. Ireland accepts the revised
+  proposal, the Technoscience ethics committee issues its approval, and consent is signed.
 - The optional breath-hold test (only if approved) uses short, voluntary breath-holds
   **while awake, seated and supervised**. It checks whether induced oxygen dips are
   flagged at the logged times; it does **not** validate detecting sleep apnea during sleep.

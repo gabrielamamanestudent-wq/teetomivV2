@@ -13,7 +13,7 @@ them in your acknowledgements.
 >
 > 🛑 **Building is fine now; data collection is not.** Briefly checking that readings appear
 > is an equipment check. Do **not** record, save or use readings from anyone (including
-> yourself) as project data until Ms. Ireland approves the revised scope, the ethics committee
+> yourself) as project data until Ms. Ireland accepts the revised proposal, the ethics committee
 > approves, and consent is signed. Please confirm with Ms. Ireland that the equipment check is acceptable.
 
 ---

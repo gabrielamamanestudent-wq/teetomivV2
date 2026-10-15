@@ -169,10 +169,10 @@ const doc = new Document({
         spacing: { before: 300 },
         border: { top: { style: BorderStyle.SINGLE, size: 4, color: "c3cdda", space: 8 } },
         children: [new TextRun({
-          text: "Revised scope (pending Ms. Ireland's approval): this project measures how accurately a low-cost "
+          text: "Revised scope (agreed with Ms. Ireland on Oct 9, 2026): this project measures how accurately a low-cost "
               + "wearable reads blood oxygen and heart rate, and whether software can flag oxygen desaturation "
               + "events. Oxygen and heart rate alone cannot confirm or diagnose sleep apnea. It is an educational "
-              + "prototype, not a medical device. No testing on people begins before teacher and ethics approval "
+              + "prototype, not a medical device. No testing on people begins before Ms. Ireland accepts this revised proposal, ethics approval is issued "
               + "and signed consent (Form B).",
           italics: true, size: 16, color: GREY,
         })],

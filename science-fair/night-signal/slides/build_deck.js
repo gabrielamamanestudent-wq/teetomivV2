@@ -175,7 +175,7 @@ s = slide(false); eyebrow(s, "Experimental protocol · planned"); title(s, "How 
 card(s, 8.75, 2.05, 3.83, 4.55);
 T(s, "Safety", { x: 9.05, y: 2.3, w: 3.3, h: 0.35, fontSize: 17, bold: true, color: C.RED });
 bullets(s, ["No testing on anyone, including me, before approval and consent", "Breath-holds only if approved: awake, seated, supervised, 20 s at most, never asleep", "Stop at any dizziness or discomfort", "Not a medical device; no diagnosis"], 9.05, 2.8, 3.3, 14, 0.18);
-notes(s, "Protocol", 50, "This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher approves the revised scope, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.");
+notes(s, "Protocol", 50, "This is my planned protocol. Nothing will be tested on anyone, including me, until my teacher accepts this revised proposal, the ethics committee approves, and consent is signed. The main test is accuracy: seated at rest, I wear my device on one finger and the reference oximeter on the other hand, and I record both oxygen and heart rate every two minutes for thirty minutes, over several sessions. Every reading must pass signal-quality checks. If approved, overnight recordings will measure signal quality and desaturation events, but those events cannot be verified because the reference oximeter does not record overnight. An optional breath-hold test, only if approved, would check whether short, awake dips are flagged; it does not test sleep apnea.");
 
 /* ---------------- 7. THE APP ---------------- */
 s = slide(false, C.OFF); eyebrow(s, "The app"); title(s, "The companion app.");
@@ -254,10 +254,10 @@ notes(s, "Sources of error", 40, "Sources of error in measurement: movement, fin
 s = slide(false); eyebrow(s, "Project status"); title(s, "What is done, and what is planned.");
 card(s, 0.75, 2.05, 5.81, 4.7); card(s, 6.77, 2.05, 5.81, 4.7);
 T(s, "Done", { x: 1.1, y: 2.28, w: 5.1, h: 0.4, fontSize: 19, bold: true, color: C.GREEN });
-bullets(s, ["Design, parts list and build guide", "Firmware written (not yet run on hardware)", "Analysis software and simulator, tested on simulated data", "App and 3D model", "Original proposal submitted (Sep 25); revised proposal and ethics package drafted"], 1.1, 2.8, 5.2, 13.5, 0.14);
+bullets(s, ["Design, parts list and build guide", "Firmware written (not yet run on hardware)", "Analysis software and simulator, tested on simulated data", "App and 3D model", "Scope revised with Ms. Ireland (Oct 9); revised proposal and ethics package drafted"], 1.1, 2.8, 5.2, 13.5, 0.14);
 T(s, "Planned or pending", { x: 7.12, y: 2.28, w: 5.1, h: 0.4, fontSize: 19, bold: true, color: C.ORANGE });
-bullets(s, ["Ms. Ireland’s approval of the revised scope", "Ethics approval and signed consent", "Build and check the prototype", "Accuracy sessions against the reference", "Overnight recordings and optional breath-hold test (if approved)", "Real results and analysis (by January 11)"], 7.12, 2.8, 5.2, 13.5, 0.14);
-notes(s, "Status", 35, "To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. Still pending are my teacher's approval of the revised scope, ethics approval and consent, building the prototype, and all of the real measurements.");
+bullets(s, ["Ms. Ireland’s review of the revised proposal", "Ethics approval and signed consent", "Build and check the prototype", "Accuracy sessions against the reference", "Overnight recordings and optional breath-hold test (if approved)", "Real results and analysis (by January 11)"], 7.12, 2.8, 5.2, 13.5, 0.14);
+notes(s, "Status", 35, "To be clear about where the project stands: the design, firmware, analysis software, app and 3D model are done, and the software has been tested only on simulated data. My teacher agreed to this revised scope on October ninth. Still pending are her review of the revised proposal, ethics approval and consent, building the prototype, and all of the real measurements.");
 
 /* ---------------- 14. CONCLUSION ---------------- */
 s = slide(true, null, "bg_glow_low.jpg"); eyebrow(s, "Conclusion"); title(s, "No conclusion yet.", { fontSize: 54, h: 1.1 });
@@ -294,7 +294,7 @@ notes(s, "Appendix A — materials", 0, "Appendix — not presented. Full parts 
 
 s = slide(false); appendix(s); eyebrow(s, "Appendix B · Full protocol (planned)"); atitle(s, "Full experimental protocol (planned, not yet started).");
 const proto = [
-  ["Approvals first.", "Ms. Ireland approves the revised scope, the ethics committee approves, and informed consent is signed (participant and parent/guardian). No data is collected from anyone, including me, before all three."],
+  ["Approvals first.", "Ms. Ireland accepts the revised proposal, the ethics committee approves, and informed consent is signed (participant and parent/guardian). No data is collected from anyone, including me, before all three."],
   ["Build and device check.", "MAX30102 → 3V3 / GND / GPIO 21 / 22; GY-521 → VIN / GND / SDA→GPIO 33 / SCL→GPIO 32 (two separate I²C buses); USB power. check_device.py must report READY before every session."],
   ["Accuracy sessions (main test).", "Seated, awake, at rest, warm hands. Wearable on one index finger, reference oximeter on the other hand. Every 2 min: time, reference SpO₂ and heart rate (15 pairs per 30-min session); several sessions on different days. validate.py: bias, 95% limits of agreement, mean absolute difference."],
   ["Signal-quality checks.", "Each 1-s reading counts only if a finger is present, the sensor marks it valid, SpO₂ is 70–100%, and there is no sudden movement within 5 s. Every report states the % of valid signal."],

@@ -140,9 +140,10 @@ def asthma_summary(path):
 PROGRESS = [
     {"date": "Sep 2026", "title": "Idea, plan and first code", "detail": "Wearable SpO₂ + heart-rate monitor designed; analysis software written and tested on SIMULATED data only.", "status": "done", "label": "Done"},
     {"date": "Sep 25", "title": "Original proposal submitted", "detail": "Experimental project · Health and Medical Sciences.", "status": "done", "label": "Done"},
-    {"date": "Oct", "title": "Scope revised after Ms. Ireland's questions", "detail": "Focus on measurement accuracy and oxygen desaturation detection; no sleep-apnea diagnosis. Approval of the revised scope is pending.", "status": "next", "label": "Pending"},
+    {"date": "Oct 9", "title": "Scope revised with Ms. Ireland", "detail": "Ms. Ireland agreed to refocus on measurement accuracy and oxygen desaturation detection (no sleep-apnea diagnosis) and asked for a revised proposal.", "status": "done", "label": "Done"},
+    {"date": "Oct", "title": "Revised proposal to Ms. Ireland", "detail": "Send the revised proposal for her review; the project is accepted only after that review.", "status": "next", "label": "To send"},
     {"date": "Oct", "title": "Software, 3D design and app", "detail": "Firmware written (not yet run on hardware); analysis, simulator, app and 3D model done.", "status": "done", "label": "Done"},
-    {"date": "Oct 13", "title": "Ethics committee forms", "detail": "Human-subject project: the student is the participant. No testing before approval and signed consent.", "status": "next", "label": "Due"},
+    {"date": "Oct", "title": "Technoscience pre-questionnaire and ethics form", "detail": "Requested by Ms. Ireland now (account needed). Human-subject project. No testing before approval and signed consent.", "status": "next", "label": "Due"},
     {"date": "Oct", "title": "Order parts and build the prototype", "detail": "Not started yet. Then flash the firmware and pass check_device.py.", "status": "todo", "label": "To do"},
     {"date": "Oct–Dec", "title": "Data collection (after approval)", "detail": "Seated accuracy sessions against the reference oximeter; overnight recordings for signal quality; optional breath-hold test only if approved.", "status": "todo", "label": "To do"},
     {"date": "Jan 11", "title": "Final slides for correction", "detail": "Replace the demonstration data with real results.", "status": "todo", "label": "To do"},
@@ -151,7 +152,7 @@ PROGRESS = [
 
 PROTOCOL = [
     ("Device check", "run check_device.py before every session; all checks must pass (data at 1/s, self-test OK, finger on, values believable)."),
-    ("Approvals first", "no testing on anyone (including myself) until Ms. Ireland approves the revised scope, the ethics committee approves, and consent is signed."),
+    ("Approvals first", "no testing on anyone (including myself) until Ms. Ireland accepts the revised proposal, the ethics approval is issued, and consent is signed."),
     ("Accuracy sessions (main test)", "seated and awake; wearable on one index finger, reference oximeter on the other hand; record both SpO₂ and heart rate every 2 minutes for 30 minutes; repeat on several days; analyse with validate.py (bias, 95% limits of agreement)."),
     ("Signal-quality checks", "finger on sensor, sensor-valid flag, believable range, and movement exclusion; report the % of valid data for every session."),
     ("Overnight recordings", "if approved: wear the device during normal sleep to measure signal quality and the desaturation-event rate per hour of valid recording. The reference cannot record overnight, so these events cannot be verified."),
