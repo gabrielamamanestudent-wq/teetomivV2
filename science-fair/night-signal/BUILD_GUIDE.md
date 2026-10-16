@@ -24,15 +24,17 @@ them in your acknowledgements.
 
 | # | Part | Size | Why |
 |---|---|---|---|
-| 1 | [AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm · pins pre-soldered | Processor + Bluetooth Classic |
-| 2 | [HiLetgo MAX30102 sensor](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | 14 × 14 mm · 4 pins to solder | SpO₂ + heart rate (finger clip) |
-| 3 | [SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)](https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4) | ≈ 21 × 16 mm | Movement check + position (exploratory) |
-| 4 | [ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)](https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78) | 20 cm each | Plug-in wiring, no soldering |
-| 5 | [Running armband phone pouch](https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4) | fits phones up to 6.9 in | Holds the ESP32 on the forearm |
-| 6 | [Anker Powerline+ USB-A to USB-C cable](https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS) | 3 m (10 ft) | All-night power from a phone charger |
-| 7 | [Anker USB-C to USB-A adapter (2-pack)](https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61) | USB-C → USB-A | Plug the cable into a MacBook |
-| 8 | [VELCRO Brand 1 in × 30 ft roll](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 25 mm wide · cut ≈ 80 mm | Finger loop |
-| 9 | [Elite Medica fingertip pulse oximeter](https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB) | Must have a Health Canada licence (check the box) | Reference for the accuracy test |
+| 1 | [AITRIP ESP32 ESP-WROOM-32 board, USB-C, CP2102, 30-pin (1 pc)](https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN) | ≈ 52 × 28 mm (typical) · check photos for soldered pins | Processor + Bluetooth Classic |
+| 2 | [HiLetgo MAX30102 breakout (“Heart Rate Click”)](https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ) | listing: 14 mm · pins usually loose: solder 4 | SpO₂ + heart rate (finger clip) |
+| 3 | [SHILLEHTEK MPU-6050 GY-521, pre-soldered (2-pack)](https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4) | ≈ 21 × 16 mm · 3.3–5 V · check stock | Movement check + position (exploratory) |
+| 4 | [ELEGOO 120 Dupont wires (EL-CP-004): 40 M-F, 40 M-M, 40 F-F](https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78) | 20 cm each | Plug-in wiring, no soldering |
+| 5 | [Running armband phone pouch](https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4) | ⚠ not verified: check it fits a 52 × 28 mm board + cable | Holds the ESP32 on the forearm |
+| 6 | [Anker Powerline+ USB-C to USB-A cable, 10 ft (A8267)](https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS) | 3 m · ⚠ unavailable on Amazon.ca: any 3 m USB-A → USB-C data cable | All-night power + data from a charger |
+| 7 | [Anker USB-C to USB 3.0 female adapter (2-pack)](https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61) | USB-C plug → USB-A socket | Plug the cable into a MacBook |
+| 8 | [VELCRO Brand Wide Straps VEL-30768-AMS, black](https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1) | 1 in (25 mm) × 30 ft · cut ≈ 80 mm | Finger loop |
+| 9 | [Elite Medica Premium Fingertip Pulse Oximeter EM-PO2 (black)](https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB) | listed as Health Canada authorized · 70–100% · 2 AAA · licence no. not shown: check box | Reference for the accuracy test |
+
+> Specs rechecked Oct 16, 2026 from the listing titles and maker pages (Amazon.ca itself could not be opened). ⚠ = check before ordering. Prices and stock change.
 
 - **From home:** a USB phone charger (the wall plug), scissors, black electrical tape
 
@@ -42,7 +44,7 @@ them in your acknowledgements.
 
 Give your helper the MAX30102 board and its strip of pins. Tell them:
 
-1. Solder header pins to at least **VIN, SDA, SCL and GND**. Doing all 7 is fine.
+1. Solder header pins to at least **VIN, SDA, SCL and GND**. Doing all of them is fine.
 2. The pins must stick out of the **back**, which is the side *without* the small black sensor window.
 
 The GY-521 motion sensor and the ESP32 already come with pins.
@@ -187,11 +189,11 @@ a cable connection, so the scripts and the app read it the same way.
 
 | Symptom | Fix |
 |---|---|
-| `max30102=FAIL` | A plug is loose, or SDA/SCL are swapped. VIN must go to **3V3**. Some purple MAX30102 boards need a small fix: send a photo and we'll sort it out. |
+| `max30102=FAIL` | A plug is loose, or SDA/SCL are swapped. VIN must go to **3V3**. Some cheap MAX30102 boards tie their I²C pull-up resistors to 1.8 V, so the ESP32 cannot see them; check for a 3-pad jumper set to 1.8 V and move it to 3.3 V (a small soldering job for your helper). |
 | `mpu6050=FAIL` | A plug is loose, or SDA/SCL are swapped (SDA→D33, SCL→D32). VCC goes to **VIN**. |
 | `finger=0` the whole time | The cuff is loose or the sensor window is covered. A cold finger can also cause it, so warm your hands. |
 | Readings jump around | Movement, a cuff that's too tight, or room light reaching the sensor. Add black tape. |
-| No port in *Tools ▸ Port* | Use the Anker cable (some cables only charge). Install the CP210x driver. |
+| No port in *Tools ▸ Port* | Use a *data* USB cable (some cables only charge). The board's USB chip is a CP2102: install the CP210x driver if the port does not appear. |
 | Upload stuck on `Connecting...` | Hold **BOOT** while it uploads. |
 | Data stops in the night | A plug came loose or the Mac slept. Tape the joins, and use `caffeinate`. |
 

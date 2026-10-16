@@ -61,11 +61,11 @@ Only good readings count. A reading is used only if a finger is on the sensor, t
 
 ## 11. Analysis: interpretation  (45 s)
 
-This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.
+This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself typically accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.
 
 ## 12. Sources of error  (40 s)
 
-Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is only accurate to about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.
+Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is typically accurate to only about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.
 
 ## 13. Status  (35 s)
 

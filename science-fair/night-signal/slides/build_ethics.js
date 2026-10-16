@@ -131,7 +131,7 @@ kids.push(P([run("Who cannot take part: ", { bold: true }), run("anyone who does
 
 kids.push(H2("3.2 Equipment"));
 kids.push(bullet("Night Signal wearable: ESP32 board, MAX30102 fingertip sensor in a Velcro cuff, MPU-6050 motion sensor, powered by a 5 V USB phone charger."));
-kids.push(bullet([run("Reference: a fingertip pulse oximeter with a Health Canada medical device licence ("), fill("model and licence number to confirm"), run("). Its stated accuracy is about ±2 percentage points, so the comparison measures agreement between two devices, not absolute truth.")]));
+kids.push(bullet([run("Reference: a fingertip pulse oximeter with a Health Canada medical device licence ("), fill("model and licence number to confirm"), run("). Fingertip oximeters are typically specified to about ±2 percentage points; the exact figure will be taken from this model's manual. The comparison therefore measures agreement between two devices, not absolute truth.")]));
 kids.push(bullet("Laptop with the recording and analysis software; a timer; the blank data sheets (section 6); alcohol wipes."));
 
 kids.push(H2("3.3 Procedures"));

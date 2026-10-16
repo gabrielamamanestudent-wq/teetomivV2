@@ -4,9 +4,9 @@ Night Signal - accuracy validation  (upgrade #1)
 ================================================
 
 Measures how closely YOUR device agrees with a reference fingertip pulse
-oximeter (Health Canada-authorized). Note that the reference is itself only
-accurate to about ±2 percentage points, so this measures AGREEMENT between two
-devices, not absolute truth.
+oximeter (Health Canada-authorized). Note that fingertip oximeters are typically
+specified to about ±2 percentage points (check the reference's manual), so this
+measures AGREEMENT between two devices, not absolute truth.
 
 It reports the standard numbers used in medical device papers:
   - Mean absolute error   (average difference, ignoring direction)
@@ -111,7 +111,7 @@ def main():
     print("=" * 54)
     within = loa_low >= -3 and loa_high <= 3
     print(f"  Hypothesis check (95% LoA within ±3 points): {'yes' if within else 'no'}")
-    print("  The reference itself is only accurate to about ±2 points.")
+    print("  The reference is itself typically only accurate to about ±2 points (see its manual).")
     print("=" * 54 + "\n")
 
     # Bland-Altman plot: average of the two vs their difference.

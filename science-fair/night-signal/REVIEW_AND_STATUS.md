@@ -71,7 +71,7 @@ A desaturation event is SpO₂ at least 3 percentage points below a 120-second t
 
 ### Limitations
 - Oxygen and heart rate alone cannot identify apnea (no airflow, breathing effort or sleep staging).
-- The reference oximeter is accurate to only about ±2 points, so the comparison measures agreement, not truth.
+- Fingertip reference oximeters are typically specified to about ±2 points (the exact figure must come from this model's manual; its Amazon.ca listing does not state one), so the comparison measures agreement, not truth.
 - Movement, finger pressure, cold hands and ambient light distort optical readings.
 - Pulse oximeters can overestimate SpO₂ in people with darker skin (Sjoding et al., 2020).
 - Awake rest is not sleep, and a breath-hold is not an apnea.

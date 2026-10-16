@@ -32,9 +32,40 @@ const C = { BLACK: "000000", INK: "1D1D1F", GRAY: "6E6E73", GRAYD: "86868B", GRA
   CARD: "F5F5F7", CARDD: "1C1C1E", CARDD2: "2C2C2E", LINE: "D2D2D7", LINED: "38383A",
   BLUE: "0071E3", BLUED: "2997FF", PINK: "E3254B", PINKD: "FF375F", GREEN: "248A3D", GREEND: "30D158",
   ORANGE: "C45500", ORANGED: "FF9F0A", RED: "D70015", REDD: "FF453A", TEAL: "2BB3A6" };
-const F = "Helvetica Neue";                 // on every Mac; PowerPoint on Windows substitutes Arial
-const MONO = "Menlo";
-const NOTES = [];                           // [title, seconds, script] — also written to speaker_script.md
+const F = "Inter";                          // a Google Font: looks the same in Google Slides, PowerPoint and Keynote
+const MONO = "Roboto Mono";                 // also a Google Font
+const NOTES = [];                           // [title, seconds, script, cues, transition] — also written to speaker_script.md and cue_cards.json
+// Cue cards: short prompts to glance at while presenting (the full script stays in speaker_script.md).
+// [cues, transition] per presented slide, keyed by the notes() title. Also written to cue_cards.json.
+const CUES = {
+  "Title": [["Gabriel Mamane · Night Signal", "How accurately can a cheap wearable measure blood oxygen?", "Can software flag oxygen drops?", "NOT a test for sleep apnea"], "First, my question and hypothesis."],
+  "Purpose & hypothesis": [["Q: does the wearable agree with a Health Canada-authorized fingertip oximeter? (SpO₂ + heart rate)", "Can it flag desaturations: ≥ 3 points for ≥ 10 s?", "H: within ±3 points (95% limits of agreement)", "Why: both use red + infrared light", "Change: device + condition → Measure: difference, events, % valid"], "Some background on how this works."],
+  "Scientific background": [["Red 660 nm + infrared 880 nm → SpO₂", "Desaturation = short drop; sleep studies use ≥ 3% plus other signals", "Apnea diagnosis = sleep study: airflow, breathing effort, sleep", "Not every drop is an apnea; not every apnea causes a drop", "So: accuracy + oxygen dips, NOT diagnosis"], "Here is the device I designed."],
+  "Design": [["v1: ESP32 in an armband, MAX30102 in a velcro finger cuff, USB power", "All plug-in wires", "1 reading per second", "3D model = a possible later sealed version (v2)", "Not built yet; parts list + build guide ready"], "How the data gets from my finger to a file."],
+  "How it works": [["Sensor → ESP32 → Bluetooth / USB → app + analysis", "Device check must say READY before every session", "Tested only on a simulated device so far", "Real hardware not tested yet"], "This is how I plan to test it."],
+  "Protocol": [["Nothing until: Ms. Ireland accepts the proposal + ethics approval + consent", "Main test: seated, 30 min, both devices every 2 min", "Every reading must pass the quality checks", "Overnight (if approved): cannot be verified", "Breath-holds (optional): only check flagging, NOT apnea"], "The app shows all of this."],
+  "The app": [["Night tab: chart, flagged events, rate per valid hour, % valid", "Live tab: connects to the wearable + runs the checks", "Same CSV as the analysis → every number traceable", "Everything shown = demonstration data"], "What I will measure."],
+  "Results table": [["No real data yet", "Each row: the measure + how it is calculated", "Demo values only prove the code runs; NOT findings", "Rate = events ÷ hours of valid signal; NOT an AHI", "Real column filled in before January 11"], "How the results will look."],
+  "Demonstration charts": [["Left: oxygen line, red bands = flagged dips (simulated)", "Right: Bland–Altman; each dot = one pair of readings", "Dashed lines = range of 95% of differences", "With real data, that range tests my hypothesis"], "Only good readings count."],
+  "Signal quality": [["4 checks: finger on · sensor-valid · 70–100% · no movement within 5 s", "Rate = flagged events ÷ hours of valid signal", "Not per hour of sleep: the device cannot measure sleep", "Every report states the % of valid signal"], "How I will interpret the results."],
+  "Analysis: interpretation": [["Supported if 95% of differences are within ±3 points (at rest)", "The reference itself is typically about ±2 points", "Flagged event = oxygen dip, not apnea; overnight unverified", "Breath-holds: only awake, induced dips", "Against: wide limits, bias, low % valid, missed dips"], "What could go wrong."],
+  "Sources of error": [["Measurement: movement, pressure, cold hands, light", "Skin tone can bias oximeters (Sjoding et al., 2020)", "Method: no airflow / effort / sleep → cannot identify apnea", "Awake ≠ asleep; breath-hold ≠ apnea; one participant", "Battery 4–5 h = estimate → USB power for v1"], "Where the project stands today."],
+  "Status": [["Done: design, firmware (not on hardware), software (simulated data), app + 3D", "Oct 9: revised scope agreed with Ms. Ireland", "Pending: her review of the revised proposal, ethics + consent", "Pending: build + all real measurements"], "So, what can I conclude?"],
+  "Conclusion": [["No conclusion yet: no real data", "Will show: agreement at rest, % valid signal, whether logged dips are flagged", "Cannot show: whether anyone has sleep apnea", "Thank you. Questions?"], ""],
+};
+// Likely questions, with short answers (Q&A prep cards).
+const QA = [
+  ["Can your device detect sleep apnea?", "No. It measures only oxygen and heart rate. Diagnosing sleep apnea needs a sleep study that also measures airflow, breathing effort and sleep. My software flags oxygen dips only."],
+  ["Why ±3 percentage points?", "It is a realistic target for a low-cost sensor: a little wider than the reference oximeter's own typical ±2 points. The international standard for pulse oximeters (ISO 80601-2-61) allows a root-mean-square error of up to 4 points."],
+  ["What is a Bland–Altman plot?", "Each dot is one pair of readings: the difference between the devices against their average. The bias is the average difference, and the 95% limits of agreement show where 95% of differences fall. It is the standard way to compare two measuring methods (Bland & Altman, 1986)."],
+  ["Why not just use correlation?", "Two devices can rise and fall together but still disagree, for example if one always reads 3 points high. Agreement has to be measured from the differences."],
+  ["How do you know a reading is good?", "Four checks: a finger is on the sensor, the sensor marks the reading valid, SpO₂ is between 70 and 100%, and there was no sudden movement within 5 seconds. Each report states the % of valid signal."],
+  ["Why events per hour of VALID signal?", "If the sensor loses the signal, dividing by time in bed would make the rate look lower than it is. It is also not an apnea–hypopnea index (AHI)."],
+  ["Is the testing safe and approved?", "Nothing is tested on anyone, including me, until Ms. Ireland accepts the revised proposal, ethics approval is issued and consent is signed. Breath-holds are optional, 20 s at most, seated and supervised, and stop at any discomfort or below 90% on the reference."],
+  ["Does skin colour affect oximeters?", "Yes. Research has found that pulse oximeters can overestimate oxygen in people with darker skin (Sjoding et al., 2020). With one participant I cannot test this; it is a limitation."],
+  ["What would you do next?", "Build the prototype, run the accuracy sessions, and, with approval, test more participants and compare against a lab-grade reference."],
+];
+
 
 function slide(dark, bg, glow) { const s = p.addSlide(); s.background = glow ? { path: A(glow) } : { color: bg || (dark ? C.BLACK : C.WHITE) }; s._dark = dark; s._bg = bg; return s; }
 const fg = (s) => (s._dark ? C.WHITE : C.INK), soft = (s) => (s._dark ? C.GRAYD : C.GRAY), accent = (s) => (s._dark ? C.PINKD : C.PINK);
@@ -52,9 +83,9 @@ function bullets(s, items, x, y, w, size, gap, color) { let yy = y; const sz = s
     const lines = Math.ceil(it.length / Math.floor((w - 0.25) * 72 / (sz * 0.52)));
     T(s, it, { x: x + 0.25, y: yy, w: w - 0.25, h: lines * lineH + 0.08, fontSize: sz, color: color || fg(s) });
     yy += lines * lineH + (gap || 0.2); }); return yy; }
-function card(s, x, y, w, h, fill) { const glass = !fill && s._dark;   // frosted cards on the dark glow slides
-  s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.22, fill: glass ? { color: "FFFFFF", transparency: 91 } : { color: fill || C.CARD },
-    line: glass ? { color: "FFFFFF", transparency: 84, width: 0.75 } : { type: "none" } }); }
+function card(s, x, y, w, h, fill) { const dark = !fill && s._dark;   // solid dark cards on the glow slides (no transparency: imports cleanly into Google Slides)
+  s.addShape(p.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.22, fill: { color: dark ? C.CARDD : fill || C.CARD },
+    line: dark ? { color: C.LINED, width: 0.75 } : { type: "none" } }); }
 function bar(s, x, y, color) { s.addShape(p.ShapeType.roundRect, { x, y, w: 0.5, h: 0.07, rectRadius: 0.035, fill: { color }, line: { type: "none" } }); }
 // a chart picture sitting in a white rounded card (on the light-grey chart slides)
 function chartCard(s, f, x, y, w, h) { card(s, x, y, w, h, C.WHITE); const pad = 0.22, iw = w - 2 * pad, ih = iw * ratio(f);
@@ -70,7 +101,9 @@ function caption(s, t, x, y, w, align) { T(s, t, { x, y, w, h: 0.3, align: align
 function link(s, label, url, x, y, w, size, align) { s.addText([{ text: label + " ›", options: { hyperlink: { url, tooltip: url }, color: s._dark ? C.BLUED : C.BLUE } }],
   { isTextBox: true, x, y, w, h: 0.34, margin: 0, fontFace: F, fontSize: size || 14, align: align || "left" }); }
 function qr(s, f, url, x, y, w) { card(s, x - 0.08, y - 0.08, w + 0.16, w + 0.16, C.WHITE); s.addImage({ path: A(f), x, y, w, h: w, hyperlink: { url, tooltip: url } }); }
-function notes(s, t, secs, script) { NOTES.push([t, secs, script]); if (secs > 0 && NOTES.length > 1) footer(s, NOTES.length); s.addNotes(`[${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}] ${script}`); }
+function notes(s, t, secs, script) { const cue = CUES[t] || [[], ""]; NOTES.push([t, secs, script, cue[0], cue[1]]); if (secs > 0 && NOTES.length > 1) footer(s, NOTES.length);
+  const head = cue[0].length ? `CUE CARD ${NOTES.length}\n` + cue[0].map((c) => "• " + c).join("\n") + (cue[1] ? `\n→ ${cue[1]}` : "") + "\n\nFULL SCRIPT " : "";
+  s.addNotes(`${head}[${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}] ${script}`); }
 function phone(s, f, x, y, w) { const h = w * ratio(f); s.addShape(p.ShapeType.roundRect, { x: x - 0.09, y: y - 0.09, w: w + 0.18, h: h + 0.18, rectRadius: 0.28, fill: { color: C.INK }, line: { type: "none" } });
   s.addImage({ path: A(f), x, y, w, h }); return h; }
 // hairline tables: no grid, a thin rule under every row
@@ -230,25 +263,25 @@ notes(s, "Signal quality", 35, "Only good readings count. A reading is used only
 
 /* ---------------- 11. ANALYSIS: INTERPRETATION ---------------- */
 s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis · plan"); title(s, "How I will interpret the results.");
-[["Agreement", "If 95% of SpO₂ differences fall within ±3 points of the reference at rest, the hypothesis is supported for these conditions. The reference itself is only ±2 points.", C.BLUED],
+[["Agreement", "If 95% of SpO₂ differences fall within ±3 points of the reference at rest, the hypothesis is supported for these conditions. The reference itself is typically about ±2 points.", C.BLUED],
  ["Desaturation events", "A flagged event means an oxygen dip, not an apnea. Overnight events cannot be checked, because the reference cannot record overnight.", C.GREEND],
  ["Breath-hold test (if approved)", "Shows whether awake, induced dips are flagged at the logged times. It does not show that sleep apnea can be detected during sleep.", C.ORANGED],
  ["What would go against it", "Limits wider than ±3 points, a consistent bias, a low % of valid signal, or logged dips that are missed.", C.PINKD]].forEach((k, i) => {
   const x = 0.75 + (i % 2) * 6.02, y = 2.05 + Math.floor(i / 2) * 2.4; card(s, x, y, 5.81, 2.2);
   T(s, k[0], { x: x + 0.35, y: y + 0.28, w: 5.1, h: 0.45, fontSize: 19, bold: true, color: k[2] });
   T(s, k[1], { x: x + 0.35, y: y + 0.82, w: 5.1, h: 1.3, fontSize: 14, color: C.GRAYL }); });
-notes(s, "Analysis: interpretation", 45, "This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.");
+notes(s, "Analysis: interpretation", 45, "This is how I will interpret the results. If ninety-five percent of the oxygen differences fall within three points of the reference at rest, my hypothesis is supported for those conditions, keeping in mind that the reference is itself typically accurate to about two points. A flagged event means an oxygen dip, not an apnea, and overnight events cannot be checked because the reference does not record overnight. The breath-hold test, if approved, shows only whether awake dips are flagged. Wider limits, a consistent bias, too little valid signal, or missed dips would count against my hypothesis.");
 
 /* ---------------- 12. ANALYSIS: SOURCES OF ERROR ---------------- */
 s = slide(true, null, "bg_glow_corner.jpg"); eyebrow(s, "Main analysis"); title(s, "Sources of error and limitations.");
 T(s, "Measurement", { x: 0.75, y: 2.05, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.BLUED });
-bullets(s, ["Movement, finger pressure, cold hands and room light distort the light signal", "Pulse oximeters can be less accurate on darker skin (Sjoding et al., 2020)", "The reference oximeter is only accurate to about ±2 points", "4-second averaging can smooth very short dips"], 0.75, 2.6, 5.7, 14.5, 0.14, C.GRAYL);
+bullets(s, ["Movement, finger pressure, cold hands and room light distort the light signal", "Pulse oximeters can be less accurate on darker skin (Sjoding et al., 2020)", "The reference oximeter is typically accurate to about ±2 points", "4-second averaging can smooth very short dips"], 0.75, 2.6, 5.7, 14.5, 0.14, C.GRAYL);
 T(s, "Method", { x: 6.77, y: 2.05, w: 5.6, h: 0.4, fontSize: 19, bold: true, color: C.PINKD });
 bullets(s, ["Oxygen and heart rate only: no airflow, breathing effort or sleep staging, so apnea cannot be identified", "Awake rest is not the same as sleep; breath-holds are not apneas", "One participant: results cannot be generalized", "The reference cannot record overnight, so night events are unverified"], 6.77, 2.6, 5.8, 14.5, 0.14, C.GRAYL);
 card(s, 0.75, 5.45, 11.83, 1.3);
 s.addText([{ text: "Engineering estimate (to be measured).  ", options: { bold: true, color: C.ORANGED } }, { text: "Bluetooth draws roughly 100 mA, so a 500 mAh battery would last only about 4–5 hours. That is why prototype v1 is planned to run on USB power.", options: { color: C.WHITE } }],
   { isTextBox: true, x: 1.1, y: 5.65, w: 11.15, h: 0.95, margin: 0, fontFace: F, fontSize: 15, valign: "top" });
-notes(s, "Sources of error", 40, "Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is only accurate to about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.");
+notes(s, "Sources of error", 40, "Sources of error in measurement: movement, finger pressure, cold hands and room light can distort the light signal; research has shown pulse oximeters can be less accurate on darker skin; and the reference is typically accurate to only about two points. In the method: my device measures only oxygen and heart rate, so it cannot identify apnea; sitting awake is not the same as sleep, and a breath-hold is not an apnea; there is only one participant; and overnight events cannot be verified. I also estimated that a small battery would last only four to five hours, which is why the first prototype is planned to use USB power; I still have to measure that.");
 
 /* ---------------- 13. STATUS ---------------- */
 s = slide(false); eyebrow(s, "Project status"); title(s, "What is done, and what is planned.");
@@ -278,18 +311,18 @@ const atitle = (s, t) => title(s, t, { fontSize: 30, h: 0.7 });
 s = slide(false); appendix(s); eyebrow(s, "Appendix A · Materials"); atitle(s, "Parts, exact sizes and where to buy.");
 const L = (t, u) => ({ text: t, options: { hyperlink: { url: u, tooltip: u }, color: C.BLUE } });
 const parts = [
-  ["AITRIP ESP32 ESP-WROOM-32 (30-pin, CP2102, USB-C)", "≈ 52 × 28 mm · pins pre-soldered", "Processor + Bluetooth Classic", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN"],
-  ["HiLetgo MAX30102 sensor", "14 × 14 mm · 4 pins to solder", "SpO₂ + heart rate (finger clip)", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ"],
-  ["SHILLEHTEK GY-521 MPU-6050, pre-soldered (2-pack)", "≈ 21 × 16 mm", "Movement check + position (exploratory)", "https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4"],
-  ["ELEGOO 120 Dupont jumper wires (F-F, M-F, M-M)", "20 cm each", "Plug-in wiring, no soldering", "https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78"],
-  ["Running armband phone pouch", "fits phones up to 6.9 in", "Holds the ESP32 on the forearm", "https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4"],
-  ["Anker Powerline+ USB-A to USB-C cable", "3 m (10 ft)", "All-night power from a phone charger", "https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS"],
-  ["Anker USB-C to USB-A adapter (2-pack)", "USB-C → USB-A", "Plug the cable into a MacBook", "https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61"],
-  ["VELCRO Brand 1 in × 30 ft roll", "25 mm wide · cut ≈ 80 mm", "Finger loop", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1"],
-  ["Elite Medica fingertip pulse oximeter", "confirm Health Canada licence", "Reference for the accuracy test", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB"]];
+  ["AITRIP ESP32 ESP-WROOM-32 board, USB-C, CP2102, 30-pin (1 pc)", "≈ 52 × 28 mm (typical) · check photos for soldered pins", "Processor + Bluetooth Classic", "https://www.amazon.ca/AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN"],
+  ["HiLetgo MAX30102 breakout (“Heart Rate Click”)", "listing: 14 mm · pins usually loose: solder 4", "SpO₂ + heart rate (finger clip)", "https://www.amazon.ca/HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ"],
+  ["SHILLEHTEK MPU-6050 GY-521, pre-soldered (2-pack)", "≈ 21 × 16 mm · 3.3–5 V · check stock", "Movement check + position (exploratory)", "https://www.amazon.ca/Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4"],
+  ["ELEGOO 120 Dupont wires (EL-CP-004): 40 M-F, 40 M-M, 40 F-F", "20 cm each", "Plug-in wiring, no soldering", "https://www.amazon.ca/Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78"],
+  ["Running armband phone pouch", "⚠ not verified: check it fits a 52 × 28 mm board + cable", "Holds the ESP32 on the forearm", "https://www.amazon.ca/Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4"],
+  ["Anker Powerline+ USB-C to USB-A cable, 10 ft (A8267)", "3 m · ⚠ unavailable on Amazon.ca: any 3 m USB-A → USB-C data cable", "All-night power + data from a charger", "https://www.amazon.ca/Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS"],
+  ["Anker USB-C to USB 3.0 female adapter (2-pack)", "USB-C plug → USB-A socket", "Plug the cable into a MacBook", "https://www.amazon.ca/Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61"],
+  ["VELCRO Brand Wide Straps VEL-30768-AMS, black", "1 in (25 mm) × 30 ft · cut ≈ 80 mm", "Finger loop", "https://www.amazon.ca/VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1"],
+  ["Elite Medica Premium Fingertip Pulse Oximeter EM-PO2 (black)", "listed as Health Canada authorized · 70–100% · 2 AAA · licence no. not shown: check box", "Reference for the accuracy test", "https://www.amazon.ca/Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB"]];
 table(s, [["Part", "Size", "Purpose", "Buy"]].concat(parts.map((r) => [r[0], r[1], r[2], { text: [L("Amazon.ca ›", r[3])] }])),
-  { x: 0.75, y: 1.75, w: 11.83, colW: [4.4, 3.3, 2.83, 1.3], fontSize: 11.5, rowH: 0.43, softCols: [1, 2] });
-T(s, "Every part is on Amazon.ca (click Buy). Prices change and several items are multi-packs. Only the MAX30102’s 4 header pins need soldering (about 5 minutes); everything else plugs in.", { x: 0.75, y: 6.45, w: 11.8, h: 0.5, fontSize: 11.5, color: C.GRAY });
+  { x: 0.75, y: 1.7, w: 11.83, colW: [4.25, 3.85, 2.53, 1.2], fontSize: 10.5, rowH: 0.4, softCols: [1, 2] });
+T(s, "Specs rechecked Oct 16, 2026 from the listing titles and makers’ pages (Amazon.ca itself could not be opened). ⚠ = check before ordering. Prices and stock change; several items are multi-packs. Only the MAX30102 needs soldering (4 pins).", { x: 0.75, y: 6.62, w: 11.8, h: 0.45, fontSize: 10.5, color: C.GRAY });
 notes(s, "Appendix A — materials", 0, "Appendix — not presented. Full parts list with exact dimensions and links.");
 
 s = slide(false); appendix(s); eyebrow(s, "Appendix B · Full protocol (planned)"); atitle(s, "Full experimental protocol (planned, not yet started).");
@@ -361,5 +394,7 @@ p.writeFile({ fileName: out }).then((f) => {
   oral.forEach((n, i) => { md += `## ${i + 1}. ${n[0]}  (${n[1]} s)\n\n${n[2]}\n\n`; });
   md += "## Appendix slides (A–D) and bibliography are in the deck but not presented.\n";
   fs.writeFileSync(path.join(__dirname, "speaker_script.md"), md);
+  let r = 0; const cards = oral.map((n, i) => { r += n[1]; return { n: i + 1, title: n[0], secs: n[1], running: `${Math.floor(r / 60)}:${String(r % 60).padStart(2, "0")}`, cues: n[3], next: n[4], script: n[2] }; });
+  fs.writeFileSync(path.join(__dirname, "cue_cards.json"), JSON.stringify({ total: total, cards, qa: QA }, null, 1));
   console.log("wrote", f, `| ${oral.length} presented slides, ${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")} spoken`);
 });

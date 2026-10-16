@@ -24,7 +24,8 @@ events** (≥ 3 points below a moving baseline for ≥ 10 s)?
 
 ```
 night-signal/
-├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix)
+├── Night_Signal_Presentation.pptx   # final deck (school format, 8:40 spoken + appendix; Inter font, imports cleanly into Google Slides)
+├── Night_Signal_Cue_Cards.docx      # one cue card per slide + Q&A cards + full practice script (uploads to Google Docs)
 ├── REVIEW_AND_STATUS.md (+ .pdf)    # scientific review for Ms. Ireland: claims corrected, planned vs done, open items
 ├── Night_Signal_Ethics.docx (+ .pdf) # ethics package (revised scope, DRAFT): protocol, risk assessment, consent, data sheets
 ├── Night_Signal_Proposal_ORIGINAL_superseded.docx  # original Sep 25 proposal, kept as a record only (superseded)
@@ -56,6 +57,8 @@ night-signal/
 └── slides/
     ├── build_deck.js      # rebuilds the presentation from slides/assets/
     ├── speaker_script.md  # timed script for the 7–10 minute talk
+    ├── build_cue_cards.js # builds Night_Signal_Cue_Cards.docx from cue_cards.json (written by build_deck.js)
+    ├── GOOGLE_UPLOAD_PROMPTS.md # how to put the deck in Google Slides and the cue cards in Google Docs
     └── assets/            # charts, 3D renders, app screenshots, QR codes
 ```
 
@@ -160,7 +163,7 @@ python start_app.py          # Chrome/Edge: Live tab connects to the device
 ```
 
 Copy the new chart PNGs into `slides/assets/` and run `node build_deck.js` to
-rebuild the presentation.
+rebuild the presentation. Then run `node build_cue_cards.js` so the cue cards match the slides.
 
 ---
 
