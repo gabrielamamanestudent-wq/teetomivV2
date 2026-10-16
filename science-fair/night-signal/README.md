@@ -29,7 +29,7 @@ night-signal/
 ├── REVIEW_AND_STATUS.md (+ .pdf)    # scientific review for Ms. Ireland: claims corrected, planned vs done, open items
 ├── Night_Signal_Ethics.docx (+ .pdf) # ethics package (revised scope, DRAFT): protocol, risk assessment, consent, data sheets
 ├── Night_Signal_Proposal_ORIGINAL_superseded.docx  # original Sep 25 proposal, kept as a record only (superseded)
-├── forms/                           # REVISED proposal form (filled PDF + Word) and the scripts that build them
+├── forms/                           # REVISED proposal form (filled PDF + Word), Technoscience copy-and-paste answers, and their builders
 ├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting
 ├── firmware/
 │   └── night_signal_esp32.ino        # v3.1: sensors + self-test + finger, 1 reading/s
