@@ -32,7 +32,7 @@ night-signal/
 ├── forms/                           # REVISED proposal form (filled PDF + Word), Technoscience copy-and-paste answers, and their builders
 ├── BUILD_GUIDE.md                   # no-solder assembly, Bluetooth pairing, troubleshooting
 ├── firmware/
-│   └── night_signal_esp32.ino        # v3.1: sensors + self-test + finger, 1 reading/s
+│   └── night_signal_esp32.ino        # v3.2: sensors + self-test + finger, 1 reading/s, UNIT_NUMBER for extra units
 ├── analysis/
 │   ├── protocol.py        # the device's line format (shared by every script)
 │   ├── check_device.py    # ✅ run before every recording: proves the device works

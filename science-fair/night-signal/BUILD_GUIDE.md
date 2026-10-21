@@ -40,6 +40,29 @@ them in your acknowledgements.
 
 ---
 
+## Building more than one
+
+Everything scales. Only the **shared** items stay at one. The interactive version in
+`build-kit.html` ("Build more") also adds up prices.
+
+| Buy | 1 wearable | 3 wearables | 5 wearables | 10 wearables |
+|---|---|---|---|---|
+| ESP32 board | 1 | 3 | 5 | 10 |
+| MAX30102 sensor (+1 spare) | 2 | 4 | 6 | 11 |
+| GY-521 (2-pack) | 1 pack | 2 packs | 3 packs | 5 packs |
+| ELEGOO wire kit (each wearable uses 4 M-F + 8 F-F) | 1 | 1 | 1 | 2 |
+| Armband pouch | 1 | 3 | 5 | 10 |
+| 3 m USB-A → USB-C data cable | 1 | 3 | 5 | 10 |
+| USB-C → USB-A adapter (2-pack) · *shared* | 1 | 1 | 1 | 1 |
+| VELCRO roll · *shared* (≈ 100 cuffs per roll) | 1 | 1 | 1 | 1 |
+| Reference oximeter · *shared* | 1 | 1 | 1 | 1 |
+| **Estimated build time** | **≈ 1 h 25 min** | **≈ 2 h 30 min** | **≈ 3 h 35 min** | **≈ 6 h 15 min** |
+
+- Chest wiring for position nights uses 12 M-F wires per wearable instead of 4, so 4 or more wearables need 2 wire kits. It also adds about 5 min each.
+- **Build time:** the first wearable takes about 1 h 25 min, including the 15-min software install and about 20 min for learning and fixes. Each extra one takes about 30–35 min, and doing one step for every unit at once is fastest. Your helper needs about 5 min of soldering per sensor. Delivery time is not included.
+- **Give each extra wearable its own number** before uploading. In the firmware, change `#define UNIT_NUMBER 1` to 2, 3, … It then appears in Bluetooth as **NightSignal-2**, **NightSignal-3**, … and its status line says `unit=2`. Put a matching sticker on its armband. Unit 1 keeps the plain name **NightSignal** used everywhere in this guide.
+- More wearables do **not** mean more people can be tested. Anyone other than you may take part only as approved in the ethics package, with signed consent.
+
 ## Step 1: Get the 4 pins soldered on the oxygen sensor (5 min, with a helper)
 
 Give your helper the MAX30102 board and its strip of pins. Tell them:
@@ -98,7 +121,7 @@ Wrap a small piece of tape around each place where two wires join, so they can't
 5. Click **Upload** (the → arrow). If it sticks on `Connecting....`, hold the **BOOT** button on the ESP32 until it starts.
 6. Open *Tools ▸ Serial Monitor* and set it to **115200**. You should see:
    ```
-   #STATUS,fw=3.1,max30102=OK,mpu6050=OK,battery=-1
+   #STATUS,fw=3.2,max30102=OK,mpu6050=OK,battery=-1,unit=1
    ```
    `battery=-1` just means it is running on USB power.
 7. Rest a fingertip on the sensor. After about 15 s, numbers like `372145,68,1,97,1,…` appear.

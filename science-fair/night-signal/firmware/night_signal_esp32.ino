@@ -22,14 +22,14 @@
 
   LIBRARY: "SparkFun MAX3010x Pulse and Proximity Sensor Library" (Library Manager)
 
-  DATA LINE (one per second, Bluetooth name "NightSignal", 115200 baud on USB)
+  DATA LINE (one per second, Bluetooth name "NightSignal" (unit 2: "NightSignal-2"), 115200 baud on USB)
         millis,heartRate,hrValid,spo2,spo2Valid,ax,ay,az,finger,battery
     e.g. 372145,68,1,97,1,0.02,-0.98,0.05,1,84
       finger  = 1 when a fingertip is on the sensor, else 0
       battery = percent (0-100), or -1 if no battery divider is fitted
 
   STATUS LINE (at start-up and every 30 s; lines starting with # are not data)
-        #STATUS,fw=3.1,max30102=OK,mpu6050=OK,battery=-1
+        #STATUS,fw=3.2,max30102=OK,mpu6050=OK,battery=-1,unit=1
 
   NOTE: Educational prototype only. Not a medical device.
 */
@@ -39,7 +39,9 @@
 #include "spo2_algorithm.h"    // Maxim SpO2 + heart-rate algorithm (expects 25 samples/s)
 #include "BluetoothSerial.h"
 
-#define FW_VERSION       "3.1"
+#define FW_VERSION       "3.2"
+#define UNIT_NUMBER      1      // building more than one? give each wearable its own number (2, 3, ...)
+                                // unit 1 is "NightSignal"; unit 2 is "NightSignal-2", and so on
 #define HAS_BATTERY_DIV  0      // set to 1 after fitting the 2 x 100k divider to GPIO34
 #define BATTERY_PIN      34
 #define LED_PIN          2
@@ -99,7 +101,8 @@ void sendStatus() {
   both(String("#STATUS,fw=") + FW_VERSION +
        ",max30102=" + (maxOK ? "OK" : "FAIL") +
        ",mpu6050="  + (mpuOK ? "OK" : "FAIL") +
-       ",battery="  + String(batteryPercent()));
+       ",battery="  + String(batteryPercent()) +
+       ",unit="     + String(UNIT_NUMBER));
   lastStatus = millis();
 }
 
@@ -116,7 +119,9 @@ void readSamples(int from, int to) {
 void setup() {
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
-  SerialBT.begin("NightSignal");
+  String btName = "NightSignal";                  // unit 1 keeps the plain name used in the guides
+  if (UNIT_NUMBER > 1) { btName += "-"; btName += String(UNIT_NUMBER); }
+  SerialBT.begin(btName);
   Wire.begin();                                    // oxygen sensor: GPIO 21 / 22
   Wire1.begin(MPU_SDA, MPU_SCL, 100000);           // motion sensor: SDA 33 / SCL 32, 100 kHz (fine on a long chest wire)
 

@@ -49,7 +49,7 @@ label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--teal)}
 
 <h1>Night Signal: buy, build, connect</h1>
 <p class="sub">Gabriel Mamane · Science Fair 2027 · Everything in one place: the shopping list, the wiring, the build steps and Bluetooth. Easy version: <b>plug-in wires, no tools except scissors</b>, about 1½ hours.</p>
-<nav><a href="#need">Buy</a><a href="#wiring">Wiring</a><a href="#s1">1 · Solder 4 pins (helper)</a><a href="#s3">3 · Plug in</a><a href="#s4">4 · Upload</a><a href="#s5">5 · Finger cuff</a><a href="#s7">7 · Bluetooth</a><a href="#night">Every night</a><a href="#fix">Troubleshooting</a></nav>
+<nav><a href="#need">Buy</a><a href="#plan">Build more</a><a href="#wiring">Wiring</a><a href="#s1">1 · Solder 4 pins (helper)</a><a href="#s3">3 · Plug in</a><a href="#s4">4 · Upload</a><a href="#s5">5 · Finger cuff</a><a href="#s7">7 · Bluetooth</a><a href="#night">Every night</a><a href="#fix">Troubleshooting</a></nav>
 <p class="hint">Tip: tap a step to tick it off. Your ticks are saved in this browser.</p>
 
 <div class="done"><b>No soldering for you.</b> Everything plugs together with jumper wires, and a USB cable powers it all night. The one exception is 4 pins on the oxygen sensor: a teacher or anyone with a soldering iron can do them in about 5 minutes. Getting help with one build step is normal at a science fair, so thank them in your acknowledgements.</div>
@@ -72,6 +72,101 @@ label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--teal)}
 <li><b>From home:</b> a USB phone charger (the wall plug), scissors, black electrical tape.</li>
 <li><b>A helper for 5 minutes</b> with a soldering iron, for step 1 only.</li>
 </ul></div>
+
+<h2 id="plan">Building more than one? <span class="t">shopping list + build time</span></h2>
+<div class="card" id="planner">
+<p style="margin:0 0 10px">Type how many wearables you want. The list works out how many <b>packs</b> to buy (some items come in packs of 2 or 120), which items are <b>shared</b> (you only ever need one), and roughly how long the build takes. Type in the prices you see on Amazon.ca to get a total; they are saved on this device only.</p>
+<div class="pl-controls">
+<label>Wearables <input id="plN" type="number" min="1" max="50" value="1"></label>
+<label>Laptops used to set them up <input id="plL" type="number" min="1" max="10" value="1"></label>
+<label class="pl-check"><input id="plChest" type="checkbox"> chest wiring for position nights</label>
+<label class="pl-check"><input id="plSpare" type="checkbox" checked> 1 spare oxygen sensor</label>
+</div>
+<div class="tw"><table class="pl-table">
+<thead><tr><th>Part</th><th>Per wearable</th><th>Buy</th><th>Price per pack (CA$)</th><th>Cost</th></tr></thead>
+<tbody id="plBody"></tbody>
+<tfoot><tr><td colspan="4" style="text-align:right"><b>Total (items with a price)</b></td><td id="plTotal"><b>–</b></td></tr></tfoot>
+</table></div>
+<p class="pl-note" id="plFromHome"></p>
+<div class="pl-time">
+<div><b id="plTime">–</b><span>estimated build time</span></div>
+<div><b id="plHelper">–</b><span>helper with a soldering iron</span></div>
+<div><b id="plEach">–</b><span>each extra wearable</span></div>
+</div>
+<p class="pl-note">Times come from the steps below: first wearable ≈ 1 h 25 min (15 min software install, 15 min wiring, 10 min upload, 10 min cuff, 10 min Bluetooth + device check, 5 min soldering, ≈ 20 min for learning and fixes). Each extra one ≈ 30–35 min once you know the steps; doing one step for all units at once is fastest. Delivery time is not included.</p>
+<p class="pl-note"><b>Give every extra wearable its own number</b> before uploading: in the firmware change <code>#define UNIT_NUMBER 1</code> to 2, 3, … It then shows up in Bluetooth as <b>NightSignal-2</b>, <b>NightSignal-3</b>, … and its status line says <code>unit=2</code>. Put a matching sticker on the armband.</p>
+</div>
+<style>
+.pl-controls{display:flex;flex-wrap:wrap;gap:10px 18px;margin:0 0 12px}
+.pl-controls label{display:flex;align-items:center;gap:8px;font-weight:600}
+.pl-controls input[type=number]{width:72px;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.pl-check{font-weight:400!important}
+.pl-table{width:100%;border-collapse:collapse;font-size:14px}
+.pl-table th,.pl-table td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.pl-table td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pl-table input{width:90px;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.pl-table small{display:block;color:var(--soft)}
+.pl-shared{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:6px;background:var(--okbg);color:var(--ok);margin-left:6px}
+.pl-time{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0 6px}
+.pl-time div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.pl-time b{display:block;font-size:24px;color:var(--navy)}
+.pl-time span{color:var(--soft);font-size:13px}
+.pl-note{color:var(--soft);font-size:14px;margin:8px 0 0}
+</style>
+<script>
+(function(){
+  // pack = how many come in one purchase; per = how many one wearable uses; shared = one for the whole project
+  var A="https://www.amazon.ca/";
+  var ITEMS=[
+    {id:"esp",  name:"AITRIP ESP32 board (USB-C, CP2102)", url:A+"AITRIP-ESP-WROOM-32-Development-Microcontroller-Compatible/dp/B0DF2YJSHN", pack:1, per:1, note:"1 per pack"},
+    {id:"max",  name:"HiLetgo MAX30102 sensor", url:A+"HiLetgo-MAX30102-Breakout-Oximetry-Solution/dp/B07QC67KMQ", pack:1, per:1, spare:true, note:"check the pack size on the listing"},
+    {id:"mpu",  name:"SHILLEHTEK GY-521, pre-soldered", url:A+"Pre-Soldered-Accelerometer-Raspberry-Compatible-Arduino/dp/B0BMY15TC4", pack:2, per:1, note:"2 per pack · check stock"},
+    {id:"wire", name:"ELEGOO 120 Dupont wires", url:A+"Elegoo-120pcs-Multicolored-Breadboard-arduino/dp/B01EV70C78", wires:true, note:"40 M-F + 40 M-M + 40 F-F per kit"},
+    {id:"arm",  name:"Running armband pouch", url:A+"Running-Armband-Samsung-Resistant-Emergency/dp/B08HZ3BPK4", pack:1, per:1, note:"⚠ check it fits the board + cable"},
+    {id:"usb",  name:"3 m USB-A → USB-C data cable", url:A+"Anker-Powerline-Double-Braided-Charging-Samsung/dp/B07G148YMS", pack:1, per:1, note:"⚠ the Anker one is unavailable: any 3 m data cable"},
+    {id:"adp",  name:"Anker USB-C → USB-A adapter (2-pack)", url:A+"Adapter-Anker-High-Speed-Transfer-Notebook/dp/B08HZ6PS61", perLaptop:true, note:"one per laptop, not per wearable"},
+    {id:"vel",  name:"VELCRO 1 in × 30 ft roll", url:A+"VELCRO-Brand-VEL-30768-AMS-Self-Gripping-Organization/dp/B09QH2NVM1", velcro:true, note:"80 mm per finger cuff · one roll ≈ 100 cuffs"},
+    {id:"ref",  name:"Elite Medica reference oximeter", url:A+"Elite-Medica-Fingertip-Saturation-Batteries/dp/B0DSGP91PB", shared:true, note:"one for the whole project"}
+  ];
+  var KEY="nightsignal-planner-v1", saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ saved={}; }
+  function store(){ try{ localStorage.setItem(KEY, JSON.stringify(saved)); }catch(e){} }
+  var $=function(id){ return document.getElementById(id); };
+  ["plN","plL"].forEach(function(id){ if(saved[id]) $(id).value=saved[id]; });
+  ["plChest","plSpare"].forEach(function(id){ if(id in saved) $(id).checked=!!saved[id]; });
+  function int(id,lo,hi){ var v=parseInt($(id).value,10); if(isNaN(v)) v=lo; return Math.max(lo,Math.min(hi,v)); }
+  function hm(min){ var h=Math.floor(min/60), m=Math.round(min%60/5)*5; if(m===60){h++;m=0;} return (h? h+" h ":"")+(m||!h? m+" min":"").trim(); }
+  function render(){
+    var n=int("plN",1,50), L=int("plL",1,10), chest=$("plChest").checked, spare=$("plSpare").checked, total=0, priced=0;
+    var rows=ITEMS.map(function(it){
+      var per, buy, unit="";
+      if(it.wires){ var mf=chest?12:4, ff=8; per=mf+" M-F + "+ff+" F-F wires"; buy=Math.max(Math.ceil(n*mf/40),Math.ceil(n*ff/40)); unit=buy===1?"kit":"kits"; }
+      else if(it.velcro){ per="80 mm"; buy=Math.ceil(n*80/9144); unit=buy===1?"roll":"rolls"; }
+      else if(it.perLaptop){ per="shared"; buy=Math.ceil(L/2); unit=buy===1?"pack":"packs"; }
+      else if(it.shared){ per="shared"; buy=1; unit=""; }
+      else { var need=n*it.per+(it.spare&&spare?1:0); per=it.per+""; buy=Math.ceil(need/it.pack); unit=it.pack>1?(buy===1?"pack":"packs"):""; }
+      var price=parseFloat(saved["p_"+it.id]); var cost=isNaN(price)?null:price*buy;
+      if(cost!==null){ total+=cost; priced++; }
+      return '<tr><td><a href="'+it.url+'" target="_blank" rel="noopener">'+it.name+'</a>'+((it.shared||it.perLaptop||it.velcro)?'<span class="pl-shared">shared</span>':'')+'<small>'+it.note+'</small></td>'+
+        '<td>'+per+'</td><td class="num"><b>'+buy+'</b> '+unit+'</td>'+
+        '<td><input inputmode="decimal" data-id="'+it.id+'" placeholder="price" value="'+(isNaN(price)?"":price)+'"></td>'+
+        '<td class="num">'+(cost===null?"–":"$"+cost.toFixed(2))+'</td></tr>';
+    });
+    $("plBody").innerHTML=rows.join("");
+    $("plTotal").innerHTML="<b>"+(priced? "$"+total.toFixed(2)+(priced<ITEMS.length?" <small>("+priced+" of "+ITEMS.length+" items priced)</small>":"") : "–")+"</b>";
+    $("plFromHome").innerHTML="<b>From home:</b> "+n+" USB phone charger"+(n>1?"s (only if they record on the same night; otherwise share one)":"")+", 1 roll of black electrical tape, scissors.";
+    var first=85, extra=chest?37:32, helper=5*(n+(spare?1:0));
+    $("plTime").textContent="≈ "+hm(first+extra*(n-1));
+    $("plHelper").textContent="≈ "+hm(helper);
+    $("plEach").textContent=n>1?"≈ "+hm(extra):"–";
+    $("plBody").querySelectorAll("input").forEach(function(inp){
+      inp.addEventListener("change",function(){ var v=parseFloat(inp.value); if(isNaN(v)) delete saved["p_"+inp.dataset.id]; else saved["p_"+inp.dataset.id]=v; store(); render(); }); });
+  }
+  ["plN","plL"].forEach(function(id){ $(id).addEventListener("input",function(){ saved[id]=$(id).value; store(); render(); }); });
+  ["plChest","plSpare"].forEach(function(id){ $(id).addEventListener("change",function(){ saved[id]=$(id).checked; store(); render(); }); });
+  render();
+})();
+</script>
 
 <h2 id="wiring">The wiring at a glance</h2>
 <div class="card">
@@ -182,7 +277,7 @@ label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--teal)}
 <li>Connect the ESP32 to your MacBook with the <b>3 m cable plus the USB-C adapter</b>.</li>
 <li>Open <code>4 - Code/firmware/night_signal_esp32.ino</code>. Choose <i>Tools ▸ Board ▸ esp32 ▸ ESP32 Dev Module</i>, then <i>Tools ▸ Port ▸ /dev/cu.usbserial-…</i>. If no port appears, install the Silicon Labs <b>CP210x</b> driver and try again.</li>
 <li>Click <b>Upload</b> (the → arrow). If it sticks on <code>Connecting....</code>, hold the <b>BOOT</b> button on the ESP32 until it starts.</li>
-<li>Open <i>Tools ▸ Serial Monitor</i> at <b>115200</b>. You should see <code>#STATUS,fw=3.1,max30102=OK,mpu6050=OK,battery=-1</code>. <code>battery=-1</code> just means it's on USB power.</li>
+<li>Open <i>Tools ▸ Serial Monitor</i> at <b>115200</b>. You should see <code>#STATUS,fw=3.2,max30102=OK,mpu6050=OK,battery=-1,unit=1</code>. <code>battery=-1</code> just means it's on USB power.</li>
 <li>Rest a fingertip on the sensor. After about 15 s, numbers like <code>372145,68,1,97,1,…</code> appear. <b>Two <code>OK</code>s means the electronics work.</b></li>
 </ol></div>
 
